@@ -45,15 +45,15 @@ public class ProfileController {
             description = "프로필 수정 요청",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostProfileResponseDto.class))
     )
-    @PostMapping("/users/{userId}/profile")
-    public ResponseEntity<PostProfileResponseDto> postProfile(
+    @PutMapping("/users/{userId}/profile")
+    public ResponseEntity<PostProfileResponseDto> updateProfile(
             @PathVariable Integer userId,
             @RequestBody UpdateProfileRequestDto requestDto
     ){
         try {
             profileService.updateProfile(userId, requestDto);
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(new PostProfileResponseDto("프로필이 성공적으로 수정되었습니다."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
