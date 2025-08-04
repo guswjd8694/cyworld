@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetEmotionResponseDto {
-
     @Schema(example = "💓 사랑", description = "오늘의 감정", requiredMode = Schema.RequiredMode.REQUIRED)
     private String emotion;
 
