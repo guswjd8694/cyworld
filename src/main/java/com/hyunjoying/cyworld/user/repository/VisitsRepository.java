@@ -9,8 +9,4 @@ import java.time.LocalDateTime;
 
 
 public interface VisitsRepository extends JpaRepository<Visit, Integer> {
-
-    Long countByMiniHomepageId(Integer miniHomepageId);
-
-    Long countByMiniHomepageIdAndCreatedAtBetween(Integer miniHomepageId, LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -26,12 +26,20 @@ public class GetProfileResponseDto {
     @Schema(example = "ajdrns8694@gmail.com", description = "사용자 이메일", requiredMode = Schema.RequiredMode.REQUIRED)
     private String email;
 
-    public GetProfileResponseDto(List<ProfileHistoryDto> history, String name, String gender, LocalDate birthday, String email) {
+    @Schema(example = "/img/image_01.jpg", description = "프로필 이미지 URL", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String imageUrl;
+
+    @Schema(example = "답답하면<br>너희들이<br>가서뛰던지~", description = "프로필 한 줄 메시지", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String bio;
+
+    public GetProfileResponseDto(List<ProfileHistoryDto> history, String name, String gender, LocalDate birthday, String email, String imageUrl, String bio) {
         this.history = history;
         this.name = name;
         this.gender = gender;
         this.birthday = birthday;
         this.email = email;
+        this.imageUrl = imageUrl;
+        this.bio = bio;
     }
 }
 
