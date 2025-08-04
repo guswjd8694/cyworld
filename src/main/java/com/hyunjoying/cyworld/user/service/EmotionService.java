@@ -1,9 +1,11 @@
 package com.hyunjoying.cyworld.user.service;
 
+import com.hyunjoying.cyworld.user.dto.request.UpdateEmotionRequestDto;
+import com.hyunjoying.cyworld.user.dto.response.GetEmotionResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface EmotionService {
-    public String getEmotion(String emotion);
-    public String updateEmotion(String emotion);
+    GetEmotionResponseDto getEmotion(Integer userId);
+    void updateEmotion(Integer userId, UpdateEmotionRequestDto requestDto);
 }

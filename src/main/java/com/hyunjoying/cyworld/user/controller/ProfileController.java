@@ -1,5 +1,8 @@
 package com.hyunjoying.cyworld.user.controller;
 
+import com.hyunjoying.cyworld.user.dto.request.PostProfileRequestDto;
+import com.hyunjoying.cyworld.user.dto.request.UpdateEmotionRequestDto;
+import com.hyunjoying.cyworld.user.dto.request.UpdateProfileRequestDto;
 import com.hyunjoying.cyworld.user.dto.response.GetProfileResponseDto;
 import com.hyunjoying.cyworld.user.dto.response.PostProfileResponseDto;
 import com.hyunjoying.cyworld.user.service.ProfileService;
@@ -43,7 +46,16 @@ public class ProfileController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostProfileResponseDto.class))
     )
     @PostMapping("/users/{userId}/profile")
-    public PostProfileResponseDto postProfile(@PathVariable String userId){
-        return new PostProfileResponseDto("success");
+    public ResponseEntity<PostProfileResponseDto> postProfile(
+            @PathVariable Integer userId,
+            @RequestBody UpdateProfileRequestDto requestDto
+    ){
+        try {
+            profileService.updateProfile(userId, requestDto);
+
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
