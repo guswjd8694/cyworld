@@ -1,0 +1,16 @@
+package com.hyunjoying.cyworld.user.dto.response;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class PostProfileResponseDto {
+    @Schema(example = "success", description = "프로필 수정 성공 여부 메시지", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String status;
+
+    public PostProfileResponseDto(String status) {
+        this.status = status;
+    }
+}
