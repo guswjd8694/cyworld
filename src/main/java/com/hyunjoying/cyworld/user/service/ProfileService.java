@@ -1,5 +1,6 @@
 package com.hyunjoying.cyworld.user.service;
 
+import com.hyunjoying.cyworld.user.dto.response.GetProfileResponseDto;
 import com.hyunjoying.cyworld.user.dto.response.schma.ProfileHistoryDto;
 
 import java.util.Date;
@@ -12,4 +13,6 @@ public interface ProfileService {
     public Date getBirthday(Long userId);
     public String getEmail(Long userId);
     public List<ProfileHistoryDto> getProfileHistory(Long userId);
+
+    GetProfileResponseDto getProfile(Integer userId);
 }
