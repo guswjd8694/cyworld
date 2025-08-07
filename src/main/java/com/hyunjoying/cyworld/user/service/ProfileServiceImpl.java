@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -35,8 +37,17 @@ public class ProfileServiceImpl implements ProfileService {
         UserProfile activeProfile = userProfileRepository.findByUserAndIsActiveTrue(user)
                 .orElseThrow(() -> new IllegalArgumentException("활성화된 프로필을 찾을 수 없습니다. User ID: " + userId));
 
+        List<UserProfile> allProfiles = userProfileRepository.findALlByUserOrderByCreatedAtDesc(user);
 
-        List<ProfileHistoryDto> profileHistoryList = List.of();
+        List<ProfileHistoryDto> profileHistoryList = allProfiles.stream()
+                .map(profile -> new ProfileHistoryDto(
+                        profile.getId(),
+                        profile.getImageUrl(),
+                        profile.getBio(),
+                        profile.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()
+                ))
+                .collect(Collectors.toList());
+
 
         return new GetProfileResponseDto(
                 profileHistoryList,
