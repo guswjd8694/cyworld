@@ -9,5 +9,9 @@ import java.util.Optional;
 
 public interface UserProfileRepository extends JpaRepository<UserProfile, Integer> {
     Optional<UserProfile> findByUserAndIsActiveTrue(User user);
-    List<UserProfile> findALlByUserOrderByCreatedAtDesc(User user);
+    List<UserProfile> findAllByUserOrderByCreatedAtDesc(User user);
+
+    long countByUser(User user);
+
+    Optional<UserProfile> findFirstByUserOrderByCreatedAtAsc(User user);
 }

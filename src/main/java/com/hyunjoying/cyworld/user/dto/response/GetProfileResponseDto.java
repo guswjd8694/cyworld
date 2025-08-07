@@ -1,7 +1,7 @@
 package com.hyunjoying.cyworld.user.dto.response;
 
 
-import com.hyunjoying.cyworld.user.dto.response.schma.ProfileHistoryDto;
+import com.hyunjoying.cyworld.user.dto.response.schema.ProfileHistoryDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
