@@ -5,6 +5,6 @@ import com.hyunjoying.cyworld.user.dto.response.GetProfileResponseDto;
 
 
 public interface ProfileService {
-    GetProfileResponseDto getProfile(Integer userId);
+    GetProfileResponseDto getProfile(Integer userId, Integer limit);
     void updateProfile(Integer userId, UpdateProfileRequestDto requestDto);
 }
