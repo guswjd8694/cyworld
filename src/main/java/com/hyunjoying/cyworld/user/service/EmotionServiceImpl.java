@@ -25,13 +25,13 @@ public class EmotionServiceImpl implements EmotionService  {
     @Transactional(readOnly = true)
     public GetEmotionResponseDto getEmotion(Integer userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
 
         Emotion currentEmotion = user.getEmotion();
 
-        if (user.getEmotion() != null) {
+        if (user.getEmotion() == null) {
             currentEmotion = emotionRepository.findById(1)
-                    .orElseThrow(() -> new IllegalStateException("기본 감정(ID=1)을 찾을 수 없습니다. DB를 확인해주세요."));
+                    .orElseThrow(() -> new IllegalArgumentException("기본 감정(ID=1)을 찾을 수 없습니다. DB를 확인해주세요."));
         }
         return new GetEmotionResponseDto(currentEmotion.getName());
     }
@@ -41,10 +41,10 @@ public class EmotionServiceImpl implements EmotionService  {
     @Transactional
     public void updateEmotion(Integer userId, UpdateEmotionRequestDto requestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
 
         Emotion newEmotion = emotionRepository.findById(requestDto.getEmotionId())
-                .orElseThrow(() -> new RuntimeException("선택한 감정을 찾을 수 없습니다: " + requestDto.getEmotionId()));
+                .orElseThrow(() -> new IllegalArgumentException("선택한 감정을 찾을 수 없습니다: " + requestDto.getEmotionId()));
 
         user.setEmotion(newEmotion);
     }

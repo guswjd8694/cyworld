@@ -1,10 +1,8 @@
 package com.hyunjoying.cyworld.user.controller;
 
-import com.hyunjoying.cyworld.user.dto.request.PostProfileRequestDto;
-import com.hyunjoying.cyworld.user.dto.request.UpdateEmotionRequestDto;
+import com.hyunjoying.cyworld.user.dto.SuccessResponseDto;
 import com.hyunjoying.cyworld.user.dto.request.UpdateProfileRequestDto;
 import com.hyunjoying.cyworld.user.dto.response.GetProfileResponseDto;
-import com.hyunjoying.cyworld.user.dto.response.PostProfileResponseDto;
 import com.hyunjoying.cyworld.user.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,32 +28,23 @@ public class ProfileController {
     )
     @GetMapping("/users/{userId}/profile")
     public ResponseEntity<GetProfileResponseDto> getProfile(@PathVariable Integer userId) {
-        try {
-            GetProfileResponseDto responseDto = profileService.getProfile(userId);
+        GetProfileResponseDto responseDto = profileService.getProfile(userId);
 
-            return ResponseEntity.ok(responseDto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(responseDto);
     }
 
 
     @Operation(summary = "프로필 수정", description = "프로필 수정", tags = { "profile" })
     @ApiResponse(
             description = "프로필 수정 요청",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PostProfileResponseDto.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
     @PutMapping("/users/{userId}/profile")
-    public ResponseEntity<PostProfileResponseDto> updateProfile(
+    public ResponseEntity<SuccessResponseDto> updateProfile(
             @PathVariable Integer userId,
             @RequestBody UpdateProfileRequestDto requestDto
     ){
-        try {
-            profileService.updateProfile(userId, requestDto);
-
-            return ResponseEntity.ok(new PostProfileResponseDto("프로필이 성공적으로 수정되었습니다."));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        profileService.updateProfile(userId, requestDto);
+        return ResponseEntity.ok(new SuccessResponseDto("프로필이 성공적으로 수정되었습니다."));
     }
 }

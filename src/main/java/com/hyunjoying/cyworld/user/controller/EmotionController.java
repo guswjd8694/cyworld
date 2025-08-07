@@ -1,8 +1,8 @@
 package com.hyunjoying.cyworld.user.controller;
 
+import com.hyunjoying.cyworld.user.dto.SuccessResponseDto;
 import com.hyunjoying.cyworld.user.dto.request.UpdateEmotionRequestDto;
 import com.hyunjoying.cyworld.user.dto.response.GetEmotionResponseDto;
-import com.hyunjoying.cyworld.user.dto.response.PutEmotionResponseDto;
 import com.hyunjoying.cyworld.user.service.EmotionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,33 +27,23 @@ public class EmotionController {
     )
     @GetMapping("/users/{userId}/emotions")
     public ResponseEntity<GetEmotionResponseDto> getEmotion(@PathVariable Integer userId) {
-        try {
-            GetEmotionResponseDto responseDto = emotionService.getEmotion(userId);
+        GetEmotionResponseDto responseDto = emotionService.getEmotion(userId);
 
-            return ResponseEntity.ok(responseDto);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(responseDto);
     }
 
 
     @Operation(summary = "감정 수정", description = "감정 수정", tags = { "emotion" })
     @ApiResponse(
             description = "감정 수정 요청",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PutEmotionResponseDto.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
     @PutMapping("/users/{userId}/emotions")
-    public ResponseEntity<PutEmotionResponseDto> putEmotion(
+    public ResponseEntity<SuccessResponseDto> putEmotion(
             @PathVariable Integer userId,
             @RequestBody UpdateEmotionRequestDto requestDto
     ){
-        try {
-            emotionService.updateEmotion(userId, requestDto);
-
-            return ResponseEntity.ok(new PutEmotionResponseDto("감정이 성공적으로 수정되었습니다."));
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        emotionService.updateEmotion(userId, requestDto);
+        return ResponseEntity.ok(new SuccessResponseDto("오늘의 감정이 성공적으로 수정되었습니다."));
     }
 }
