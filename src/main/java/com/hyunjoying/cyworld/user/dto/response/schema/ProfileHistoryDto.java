@@ -1,4 +1,4 @@
-package com.hyunjoying.cyworld.user.dto.response.schma;
+package com.hyunjoying.cyworld.user.dto.response.schema;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -34,13 +34,13 @@ public class ProfileController {
     }
 
 
-    @Operation(summary = "프로필 수정", description = "프로필 수정", tags = { "profile" })
+    @Operation(summary = "프로필 수정", description = "기존 프로필을 비활성화하고 새로운 프로필을 생성하여 히스토리를 남깁니다.", tags = { "profile" })
     @ApiResponse(
             description = "프로필 수정 요청",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/users/{userId}/profile")
-    public ResponseEntity<SuccessResponseDto> updateProfile(
+    @PostMapping("/users/{userId}/profile")
+    public ResponseEntity<SuccessResponseDto> postProfile(
             @PathVariable Integer userId,
             @RequestBody UpdateProfileRequestDto requestDto
     ){
