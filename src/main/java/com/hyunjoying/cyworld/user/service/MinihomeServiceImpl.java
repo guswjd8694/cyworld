@@ -24,7 +24,7 @@ public class MinihomeServiceImpl implements MinihomeService {
 
     private MiniHomepage getMinihomepageByUserId(Integer userId) {
         return minihomeRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 미니홈피를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
     }
 
 
@@ -38,7 +38,13 @@ public class MinihomeServiceImpl implements MinihomeService {
 
         Visit newVisit = new Visit();
         newVisit.setMiniHomepage(miniHomepage);
-        newVisit.setVisitor(visitor);
+
+        if (visitor != null) {
+            newVisit.setVisitor(visitor);
+            newVisit.setCreatedBy(visitor.getId());
+        } else {
+            newVisit.setCreatedBy(0);
+        }
 
         visitsRepository.save(newVisit);
     }
