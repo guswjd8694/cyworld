@@ -26,12 +26,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
-    private static final int MAX_PROFILE_HISTORY_SIZE = 20;
-
 
     @Override
     @Transactional(readOnly = true)
-    public GetProfileResponseDto getProfile(Integer userId){
+    public GetProfileResponseDto getProfile(Integer userId, Integer limit){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
 
@@ -41,6 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<UserProfile> allProfiles = userProfileRepository.findAllByUserOrderByCreatedAtDesc(user);
 
         List<ProfileHistoryDto> profileHistoryList = allProfiles.stream()
+                .limit(limit)
                 .map(profile -> new ProfileHistoryDto(
                         profile.getId(),
                         profile.getImageUrl(),
@@ -88,12 +87,5 @@ public class ProfileServiceImpl implements ProfileService {
         newProfile.setUpdatedBy(userId);
 
         userProfileRepository.save(newProfile);
-
-        long profileCount = userProfileRepository.countByUser(user);
-
-        if (profileCount > MAX_PROFILE_HISTORY_SIZE) {
-            userProfileRepository.findFirstByUserOrderByCreatedAtAsc(user)
-                    .ifPresent(oldestProfile -> userProfileRepository.delete(oldestProfile));
-        }
     }
 }

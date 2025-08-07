@@ -27,8 +27,11 @@ public class ProfileController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetProfileResponseDto.class))
     )
     @GetMapping("/users/{userId}/profile")
-    public ResponseEntity<GetProfileResponseDto> getProfile(@PathVariable Integer userId) {
-        GetProfileResponseDto responseDto = profileService.getProfile(userId);
+    public ResponseEntity<GetProfileResponseDto> getProfile(
+            @PathVariable Integer userId,
+            @RequestParam(defaultValue = "20", required = false) Integer limit
+    ) {
+        GetProfileResponseDto responseDto = profileService.getProfile(userId, limit);
 
         return ResponseEntity.ok(responseDto);
     }
