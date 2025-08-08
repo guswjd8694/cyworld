@@ -16,7 +16,6 @@ public class EmotionServiceImpl implements EmotionService  {
 
     @Autowired
     private EmotionRepository emotionRepository;
-
     @Autowired
     private UserRepository userRepository;
 

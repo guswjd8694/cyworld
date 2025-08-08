@@ -18,9 +18,9 @@ public class MinihomeServiceImpl implements MinihomeService {
 
     @Autowired
     private VisitsRepository visitsRepository;
-
     @Autowired
     private MinihomeRepository minihomeRepository;
+
 
     private MiniHomepage getMinihomepageByUserId(Integer userId) {
         return minihomeRepository.findByUserId(userId)
