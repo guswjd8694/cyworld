@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/emotion")
+@RequestMapping("/users/{userId}/emotion")
 public class EmotionController {
     @Autowired
     private EmotionService emotionService;
@@ -25,7 +25,7 @@ public class EmotionController {
         description = "감정 조회 응답 값",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetEmotionResponseDto.class))
     )
-    @GetMapping("/users/{userId}/emotions")
+    @GetMapping
     public ResponseEntity<GetEmotionResponseDto> getEmotion(@PathVariable Integer userId) {
         GetEmotionResponseDto responseDto = emotionService.getEmotion(userId);
 
@@ -38,7 +38,7 @@ public class EmotionController {
             description = "감정 수정 요청",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/users/{userId}/emotions")
+    @PutMapping
     public ResponseEntity<SuccessResponseDto> putEmotion(
             @PathVariable Integer userId,
             @RequestBody UpdateEmotionRequestDto requestDto

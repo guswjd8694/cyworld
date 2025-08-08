@@ -1,0 +1,66 @@
+package com.hyunjoying.cyworld.user.controller;
+
+import com.hyunjoying.cyworld.user.dto.SuccessResponseDto;
+import com.hyunjoying.cyworld.user.dto.request.CreateBoardRequestDto;
+import com.hyunjoying.cyworld.user.dto.request.UpdateBoardRequestDto;
+import com.hyunjoying.cyworld.user.dto.response.GetBoardResponseDto;
+import com.hyunjoying.cyworld.user.entity.User;
+import com.hyunjoying.cyworld.user.service.BoardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/boards")
+public class BoardController {
+
+    @Autowired
+    private BoardService boardService;
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Page<GetBoardResponseDto>> getBoards(
+            @PathVariable Integer userId,
+            @RequestParam String type,
+            Pageable pageable
+    ) {
+        Page<GetBoardResponseDto> boardPage = boardService.getBoards(userId, type, pageable);
+
+        return ResponseEntity.ok(boardPage);
+    }
+
+
+    @PostMapping("/users/{userId}")
+    public ResponseEntity<SuccessResponseDto> createBoard(
+            @PathVariable Integer userId,
+            @RequestBody CreateBoardRequestDto requestDto,
+            @AuthenticationPrincipal User writer
+    ){
+        requestDto.setMinihomepageOwnerId(userId);
+        boardService.createBoard(writer.getId(), requestDto);
+        return ResponseEntity.ok(new SuccessResponseDto("게시글이 성공적으로 등록되었습니다."));
+    }
+
+
+    @PutMapping("/{boardId}")
+    public ResponseEntity<SuccessResponseDto> updateBoard(
+            @PathVariable Integer boardId,
+            @RequestBody UpdateBoardRequestDto requestDto,
+            @AuthenticationPrincipal User writer
+    ){
+        boardService.updateBoard(boardId, writer.getId(), requestDto);
+        return ResponseEntity.ok(new SuccessResponseDto("게시글이 성공적으로 수정되었습니다."));
+    }
+
+
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<SuccessResponseDto> deleteBoard(
+            @PathVariable Integer boardId,
+            @AuthenticationPrincipal User writer
+    ){
+        boardService.deleteBoard(boardId, writer.getId());
+        return ResponseEntity.ok(new SuccessResponseDto("게시글이 성공적으로 삭제되었습니다."));
+    }
+}

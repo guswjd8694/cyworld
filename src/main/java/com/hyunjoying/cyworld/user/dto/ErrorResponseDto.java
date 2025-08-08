@@ -1,4 +1,4 @@
-package com.hyunjoying.cyworld.user.dto.response;
+package com.hyunjoying.cyworld.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
