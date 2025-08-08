@@ -9,12 +9,11 @@ import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.repository.BoardRepository;
 import com.hyunjoying.cyworld.user.repository.MinihomeRepository;
 import com.hyunjoying.cyworld.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.security.access.AccessDeniedException;
 
 
 @Service
@@ -22,10 +21,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private BoardRepository boardRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private MinihomeRepository minihomeRepository;
 
@@ -33,22 +30,18 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Page<GetBoardResponseDto> getBoards(Integer userId, String type, Pageable pageable){
-        MiniHomepage miniHomepage = minihomeRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
-
+        MiniHomepage miniHomepage = getMiniHomepageByUserIdOrThrow(userId);
         Page<Board> boardPage = boardRepository.findByMiniHomepageIdAndType(miniHomepage.getId(), type, pageable);
 
         return boardPage.map(GetBoardResponseDto::new);
     }
 
+
     @Override
     @Transactional
     public void createBoard(Integer writerId, CreateBoardRequestDto requestDto){
-        User writer = userRepository.findById(writerId)
-                .orElseThrow(() -> new IllegalArgumentException("글을 작성할 사용자를 찾을 수 없습니다."));
-
-        MiniHomepage targetHomepage = minihomeRepository.findByUserId(requestDto.getMinihomepageOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 작성할 미니홈피를 찾을 수 없습니다."));
+        User writer = getUserOrThrow(writerId);
+        MiniHomepage targetHomepage = getMiniHomepageByUserIdOrThrow(requestDto.getMinihomepageOwnerId());
 
         Board newBoard = new Board();
         newBoard.setUser(writer);
@@ -61,38 +54,46 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.save(newBoard);
     }
 
+
     @Override
     @Transactional
-    public void updateBoard(Integer boardId, Integer writerId, UpdateBoardRequestDto requestDto){
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글을 찾을 수 없습니다." + boardId));
+    public void updateBoard(Integer boardId, Integer currentUserId, UpdateBoardRequestDto requestDto){
+        Board board = getBoardOrThrow(boardId);
+        User currentUser = getUserOrThrow(currentUserId);
 
-        if(!board.getUser().getId().equals(writerId)){
-            throw new AccessDeniedException("게시글을 수정할 권한이 없습니다.");
+        if (requestDto.getContent() != null){
+            board.updateContent(requestDto.getContent(), currentUser);
         }
 
-        if(requestDto.getContent() != null){
-            board.setContent(requestDto.getContent());
-        }
-
-        if(requestDto.getIsPublic() != null) {
-            board.setPublic(requestDto.getIsPublic());
+        if (requestDto.getIsPublic() != null){
+            board.updatePrivacy(requestDto.getIsPublic(), currentUser);
         }
     }
 
+
     @Override
     @Transactional
-    public void deleteBoard(Integer boardId, Integer writerId){
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("삭제할 게시글을 찾을 수 없습니다."));
+    public void deleteBoard(Integer boardId, Integer currentUserId){
+        Board board = getBoardOrThrow(boardId);
+        User currentUser = getUserOrThrow(currentUserId);
 
-        if (!board.getUser().getId().equals(writerId)){
-            throw new AccessDeniedException("게시글을 삭제할 권한이 없습니다.");
-        }
+        board.checkDeletionPermission(currentUser);
+        boardRepository.delete(board);
+    }
 
-        if (!boardRepository.existsById(boardId)){
-            throw new IllegalArgumentException("해당 ID의 게시글을 찾을 수 없습니다." + boardId);
-        }
-        boardRepository.deleteById(boardId);
+
+    private User getUserOrThrow(Integer currentUserId){
+        return userRepository.findById(currentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + currentUserId));
+    }
+
+    private Board getBoardOrThrow(Integer boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
+    }
+
+    private MiniHomepage getMiniHomepageByUserIdOrThrow(Integer userId) {
+        return minihomeRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
     }
 }
