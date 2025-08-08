@@ -24,7 +24,6 @@ public class MinihomeController {
     private MinihomeService minihomeService;
 
 
-
     @Operation(summary = "미니홈피 조회", description = "미니홈피 조회", tags = { "minihome" })
     @ApiResponse(
             description = "미니홈피 조회 요청",

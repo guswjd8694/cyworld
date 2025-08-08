@@ -48,5 +48,8 @@ public class Board {
 
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    @Column(nullable = false)
+    private boolean isPublic = true;
 }
 

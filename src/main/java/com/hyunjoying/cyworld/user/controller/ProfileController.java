@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("/users/{userId}/profile")
 public class ProfileController {
 
     @Autowired
@@ -26,7 +26,7 @@ public class ProfileController {
         description = "프로필 조회 응답 값",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetProfileResponseDto.class))
     )
-    @GetMapping("/users/{userId}/profile")
+    @GetMapping
     public ResponseEntity<GetProfileResponseDto> getProfile(
             @PathVariable Integer userId,
             @RequestParam(defaultValue = "20", required = false) Integer limit
@@ -42,7 +42,7 @@ public class ProfileController {
             description = "프로필 수정 요청",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PostMapping("/users/{userId}/profile")
+    @PostMapping
     public ResponseEntity<SuccessResponseDto> postProfile(
             @PathVariable Integer userId,
             @RequestBody UpdateProfileRequestDto requestDto
