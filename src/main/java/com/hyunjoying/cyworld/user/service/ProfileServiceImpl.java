@@ -1,14 +1,14 @@
 package com.hyunjoying.cyworld.user.service;
 
+import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.user.dto.request.UpdateProfileRequestDto;
 import com.hyunjoying.cyworld.user.dto.response.GetProfileResponseDto;
 import com.hyunjoying.cyworld.user.dto.response.schema.ProfileHistoryDto;
 import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.entity.UserProfile;
 import com.hyunjoying.cyworld.user.repository.UserProfileRepository;
-import com.hyunjoying.cyworld.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,26 +18,19 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final EntityFinder entityFinder;
 
 
     @Override
     @Transactional(readOnly = true)
     public GetProfileResponseDto getProfile(Integer userId, Integer limit){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
-
-        UserProfile activeProfile = userProfileRepository.findByUserAndIsActiveTrue(user)
-                .orElseThrow(() -> new IllegalArgumentException("활성화된 프로필을 찾을 수 없습니다. User ID: " + userId));
+        User user = entityFinder.getUserOrThrow(userId);
+        UserProfile activeProfile = entityFinder.getActiveUserProfileOrThrow(userId);
 
         List<UserProfile> allProfiles = userProfileRepository.findAllByUserOrderByCreatedAtDesc(user);
-
         List<ProfileHistoryDto> profileHistoryList = allProfiles.stream()
                 .limit(limit)
                 .map(profile -> new ProfileHistoryDto(
@@ -64,11 +57,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void updateProfile(Integer userId, UpdateProfileRequestDto requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
-
-        UserProfile activeProfile = userProfileRepository.findByUserAndIsActiveTrue(user)
-                .orElseThrow(() -> new IllegalArgumentException("활성화된 프로필을 찾을 수 없습니다. User ID: " + userId));
+        User user = entityFinder.getUserOrThrow(userId);
+        UserProfile activeProfile = entityFinder.getActiveUserProfileOrThrow(userId);
 
         boolean isImageSame = requestDto.getProfileImageUrl() != null && requestDto.getProfileImageUrl().equals(activeProfile.getImageUrl());
         boolean isBioSame = requestDto.getBio() != null && requestDto.getBio().equals(activeProfile.getBio());
