@@ -8,16 +8,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users/{userId}/emotion")
 public class EmotionController {
-    @Autowired
-    private EmotionService emotionService;
+    private final EmotionService emotionService;
 
 
     @Operation(summary = "감정 조회", description = "감정 조회", tags = { "emotion" })

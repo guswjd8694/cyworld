@@ -1,31 +1,27 @@
 package com.hyunjoying.cyworld.user.service;
 
 
+import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.user.dto.request.UpdateEmotionRequestDto;
 import com.hyunjoying.cyworld.user.dto.response.GetEmotionResponseDto;
 import com.hyunjoying.cyworld.user.entity.Emotion;
 import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.repository.EmotionRepository;
-import com.hyunjoying.cyworld.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class EmotionServiceImpl implements EmotionService  {
-
-    @Autowired
-    private EmotionRepository emotionRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final EmotionRepository emotionRepository;
+    private final EntityFinder entityFinder;
 
 
     @Override
     @Transactional(readOnly = true)
     public GetEmotionResponseDto getEmotion(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
-
+        User user = entityFinder.getUserOrThrow(userId);
         Emotion currentEmotion = user.getEmotion();
 
         if (user.getEmotion() == null) {
@@ -39,11 +35,8 @@ public class EmotionServiceImpl implements EmotionService  {
     @Override
     @Transactional
     public void updateEmotion(Integer userId, UpdateEmotionRequestDto requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
-
-        Emotion newEmotion = emotionRepository.findById(requestDto.getEmotionId())
-                .orElseThrow(() -> new IllegalArgumentException("선택한 감정을 찾을 수 없습니다: " + requestDto.getEmotionId()));
+        User user = entityFinder.getUserOrThrow(userId);
+        Emotion newEmotion = entityFinder.getEmotionOrThrow(requestDto.getEmotionId());
 
         user.setEmotion(newEmotion);
     }

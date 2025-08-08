@@ -1,6 +1,7 @@
 package com.hyunjoying.cyworld.user.service;
 
 
+import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.user.dto.request.UpdateMinihomeRequestDto;
 import com.hyunjoying.cyworld.user.dto.response.GetMinihomeResponseDto;
 import com.hyunjoying.cyworld.user.entity.MiniHomepage;
@@ -8,30 +9,23 @@ import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.entity.Visit;
 import com.hyunjoying.cyworld.user.repository.MinihomeRepository;
 import com.hyunjoying.cyworld.user.repository.VisitsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class MinihomeServiceImpl implements MinihomeService {
-
-    @Autowired
-    private VisitsRepository visitsRepository;
-    @Autowired
-    private MinihomeRepository minihomeRepository;
-
-
-    private MiniHomepage getMinihomepageByUserId(Integer userId) {
-        return minihomeRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
-    }
+    private final VisitsRepository visitsRepository;
+    private final MinihomeRepository minihomeRepository;
+    private final EntityFinder entityFinder;
 
 
     @Override
     @Transactional
     public void recordVisitAndIncrementCounters(Integer userId, User visitor) {
-        MiniHomepage miniHomepage = getMinihomepageByUserId(userId);
+        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
 
         miniHomepage.setTodayVisits(miniHomepage.getTodayVisits() + 1);
         miniHomepage.setTotalVisits(miniHomepage.getTotalVisits() + 1);
@@ -49,10 +43,11 @@ public class MinihomeServiceImpl implements MinihomeService {
         visitsRepository.save(newVisit);
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public GetMinihomeResponseDto getMinihome(Integer userId) {
-        MiniHomepage miniHomepage = getMinihomepageByUserId(userId);
+        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
 
         return new GetMinihomeResponseDto(
                 miniHomepage.getTodayVisits(),
@@ -66,9 +61,11 @@ public class MinihomeServiceImpl implements MinihomeService {
     @Override
     @Transactional
     public void updateMinihome(Integer userId, UpdateMinihomeRequestDto requestDto) {
-        MiniHomepage miniHomepage = getMinihomepageByUserId(userId);
+        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
+
         miniHomepage.setTitle(requestDto.getTitle());
     }
+
 
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional

@@ -7,30 +7,24 @@ import com.hyunjoying.cyworld.user.entity.Board;
 import com.hyunjoying.cyworld.user.entity.MiniHomepage;
 import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.repository.BoardRepository;
-import com.hyunjoying.cyworld.user.repository.MinihomeRepository;
-import com.hyunjoying.cyworld.user.repository.UserRepository;
+import com.hyunjoying.cyworld.common.util.EntityFinder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
 @Service
+@RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
-
-    @Autowired
-    private BoardRepository boardRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private MinihomeRepository minihomeRepository;
+    private final BoardRepository boardRepository;
+    private final EntityFinder entityFinder;
 
 
     @Override
     @Transactional
     public Page<GetBoardResponseDto> getBoards(Integer userId, String type, Pageable pageable){
-        MiniHomepage miniHomepage = getMiniHomepageByUserIdOrThrow(userId);
+        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
         Page<Board> boardPage = boardRepository.findByMiniHomepageIdAndType(miniHomepage.getId(), type, pageable);
 
         return boardPage.map(GetBoardResponseDto::new);
@@ -40,8 +34,8 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void createBoard(Integer writerId, CreateBoardRequestDto requestDto){
-        User writer = getUserOrThrow(writerId);
-        MiniHomepage targetHomepage = getMiniHomepageByUserIdOrThrow(requestDto.getMinihomepageOwnerId());
+        User writer = entityFinder.getUserOrThrow(writerId);
+        MiniHomepage targetHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(requestDto.getMinihomepageOwnerId());
 
         Board newBoard = new Board();
         newBoard.setUser(writer);
@@ -58,8 +52,8 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void updateBoard(Integer boardId, Integer currentUserId, UpdateBoardRequestDto requestDto){
-        Board board = getBoardOrThrow(boardId);
-        User currentUser = getUserOrThrow(currentUserId);
+        Board board = entityFinder.getBoardOrThrow(boardId);
+        User currentUser = entityFinder.getUserOrThrow(currentUserId);
 
         if (requestDto.getContent() != null){
             board.updateContent(requestDto.getContent(), currentUser);
@@ -74,26 +68,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void deleteBoard(Integer boardId, Integer currentUserId){
-        Board board = getBoardOrThrow(boardId);
-        User currentUser = getUserOrThrow(currentUserId);
+        Board board = entityFinder.getBoardOrThrow(boardId);
+        User currentUser = entityFinder.getUserOrThrow(currentUserId);
 
         board.checkDeletionPermission(currentUser);
         boardRepository.delete(board);
-    }
-
-
-    private User getUserOrThrow(Integer currentUserId){
-        return userRepository.findById(currentUserId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + currentUserId));
-    }
-
-    private Board getBoardOrThrow(Integer boardId) {
-        return boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
-    }
-
-    private MiniHomepage getMiniHomepageByUserIdOrThrow(Integer userId) {
-        return minihomeRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
     }
 }
