@@ -6,6 +6,10 @@ import com.hyunjoying.cyworld.user.dto.request.UpdateBoardRequestDto;
 import com.hyunjoying.cyworld.user.dto.response.GetBoardResponseDto;
 import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.service.BoardService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +23,12 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
     private final BoardService boardService;
 
+
+    @Operation(summary = "게시글 목록 조회", description = "특정 사용자의 게시글 목록을 조회합니다.", tags = { "board" })
+    @ApiResponse(
+            description = "게시글 목록 조회 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))
+    )
     @GetMapping("/users/{userId}")
     public ResponseEntity<Page<GetBoardResponseDto>> getBoards(
             @PathVariable Integer userId,
@@ -31,6 +41,11 @@ public class BoardController {
     }
 
 
+    @Operation(summary = "게시글 생성", description = "로그인한 사용자가 특정 미니홈피에 게시글을 작성합니다.", tags = { "board" })
+    @ApiResponse(
+            description = "게시글 생성 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
+    )
     @PostMapping("/users/{userId}")
     public ResponseEntity<SuccessResponseDto> createBoard(
             @PathVariable Integer userId,
@@ -50,6 +65,11 @@ public class BoardController {
     }
 
 
+    @Operation(summary = "게시글 수정", description = "로그인한 사용자가 자신의 게시글을 수정합니다.", tags = { "board" })
+    @ApiResponse(
+            description = "게시글 수정 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
+    )
     @PutMapping("/{boardId}")
     public ResponseEntity<SuccessResponseDto> updateBoard(
             @PathVariable Integer boardId,
@@ -61,6 +81,11 @@ public class BoardController {
     }
 
 
+    @Operation(summary = "게시글 삭제", description = "로그인한 사용자가 자신의 게시글을 삭제합니다.", tags = { "board" })
+    @ApiResponse(
+            description = "게시글 삭제 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
+    )
     @DeleteMapping("/{boardId}")
     public ResponseEntity<SuccessResponseDto> deleteBoard(
             @PathVariable Integer boardId,

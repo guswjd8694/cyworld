@@ -2,9 +2,7 @@ package com.hyunjoying.cyworld.user.service;
 
 import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.common.util.JwtUtil;
-import com.hyunjoying.cyworld.user.dto.request.LoginRequestDto;
-import com.hyunjoying.cyworld.user.dto.request.SignUpRequestDto;
-import com.hyunjoying.cyworld.user.dto.request.UpdateUserRequestDto;
+import com.hyunjoying.cyworld.user.dto.request.*;
 import com.hyunjoying.cyworld.user.entity.MiniHomepage;
 import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.entity.UserProfile;
@@ -89,6 +87,25 @@ public class UserServiceImpl implements UserService {
         user.setEmail(requestDto.getEmail());
         user.setPhone(requestDto.getPhone());
 
+        userRepository.save(user);
+    }
+
+    @Override
+    public String findLoginId(FindLoginIdRequestDto requestDto) {
+        User user = entityFinder.getUserNameAndEmailOrThrow(requestDto.getName(), requestDto.getEmail());
+
+        return user.getLoginId();
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequestDto requestDto) {
+        User user = entityFinder.getLoginIdAndEmailOrThrow(requestDto.getLoginId(), requestDto.getEmail());
+
+        System.out.println("requestDto.getLoginId() : " + requestDto.getLoginId());
+        System.out.println("requestDto.getEmail(): " + requestDto.getEmail());
+
+        String encodedPassword = passwordEncoder.encode(requestDto.getNewPassword());
+        user.setPassword(encodedPassword);
         userRepository.save(user);
     }
 }

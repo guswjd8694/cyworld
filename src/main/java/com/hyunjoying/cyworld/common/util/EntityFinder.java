@@ -20,6 +20,16 @@ public class EntityFinder {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + currentUserId));
     }
 
+    public User getUserNameAndEmailOrThrow(String name, String email){
+        return userRepository.findByNameAndEmail(name, email)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
+    }
+
+    public User getLoginIdAndEmailOrThrow(String loginId, String email){
+        return userRepository.findByLoginIdAndEmail(loginId, email)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
+    }
+
     public Board getBoardOrThrow(Integer boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글을 찾을 수 없습니다: " + boardId));
