@@ -37,7 +37,14 @@ public class BoardController {
             @RequestBody CreateBoardRequestDto requestDto,
             @AuthenticationPrincipal User writer
     ){
+        System.out.println("DEBUG: @AuthenticationPrincipal로 주입된 writer: " + writer);
+        if (writer != null) {
+            System.out.println("DEBUG: writer의 ID: " + writer.getId());
+            System.out.println("DEBUG: writer의 loginId: " + writer.getLoginId());
+        }
+
         requestDto.setMinihomepageOwnerId(userId);
+        assert writer != null;
         boardService.createBoard(writer.getId(), requestDto);
         return ResponseEntity.ok(new SuccessResponseDto("게시글이 성공적으로 등록되었습니다."));
     }
