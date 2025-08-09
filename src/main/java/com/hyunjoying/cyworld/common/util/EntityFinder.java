@@ -21,6 +21,7 @@ public class EntityFinder {
     private final MinihomeRepository minihomeRepository;
     private final EmotionRepository emotionRepository;
     private final UserProfileRepository userProfileRepository;
+    private final IlchonRepository ilchonRepository;
 
 
     public User getUserOrThrow(Integer currentUserId){
@@ -58,5 +59,10 @@ public class EntityFinder {
 
         return userProfileRepository.findByUserAndIsActiveTrue(user)
                 .orElseThrow(() -> new IllegalArgumentException("활성화된 프로필을 찾을 수 없습니다. User ID: " + userId));
+    }
+
+    public Ilchon getIlchonOrThrow(Integer ilchonRequestId) {
+        return ilchonRepository.findById(ilchonRequestId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일촌 요청입니다."));
     }
 }
