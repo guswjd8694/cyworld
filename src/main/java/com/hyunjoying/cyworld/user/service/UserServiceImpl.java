@@ -42,9 +42,8 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(encodePassword);
         newUser.setName(requestDto.getName());
         newUser.setEmail(requestDto.getEmail());
-        newUser.setBirth(requestDto.getBirth());
-        newUser.setPhone(requestDto.getPhone());
-        newUser.setBirth(requestDto.getBirth());
+        newUser.setBirth(formatBirth(requestDto.getBirth()));
+        newUser.setPhone(formatPhone(requestDto.getPhone()));
         newUser.setGender(User.Gender.valueOf(requestDto.getGender()));
 
         User savedUser = userRepository.save(newUser);
@@ -62,6 +61,20 @@ public class UserServiceImpl implements UserService {
         newUserProfile.setBio("자기소개를 입력해주세요.");
         newUserProfile.setCreatedBy(savedUser.getId());
         userProfileRepository.save(newUserProfile);
+    }
+
+    private String formatBirth(String birth) {
+        if (birth != null && birth.length() == 8) {
+            return birth.substring(0, 4) + "-" + birth.substring(4, 6) + "-" + birth.substring(6, 8);
+        }
+        return birth;
+    }
+
+    private String formatPhone(String phone) {
+        if (phone != null && phone.length() == 11) {
+            return phone.substring(0, 3) + "-" + phone.substring(3, 7) + "-" + phone.substring(7, 11);
+        }
+        return phone;
     }
 
 
