@@ -1,7 +1,15 @@
 package com.hyunjoying.cyworld.common.util;
 
-import com.hyunjoying.cyworld.user.entity.*;
-import com.hyunjoying.cyworld.user.repository.*;
+import com.hyunjoying.cyworld.domain.board.entity.Board;
+import com.hyunjoying.cyworld.domain.board.repository.BoardRepository;
+import com.hyunjoying.cyworld.domain.emotion.entity.Emotion;
+import com.hyunjoying.cyworld.domain.emotion.repository.EmotionRepository;
+import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
+import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
+import com.hyunjoying.cyworld.domain.profile.entity.UserProfile;
+import com.hyunjoying.cyworld.domain.profile.repository.UserProfileRepository;
+import com.hyunjoying.cyworld.domain.user.entity.*;
+import com.hyunjoying.cyworld.domain.user.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

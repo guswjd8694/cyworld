@@ -1,11 +1,11 @@
 package com.hyunjoying.cyworld.user.service;
 
-import com.hyunjoying.cyworld.user.dto.request.UpdateMinihomeRequestDto;
-import com.hyunjoying.cyworld.user.dto.response.GetMinihomeResponseDto;
-import com.hyunjoying.cyworld.user.entity.MiniHomepage;
-import com.hyunjoying.cyworld.user.entity.User;
-import com.hyunjoying.cyworld.user.repository.MinihomeRepository;
-import com.hyunjoying.cyworld.user.repository.VisitsRepository;
+import com.hyunjoying.cyworld.domain.minihomepage.dto.request.UpdateMinihomeRequestDto;
+import com.hyunjoying.cyworld.domain.minihomepage.dto.response.GetMinihomeResponseDto;
+import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
+import com.hyunjoying.cyworld.domain.user.entity.User;
+import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
+import com.hyunjoying.cyworld.domain.minihomepage.service.MinihomeServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
