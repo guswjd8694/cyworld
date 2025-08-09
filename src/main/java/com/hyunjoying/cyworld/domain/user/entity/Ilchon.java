@@ -34,6 +34,9 @@ public class Ilchon {
     @Column(nullable = false, length = 50)
     private String status;
 
+    @Column(columnDefinition = "TEXT")
+    private String requestMessage;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
