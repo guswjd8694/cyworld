@@ -1,8 +1,10 @@
 package com.hyunjoying.cyworld.user.service;
 
+import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.common.util.JwtUtil;
 import com.hyunjoying.cyworld.user.dto.request.LoginRequestDto;
 import com.hyunjoying.cyworld.user.dto.request.SignUpRequestDto;
+import com.hyunjoying.cyworld.user.dto.request.UpdateUserRequestDto;
 import com.hyunjoying.cyworld.user.entity.MiniHomepage;
 import com.hyunjoying.cyworld.user.entity.User;
 import com.hyunjoying.cyworld.user.entity.UserProfile;
@@ -22,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EntityFinder entityFinder;
 
     @Override
     @Transactional
@@ -76,5 +79,16 @@ public class UserServiceImpl implements UserService {
         System.out.println("토큰 생성에 사용될 loginId: " + user.getLoginId());
 
         return jwtUtil.createToken(user.getLoginId());
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(Integer userId, UpdateUserRequestDto requestDto) {
+        User user = entityFinder.getUserOrThrow(userId);
+
+        user.setEmail(requestDto.getEmail());
+        user.setPhone(requestDto.getPhone());
+
+        userRepository.save(user);
     }
 }

@@ -16,12 +16,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
-@RequiredArgsConstructor
+//@EnableWebSecurity
+//@RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final JwtUtil jwtUtil;
+//    private final UserDetailsService userDetailsService;
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
     @Bean
@@ -30,21 +30,30 @@ public class SecurityConfig {
     }
 
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .authorizeHttpRequests(authorize -> authorize
+//                        // 로그인, 회원가입, Swagger는 인증 없이 접근 허용
+//                        .requestMatchers("/users/signup", "/users/login").permitAll()
+//                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+//                        // GET 요청은 일단 모두 허용 (개발 편의를 위해)
+//                        .requestMatchers(HttpMethod.GET).permitAll()
+//                        // 위에서 허용한 경로 외의 모든 요청은 반드시 인증(로그인)을 거쳐야 함
+//                        .anyRequest().authenticated()
+//                );
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize -> authorize
-                        // 로그인, 회원가입, Swagger는 인증 없이 접근 허용
-                        .requestMatchers("/users/signup", "/users/login").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // GET 요청은 일단 모두 허용 (개발 편의를 위해)
-                        .requestMatchers(HttpMethod.GET).permitAll()
-                        // 위에서 허용한 경로 외의 모든 요청은 반드시 인증(로그인)을 거쳐야 함
-                        .anyRequest().authenticated()
-                );
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
 
         return http.build();
     }
