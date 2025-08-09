@@ -21,17 +21,20 @@ public class User {
     @JoinColumn(name = "emotion_id")
     private Emotion emotion;
 
+    @Column(name = "login_id", nullable = false)
+    private String loginId;
+
+    @Column(nullable = false)
+    private String password;
+
     @Column(nullable = false, length = 50)
     private String name;
 
     @Column(nullable = false)
     private String email;
 
-    @Column(name = "login_id", nullable = false)
-    private String loginId;
-
-    @Column(nullable = false)
-    private String password;
+    @Column(nullable = false, length = 50)
+    private String phone;
 
     @Column(nullable = false, length = 50)
     private String birth;
@@ -57,6 +60,7 @@ public class User {
 
     @Column(nullable = false)
     private boolean isDeleted = false;
+
 
     public enum Gender {
         Male, Female
