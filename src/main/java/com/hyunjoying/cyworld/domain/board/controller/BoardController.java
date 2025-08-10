@@ -24,7 +24,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/boards")
 public class BoardController {
     private final BoardService boardService;
 
@@ -34,7 +33,7 @@ public class BoardController {
             description = "게시글 목록 조회 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))
     )
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users/{userId}/boards")
     public ResponseEntity<Page<GetBoardResponseDto>> getBoards(
             @PathVariable Integer userId,
             @RequestParam String type,
@@ -51,7 +50,7 @@ public class BoardController {
             description = "게시글 생성 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PostMapping("/users/{userId}")
+    @PostMapping("/users/{userId}/boards")
     public ResponseEntity<SuccessResponseDto> createBoard(
             @PathVariable Integer userId,
             @RequestBody CreateBoardRequestDto requestDto,
@@ -70,7 +69,7 @@ public class BoardController {
             description = "게시글 수정 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/{boardId}")
+    @PutMapping("/boards/{boardId}")
     public ResponseEntity<SuccessResponseDto> updateBoard(
             @PathVariable Integer boardId,
             @RequestBody UpdateBoardRequestDto requestDto,
@@ -88,7 +87,7 @@ public class BoardController {
             description = "게시글 삭제 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @DeleteMapping("/{boardId}")
+    @DeleteMapping("/boards/{boardId}")
     public ResponseEntity<SuccessResponseDto> deleteBoard(
             @PathVariable Integer boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -105,7 +104,7 @@ public class BoardController {
             description = "댓글 생성 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PostMapping("/{boardId}/comments")
+    @PostMapping("/boards/{boardId}/comments")
     public ResponseEntity<SuccessResponseDto> createComment(
             @PathVariable Integer boardId,
             @RequestBody CreateCommentRequestDto requestDto,
@@ -123,7 +122,7 @@ public class BoardController {
             description = "댓글 목록 조회 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetCommentResponseDto.class))
     )
-    @GetMapping("/{boardId}/comments")
+    @GetMapping("/boards/{boardId}/comments")
     public ResponseEntity<List<GetCommentResponseDto>> getComments(
             @PathVariable Integer boardId
     ){

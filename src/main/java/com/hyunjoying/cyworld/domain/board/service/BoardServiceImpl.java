@@ -12,12 +12,15 @@ import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.board.repository.BoardRepository;
 import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.domain.comment.repository.CommentRepository;
+import com.hyunjoying.cyworld.domain.user.repository.IlchonRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +30,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final EntityFinder entityFinder;
     private final CommentRepository commentRepository;
+    private final IlchonRepository ilchonRepository;
 
 
     @Override
@@ -35,7 +39,28 @@ public class BoardServiceImpl implements BoardService {
         MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
         Page<Board> boardPage = boardRepository.findByMiniHomepageIdAndType(miniHomepage.getId(), type, pageable);
 
-        return boardPage.map(GetBoardResponseDto::new);
+        long totalElements = boardPage.getTotalElements();
+
+        List<GetBoardResponseDto> dtoList = new ArrayList<>();
+        List<Board> boardList = boardPage.getContent();
+
+        for (int i = 0; i < boardList.size(); i++) {
+            Board board = boardList.get(i);
+            Long boardNo = null;
+            String nickname = null;
+
+            if ("ILCHONPYEONG".equals(board.getType())) {
+                nickname = ilchonRepository.findByUserAndFriend(board.getUser(), miniHomepage.getUser())
+                        .map(ilchon -> ilchon.getUserNickname())
+                        .orElse("일촌명 없음");
+            } else {
+                boardNo = totalElements - (pageable.getPageNumber() * pageable.getPageSize()) - i;
+            }
+
+            dtoList.add(new GetBoardResponseDto(board, boardNo, nickname));
+        }
+
+        return new PageImpl<>(dtoList, pageable, totalElements);
     }
 
 
