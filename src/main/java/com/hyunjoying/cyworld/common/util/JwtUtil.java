@@ -25,8 +25,10 @@ public class JwtUtil {
         this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds;
     }
 
-    public String createToken(String loginId){
+    public String createToken(String loginId, Integer userId) {
         Claims claims = Jwts.claims().setSubject(loginId);
+        claims.put("userId", userId);
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + this.accessTokenValidityInMilliseconds);
 

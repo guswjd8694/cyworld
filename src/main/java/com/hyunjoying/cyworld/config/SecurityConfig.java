@@ -67,6 +67,8 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
+        configuration.setExposedHeaders(List.of("Authorization"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         // 모든 경로("/**")에 대해 위에서 정의한 CORS 설정을 적용합니다.
         source.registerCorsConfiguration("/**", configuration);
