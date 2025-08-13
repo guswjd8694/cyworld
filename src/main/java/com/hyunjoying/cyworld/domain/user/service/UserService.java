@@ -1,6 +1,7 @@
 package com.hyunjoying.cyworld.domain.user.service;
 
 import com.hyunjoying.cyworld.domain.user.dto.request.*;
+import com.hyunjoying.cyworld.domain.user.dto.response.UserResponseDto;
 
 public interface UserService {
     void signUp(SignUpRequestDto requestDto);
@@ -8,4 +9,5 @@ public interface UserService {
     void updateUser(Integer userId, UpdateUserRequestDto requestDto);
     String findLoginId(FindLoginIdRequestDto requestDto);
     void resetPassword(ResetPasswordRequestDto requestDto);
+    UserResponseDto getUserByLoginId(String loginId);
 }

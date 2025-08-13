@@ -16,10 +16,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -128,5 +131,15 @@ public class BoardController {
     ){
         List<GetCommentResponseDto> comments = boardService.getComments(boardId);
         return ResponseEntity.ok(comments);
+    }
+
+
+    @GetMapping("/users/{userId}/diary")
+    public ResponseEntity<GetBoardResponseDto> getDiaryByDate(
+            @PathVariable Integer userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ){
+        GetBoardResponseDto diary = boardService.getDiaryByDate(userId, date);
+        return ResponseEntity.ok(diary);
     }
 }
