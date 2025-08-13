@@ -15,6 +15,7 @@ public class GetBoardResponseDto {
     private final boolean isPublic;
     private final LocalDateTime createdAt;
     private final String writerNickname;
+    private final String writerLoginId;
 
     public GetBoardResponseDto(Board board, Long boardNo, String writerNickname) {
         this.boardId = board.getId();
@@ -25,5 +26,6 @@ public class GetBoardResponseDto {
         this.isPublic = board.isPublic();
         this.createdAt = board.getCreatedAt();
         this.writerNickname = writerNickname;
+        this.writerLoginId = board.getUser().getLoginId();
     }
 }

@@ -2,6 +2,7 @@ package com.hyunjoying.cyworld.domain.user.controller;
 
 import com.hyunjoying.cyworld.common.dto.SuccessResponseDto;
 import com.hyunjoying.cyworld.domain.user.dto.request.*;
+import com.hyunjoying.cyworld.domain.user.dto.response.UserResponseDto;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -94,5 +95,12 @@ public class UserController {
     public ResponseEntity<SuccessResponseDto> resetPassword(@RequestBody ResetPasswordRequestDto requestDto) {
         userService.resetPassword(requestDto);
         return ResponseEntity.ok(new SuccessResponseDto("비밀번호가 성공적으로 재설정되었습니다."));
+    }
+
+
+    @GetMapping("/by-login-id/{loginId}")
+    public ResponseEntity<UserResponseDto> getUserByLoginId(@PathVariable String loginId) {
+        UserResponseDto userDto = userService.getUserByLoginId(loginId);
+        return ResponseEntity.ok(userDto);
     }
 }

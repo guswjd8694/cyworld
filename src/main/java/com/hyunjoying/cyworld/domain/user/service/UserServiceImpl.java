@@ -4,6 +4,7 @@ import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.common.util.JwtUtil;
 import com.hyunjoying.cyworld.domain.user.dto.request.*;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
+import com.hyunjoying.cyworld.domain.user.dto.response.UserResponseDto;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.profile.entity.UserProfile;
 import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
@@ -56,8 +57,12 @@ public class UserServiceImpl implements UserService {
         minihomeRepository.save(newMiniHomePage);
 
         UserProfile newUserProfile = new UserProfile();
+        if ("Male".equalsIgnoreCase(requestDto.getGender())) {
+            newUserProfile.setImageUrl("/imgs/default_img_male.jpg");
+        } else {
+            newUserProfile.setImageUrl("/imgs/default_img_female.jpg");
+        }
         newUserProfile.setUser(savedUser);
-        newUserProfile.setImageUrl("/대충이미지경로");
         newUserProfile.setBio("자기소개를 입력해주세요.");
         newUserProfile.setCreatedBy(savedUser.getId());
         userProfileRepository.save(newUserProfile);
@@ -120,5 +125,14 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(requestDto.getNewPassword());
         user.setPassword(encodedPassword);
         userRepository.save(user);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponseDto getUserByLoginId(String loginId) {
+        User user = entityFinder.getLoginIdOrThrow(loginId);
+
+        return new UserResponseDto(user);
     }
 }

@@ -8,6 +8,8 @@ import com.hyunjoying.cyworld.domain.comment.dto.response.GetCommentResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BoardService {
@@ -22,4 +24,6 @@ public interface BoardService {
     void createComment(Integer boardId, Integer writerId, CreateCommentRequestDto requestDto);
 
     List<GetCommentResponseDto> getComments(Integer boardId);
+
+    GetBoardResponseDto getDiaryByDate(Integer userId, LocalDate date);
 }

@@ -34,6 +34,11 @@ public class EntityFinder {
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
     }
 
+    public User getLoginIdOrThrow(String loginId){
+        return userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
+    }
+
     public User getLoginIdAndEmailOrThrow(String loginId, String email){
         return userRepository.findByLoginIdAndEmail(loginId, email)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
