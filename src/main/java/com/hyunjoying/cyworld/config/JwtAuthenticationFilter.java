@@ -26,7 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
-        // 여기에 추가된 코드: 어떤 요청이든 헤더 값을 출력
         System.out.println("DEBUG: 들어온 요청의 Authorization 헤더: " + authorizationHeader);
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
