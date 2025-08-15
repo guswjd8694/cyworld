@@ -1,5 +1,6 @@
 package com.hyunjoying.cyworld.domain.board.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,5 +12,8 @@ public class CreateBoardRequestDto {
     private Integer minihomepageOwnerId;
     private String content;
     private String type;
-    private boolean isPublic;
+    private String weather;
+    private String mood;
+    @JsonProperty("isPublic")
+    private Boolean publicSetting;
 }

@@ -101,8 +101,15 @@ public class BoardServiceImpl implements BoardService {
         newBoard.setMiniHomepage(targetHomepage);
         newBoard.setContent(requestDto.getContent());
         newBoard.setType(requestDto.getType());
-        newBoard.setPublic(requestDto.isPublic());
+        newBoard.setWeather(requestDto.getWeather());
+        newBoard.setMood(requestDto.getMood());
         newBoard.setCreatedBy(writerId);
+
+        if (requestDto.getPublicSetting() != null) {
+            newBoard.setPublic(requestDto.getPublicSetting());
+        } else {
+            newBoard.setPublic(true);
+        }
 
         boardRepository.save(newBoard);
     }
