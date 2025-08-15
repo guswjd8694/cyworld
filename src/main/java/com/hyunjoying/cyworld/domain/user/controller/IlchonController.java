@@ -16,7 +16,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ilchons")
@@ -119,5 +121,18 @@ public class IlchonController {
         List<GetIlchonResponseDto> requests = ilchonService.getSentIlchonRequests(userDetails.getUser().getId());
 
         return ResponseEntity.ok(requests);
+    }
+
+
+    @Operation(summary = "일촌 상태 조회", description = "나와 특정 사용자 간의 일촌 상태를 조회합니다.", tags = {"ilchon"})
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, String>> getIlchonStatus(
+            @RequestParam Integer targetUserId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        String status = ilchonService.getIlchonStatus(userDetails.getUser().getId(), targetUserId);
+        Map<String, String> response = new HashMap<>();
+        response.put("status", status);
+        return ResponseEntity.ok(response);
     }
 }

@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
         System.out.println("토큰 생성에 사용될 loginId: " + user.getLoginId());
 
-        return jwtUtil.createToken(user.getLoginId(), user.getId());
+        return jwtUtil.createToken(user.getLoginId(), user.getId(), user.getName());
     }
 
     @Override

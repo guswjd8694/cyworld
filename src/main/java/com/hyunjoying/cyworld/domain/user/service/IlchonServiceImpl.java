@@ -180,4 +180,22 @@ public class IlchonServiceImpl implements IlchonService {
                 ))
                 .collect(Collectors.toList());
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getIlchonStatus(Integer currentUserId, Integer targetUserId) {
+        User currentUser = entityFinder.getUserOrThrow(currentUserId);
+        User targetUser = entityFinder.getUserOrThrow(targetUserId);
+
+        // 내가 보낸 신청 확인
+        Optional<Ilchon> sentRequest = ilchonRepository.findByUserAndFriend(currentUser, targetUser);
+        if (sentRequest.isPresent()) {
+            return sentRequest.get().getStatus();
+        }
+
+        // 상대방이 보낸 신청 확인
+        Optional<Ilchon> receivedRequest = ilchonRepository.findByUserAndFriend(targetUser, currentUser);
+        return receivedRequest.map(ilchon -> ilchon.getStatus().equals("PENDING") ? "PENDING_RECEIVED" : ilchon.getStatus()).orElse("NONE");
+    }
 }

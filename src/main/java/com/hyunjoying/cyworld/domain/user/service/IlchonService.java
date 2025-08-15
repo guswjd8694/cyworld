@@ -14,4 +14,5 @@ public interface IlchonService {
     List<GetIlchonResponseDto> getIlchon(Integer userId);
     List<GetIlchonResponseDto> getReceivedIlchonRequests(Integer currentUserId);
     List<GetIlchonResponseDto> getSentIlchonRequests(Integer currentUserId);
+    String getIlchonStatus(Integer currentUserId, Integer targetUserId);
 }
