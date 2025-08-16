@@ -2,7 +2,7 @@ import React from 'react';
 import Ilchonpyeong from './Ilchonpyeong';
 import IlchonModal from './IlchonModal';
 
-function HomePage({ userId, navigateTo }) {
+function HomePage({ userId, navigateTo, ilchonStatus }) {
     return (
         <div className="grid_container">
             <section aria-labelledby="recent-posts-title" className="recent_posts">
@@ -35,7 +35,7 @@ function HomePage({ userId, navigateTo }) {
                 </figure>
             </section>
             
-            <Ilchonpyeong userId={userId} />
+            <Ilchonpyeong userId={userId} ilchonStatus={ilchonStatus} />
         </div>
     );
 }
