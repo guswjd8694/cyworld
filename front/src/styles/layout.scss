@@ -1,9 +1,6 @@
-// 변수 선언 (나중에 색상 등을 한 번에 바꾸기 용이합니다)
-$primary-color: #5a87af;
-$secondary-color: #82bad6;
-$border-color: #888;
-$text-color-light: #888;
-$highlight-color: #FF7F00;
+@import './variables';
+@import './header';
+
 
 .disabled { pointer-events: none; color: #ccc; }
 
@@ -27,6 +24,7 @@ body {
         linear-gradient(to bottom, #cccccc80 1px, transparent 1px);
     background-size: 20px 20px; 
 }
+
 
 div.container {
     position: relative;
@@ -158,14 +156,14 @@ section.right_page {
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
         .bottom_area {
-            padding: 16px 20px;
+            padding: 16px 28px;
         }
     }
 
     @media screen and (max-width: 1220px) {
         border-radius: 14px;
         .bottom_area {
-            padding: 10px 18px;
+            padding: 10px 15px;
             border-radius: 10px;
         }
     }
@@ -362,7 +360,7 @@ section.left_page {
             font-size: 12px;
         }
         .user_gender, .user_birth {
-            font-size: 8px;
+            font-size: 9px;
         }
         .user_email {
             font-size: 9px;
@@ -1001,4 +999,23 @@ section.left_page {
     .prev, .next {
         color: #333;
     }
+}
+
+
+textarea:disabled,
+button:disabled {
+    background-color: #f5f5f5; 
+    color: #ccc;
+    cursor: not-allowed; 
+    border-color: #e0e0e0;
+}
+
+button:disabled:hover {
+    background-color: #f5f5f5;
+}
+
+input:disabled + label,
+input:disabled {
+    color: #ccc;
+    cursor: not-allowed;
 }

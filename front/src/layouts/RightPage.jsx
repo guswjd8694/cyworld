@@ -17,7 +17,7 @@ function RightPageLayout({ children, owner, onIlchonClick, ilchonStatus }) {
                             )}
                             <li><button type="button">+팬되기</button></li>
                         </ul>
-                        <a href="#">http://www.cyworld.com/dallaezzang</a>
+                        <a href="#">http://www.cyworld.com/{owner?.loginId}</a>
                     </div>
                 </section>
                 <section className="bottom_area" aria-label="메인 하단 영역">

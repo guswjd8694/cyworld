@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 
-function Ilchonpyeong({ userId }) {
+function Ilchonpyeong({ userId, ilchonStatus }) {
     const { currentUser } = useContext(AuthContext);
     const isOwner = currentUser && currentUser.id === userId;
 
@@ -13,7 +13,6 @@ function Ilchonpyeong({ userId }) {
     
     const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-    // --- 수정 기능을 위한 상태 추가 ---
     const [editingPostId, setEditingPostId] = useState(null);
     const [editedContent, setEditedContent] = useState('');
 
@@ -21,7 +20,6 @@ function Ilchonpyeong({ userId }) {
         const fetchIlchonpyeong = async () => {
             setLoading(true);
             try {
-                // 일촌평은 페이지네이션 없이 모두 가져옵니다.
                 const response = await fetch(`http://localhost:8080/users/${userId}/boards?type=ILCHONPYEONG`);
                 if (!response.ok) throw new Error('일촌평을 불러오는 데 실패했습니다.');
                 const data = await response.json();
@@ -57,13 +55,12 @@ function Ilchonpyeong({ userId }) {
             });
             if (!response.ok) throw new Error('일촌평 작성에 실패했습니다.');
             setNewContent('');
-            setRefetchTrigger(prev => prev + 1); // 목록 새로고침
+            setRefetchTrigger(prev => prev + 1);
         } catch (err) {
             alert(err.message);
         }
     };
 
-    // --- 수정/삭제 핸들러 추가 ---
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
             try {
@@ -104,6 +101,9 @@ function Ilchonpyeong({ userId }) {
         }
     };
 
+    const isIlchon = ilchonStatus === 'ACCEPTED';
+    const canWrite = isOwner || isIlchon;
+
     return (
         <section className="ilchon" aria-labelledby="ilchon-title">
             <h2 id="ilchon-title">일촌평</h2>
@@ -112,11 +112,12 @@ function Ilchonpyeong({ userId }) {
                 <input 
                     type="text" 
                     id="ilchon-input" 
-                    placeholder="일촌과 나누고 싶은 이야기를 남겨보세요~!" 
+                    placeholder={canWrite ? "일촌과 나누고 싶은 이야기를 남겨보세요~!" : "일촌만 작성할 수 있습니다."}
                     value={newContent}
                     onChange={(e) => setNewContent(e.target.value)}
+                    disabled={!canWrite}
                 />
-                <button type="submit">작성</button>
+                <button type="submit" disabled={!canWrite}>작성</button>
             </form>
 
             {loading && <p>일촌평 로딩 중...</p>}

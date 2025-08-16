@@ -9,6 +9,7 @@ public class GetIlchonResponseDto {
     private final Integer ilchonRequestId;
     private final Integer friendId;
     private final String friendName;
+    private final String friendLoginId;
     private final String myNicknameForFriend;
     private final String friendNicknameForMe;
     private final String requestMessage;
@@ -17,6 +18,7 @@ public class GetIlchonResponseDto {
         this.ilchonRequestId = ilchonRequestId;
         this.friendId = friend.getId();
         this.friendName = friend.getName();
+        this.friendLoginId = friend.getLoginId();
         this.myNicknameForFriend = myNicknameForFriend;
         this.friendNicknameForMe = friendNicknameForMe;
         this.requestMessage = requestMessage;

@@ -15,7 +15,6 @@ function Guestbook({ userId }) {
     
     const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-    // --- 수정 기능을 위한 상태 추가 ---
     const [editingPostId, setEditingPostId] = useState(null);
     const [editedContent, setEditedContent] = useState('');
     const [editedIsSecret, setEditedIsSecret] = useState(false);
@@ -70,7 +69,6 @@ function Guestbook({ userId }) {
         }
     };
 
-    // --- 수정/삭제/비밀글 토글 핸들러 추가 ---
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
             try {
@@ -146,8 +144,9 @@ function Guestbook({ userId }) {
                         <textarea 
                             value={newContent}
                             onChange={(e) => setNewContent(e.target.value)}
-                            placeholder="방명록에 하고 싶은 말을 남겨보세요~!" 
+                            placeholder={currentUser ? "방명록에 하고 싶은 말을 남겨보세요~!" : "로그인 후 작성할 수 있습니다."}
                             required 
+                            disabled={!currentUser}
                         />
                         <div className="form_bottom">
                             <label className="secret_checkbox">
@@ -155,10 +154,11 @@ function Guestbook({ userId }) {
                                     type="checkbox" 
                                     checked={isSecret}
                                     onChange={(e) => setIsSecret(e.target.checked)}
+                                    disabled={!currentUser}
                                 />
                                 비밀로 하기
                             </label>
-                            <button type="submit" className="guestbook_btn">확인</button>
+                            <button type="submit" className="guestbook_btn" disabled={!currentUser}>확인</button>
                         </div>
                     </form>
                 </div>

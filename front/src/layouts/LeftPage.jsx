@@ -55,7 +55,6 @@ function LeftPage({ userId, activeView }) {
                 ) : (
                     <BoardListSection userId={userId} boardType={activeView} />
                 )}
-                <button onClick={handleLogout} className="logout-button">로그아웃</button>
             </div>
         </section>
     );
