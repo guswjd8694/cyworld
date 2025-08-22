@@ -7,6 +7,8 @@ import './styles/reset.scss';
 import './styles/header.scss';
 
 import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
+import FindAccountPage from './pages/FindAccountPage';
 import MinihomePage from './pages/MinihomePage';
 import HomePage from './components/home/HomePage';
 import Guestbook from './components/guestbook/Guestbook';
@@ -23,7 +25,8 @@ function App() {
             <main className="main-content">
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
-                    
+                    <Route path="/signup" element={<SignUpPage />} />
+                    <Route path="/find" element={<FindAccountPage />} />
                     <Route 
                         path="/:loginId" 
                         element={<MinihomePage />}

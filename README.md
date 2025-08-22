@@ -39,7 +39,7 @@
 
 <details>
   <summary>ERD 보기 (Click to expand)</summary>
-  <img alt="ERD" src="erd/cyworld_erd_20250719_v01.png" />
+  <img alt="ERD" src="back/erd/cyworld_erd_20250719_v01.png" />
 </details>
 
 <br>

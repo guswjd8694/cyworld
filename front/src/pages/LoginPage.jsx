@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 
 import '../styles/reset.scss';
@@ -92,8 +92,8 @@ function LoginPage() {
             {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
 
             <ul className="sub-links">
-                <li><a href="#">아이디/비밀번호 찾기</a></li>
-                <li><a href="#">회원가입</a></li>
+                <li><Link to="/find">아이디/비밀번호 찾기</Link></li>
+                <li><Link to="/signup">회원가입</Link></li>
             </ul>
         </main>
     );

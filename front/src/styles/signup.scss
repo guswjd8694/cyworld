@@ -1,0 +1,97 @@
+/* signup.scss */
+@import './variables';
+
+.signup-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 380px;
+    text-transform: none;
+
+    .logo_title {
+        width: 180px;
+        margin-bottom: 20px;
+    }
+}
+
+.signup-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+        width: 100%;
+        border: 1px solid $border-color;
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .gender-select {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+
+        label {
+            input[type="radio"] {
+                position: absolute;
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            span {
+                display: block;
+                padding: 12px;
+                border: 1px solid $border-color;
+                border-radius: 4px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+                font-size: 14px;
+                text-transform: uppercase;
+            }
+
+            // 선택된 상태일 때의 스타일
+            input[type="radio"]:checked + span {
+                background-color: #ccc;
+                color: white;
+                border-color: #ccc;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .error-message {
+        color: #e53e3e;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+        padding: 12px;
+        background-color: $cyworld-orange;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #fff;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        margin-top: 10px;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: darken($primary-color, 10%);
+        }
+    }
+}

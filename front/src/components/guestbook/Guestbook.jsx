@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import Pagination from '../common/Pagination';
 
@@ -178,8 +179,8 @@ function Guestbook({ userId }) {
                                     <header className="guestbook_header">
                                         <div className="guestbook_header_left">
                                             <em className="guestbook_number">No.{item.boardNo}</em>
-                                            <a href="#"><h4 className="guestbook_writer">{item.writerName}</h4></a>
-                                            <a href="#" className="mini_home_btn" role="button">미니홈피</a>
+                                            <Link to={`/${item.writerLoginId}`}><h4 className="guestbook_writer">{item.writerName}</h4></Link>
+                                            <Link to={`/${item.writerLoginId}`} className="mini_home_btn" role="button">미니홈피</Link>
                                             <time dateTime={item.createdAt}>
                                                 ({new Date(item.createdAt).toLocaleString('ko-KR', {
                                                     year: 'numeric', month: '2-digit', day: '2-digit',

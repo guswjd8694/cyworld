@@ -17,31 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class MinihomeServiceImpl implements MinihomeService {
-    private final VisitsRepository visitsRepository;
     private final MinihomeRepository minihomeRepository;
     private final EntityFinder entityFinder;
-
-
-    @Override
-    @Transactional
-    public void recordVisitAndIncrementCounters(Integer userId, User visitor) {
-        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
-
-        miniHomepage.setTodayVisits(miniHomepage.getTodayVisits() + 1);
-        miniHomepage.setTotalVisits(miniHomepage.getTotalVisits() + 1);
-
-        Visit newVisit = new Visit();
-        newVisit.setMiniHomepage(miniHomepage);
-
-        if (visitor != null) {
-            newVisit.setVisitor(visitor);
-            newVisit.setCreatedBy(visitor.getId());
-        } else {
-            newVisit.setCreatedBy(0);
-        }
-
-        visitsRepository.save(newVisit);
-    }
 
 
     @Override

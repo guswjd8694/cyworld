@@ -1,6 +1,5 @@
-@import './variables';
-@import './header';
-
+@use './variables' as *;
+@use './header';
 
 .disabled { pointer-events: none; color: #ccc; }
 
@@ -10,7 +9,10 @@
 
 * {
     box-sizing: border-box;
-    text-transform: uppercase;
+
+    &:not(input, textarea) {
+        text-transform: uppercase;
+    }
 }
 
 body {
@@ -39,8 +41,8 @@ main.main_container {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        width: 1100px;
-        height: 700px;
+        width: 1020px;
+        height: 670px;
     }
 
     @media screen and (max-width: 1220px) {
@@ -66,23 +68,18 @@ section.book_cover {
         border-radius: 16px;
     }
 
+
     @media screen and (max-width: 1220px) {
         border-radius: 12px;
-
-        &::after {
-            top: 10px;
-            width: calc(100% - 10px);
-            height: calc(100% - 20px);
-            border-radius: 12px;
-        }
     }
 }
 
 section.left_page {
-    max-width: 200px;
+    max-width: 210px;
     width: 100%;
     padding: 26px 0 26px 26px;
     border-right: none !important;
+
     &::after {
         left: 13px;
         border-right: none;
@@ -93,13 +90,25 @@ section.left_page {
     }
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        max-width: 260px;
+        padding: 20px 0 20px 20px;
+        max-width: 250px;
+
+        &::after {
+            left: 10px;
+            top: 10px;
+            width: calc(100% - 10px);
+            height: calc(100% - 20px);
+        }
     }
 
     @media screen and (max-width: 1220px) {
         padding: 18px 0 18px 18px;
+
         &::after {
+            top: 10px;
             left: 10px;
+            width: calc(100% - 10px);
+            height: calc(100% - 20px);
         }
         .inner_page {
             padding-right: 4px;
@@ -111,6 +120,7 @@ section.right_page {
     width: 1180px;
     padding: 26px 26px 26px 0;
     border-left: none !important;
+
     &::after {
         right: 13px;
         border-left: none;
@@ -120,10 +130,30 @@ section.right_page {
         padding-left: 8px;
     }
 
+    @media screen and (max-width: 1600px) and (min-width: 1221px) {
+        padding: 20px 20px 20px 0;
+
+        &::after {
+            right: 10px;
+            top: 10px;
+            width: calc(100% - 10px);
+            height: calc(100% - 20px);
+        }
+    }
+
+    
     @media screen and (max-width: 1220px) {
         padding: 18px 18px 18px 0;
         .inner_page {
             padding-left: 4px;
+        }
+
+        &::after {
+            right: 8px;
+            top: 10px;
+            width: calc(100% - 10px);
+            height: calc(100% - 20px);
+            border-radius: 12px;
         }
     }
 }
@@ -156,7 +186,7 @@ section.right_page {
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
         .bottom_area {
-            padding: 16px 28px;
+            padding: 16px 18px;
         }
     }
 
@@ -210,9 +240,109 @@ section.left_page {
     }
 }
 
+.profile_area {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile_main {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.profile_footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    margin-bottom: 40px;
+}
+
+.profile_pic {
+    position: relative;
+    width: 100%;
+    max-height: 250px;
+    min-height: 250px;
+    margin-bottom: 10px;
+    overflow: hidden;
+
+    figure {
+        margin: 0;
+        transition: filter 0.3s ease;
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .profile-pic-edit-btn {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0; // 평소에는 숨김
+        transition: opacity 0.3s ease;
+        text-transform: none;
+    }
+}
+
+.profile_intro {
+    font-size: 12px;
+    p {
+        white-space: pre-wrap;
+        text-transform: none;
+    }
+}
+
+.profile-edit-form {
+    .profile_pic.edit-mode {
+        position: relative;
+
+        &:hover {
+            figure {
+                filter: blur(2px) brightness(0.7);
+            }
+            .profile-pic-edit-btn {
+                opacity: 1;
+            }
+        }
+        
+        .file-upload-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 80%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            text-align: center;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: none;
+        }
+
+        // 실제 파일 input은 화면에 보이지 않도록 숨깁니다.
+        input[type="file"] {
+            display: none;
+        }
+    }
+}
+
 .today_mood {
     position: relative; 
-    padding: 3px 20px;
+    padding: 3px 14px;
     border: 1px solid $border-color;
     border-radius: 2px;
     margin-bottom: 8px;
@@ -222,9 +352,9 @@ section.left_page {
         font-weight: bold;
         color: $secondary-color;
     }
-    button {
+    button, span {
         margin-left: 6px;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: normal;
         color: #000;
     }
@@ -255,6 +385,15 @@ section.left_page {
         }
     }
 
+    @media screen and (max-width: 1600px) and (min-width: 1221px) {
+        padding: 4px 14px;
+
+        p {
+            font-size: 10px;
+        }
+    }
+
+
     @media screen and (max-width: 1220px) {
         padding: 2px 8px;
         button { font-size: 12px; }
@@ -265,6 +404,7 @@ section.left_page {
     position: relative;
     width: 100%;
     max-height: 250px;
+    min-height: 250px;
     margin-bottom: 10px;
     overflow: hidden;
 
@@ -276,9 +416,11 @@ section.left_page {
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
         max-height: 210px;
+        min-height: 210px;
     }
     @media screen and (max-width: 1220px) {
         max-height: 160px;
+        min-height: 160px;
     }
 }
 
@@ -287,6 +429,12 @@ section.left_page {
     overflow-y: scroll;
     p {
         font-size: 14px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 95%;
+        border: 1px solid $cyworld-blue;
     }
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
@@ -298,33 +446,75 @@ section.left_page {
     }
 }
 
-.profile_history {
+.profile_util {
+    display: flex;
+    gap: 8px;
     border-bottom: 1px solid $border-color;
     margin-bottom: 10px;
-    p {
+
+    button {
         display: inline-flex;
         align-items: center;
-        font-size: 11px;
+        font-size: 9px;
         font-weight: bold;
         &::before {
             content: '';
             display: inline-block;
-            width: 2px;
-            height: 2px;
+            width: 1px;
+            height: 1px;
             margin-right: 2px;
-            border-top: 4px solid transparent;
-            border-bottom: 4px solid transparent;
-            border-left: 6px solid black;
+            border-top: 3px solid transparent;
+            border-bottom: 3px solid transparent;
+            border-left: 6px solid $highlight-color;
             background: none;
             border-radius: 0;
             cursor: pointer;
             padding: 0;
+
+            &:hover {
+                border-left-color: #666;
+            }
+        }
+
+        &:hover {
+            color: #666;
         }
     }
 
     @media screen and (max-width: 1220px) {
         margin-bottom: 6px;
         p { font-size: 10px; }
+    }
+
+
+    &.edit-mode {
+        justify-content: flex-end;
+        gap: 8px;
+        padding-bottom: 5px;
+
+        button {
+            background-color: #f0f0f0;
+            border: 1px solid #666;
+            border-radius: 2px;
+            padding: 0px 4px;
+            font-size: 8px;
+            line-height: 12px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            text-transform: none;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #e0e0e0;
+            }
+
+            &::before {
+                content: '';
+                display: none;
+            }
+        }
+    
     }
 }
 
@@ -398,6 +588,52 @@ section.left_page {
         font-size: 10px;
     }
 
+    .title-wrapper {
+        display: flex;
+        align-items: flex-end;
+        gap: 14px;
+        margin-bottom: 5px;
+
+        h3 {
+            margin: 0;
+        }
+
+        .title-edit-btn, .title-edit-actions button {
+            background-color: #f0f0f0;
+            border: 1px solid #666;
+            border-radius: 2px;
+            padding: 0px 4px;
+            font-size: 8px;
+            line-height: 12px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            text-transform: none;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #e0e0e0;
+            }
+        }
+
+        .title-edit-input {
+            font-size: 18px;
+            font-weight: bold;
+            color: #5a87af;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 0px 6px;
+            text-transform: uppercase;
+        }
+
+        .title-edit-actions {
+            display: flex;
+            gap: 3px;
+        }
+        
+        
+    }
+
     @media screen and (max-width: 1220px) {
         h3 { font-size: 18px; }
     }
@@ -418,6 +654,39 @@ section.left_page {
         height: 30px;
         font-size: 18px;
         color: $primary-color;
+    }
+
+    .title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 5px;
+
+        h3 {
+            margin: 0;
+        }
+
+        .title-edit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .title-edit-input {
+            font-size: 21px;
+            font-weight: bold;
+            color: #5a87af;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 2px 6px;
+        }
+        
+        .title-edit-actions button {
+            font-size: 12px;
+            padding: 2px 8px;
+            margin-left: 5px;
+        }
     }
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
@@ -517,6 +786,7 @@ section.left_page {
 
     img {
         width: 100%;
+        border: 1px solid #d3d3d3;
     }
 }
 .ilchon { 
@@ -1018,4 +1288,62 @@ input:disabled + label,
 input:disabled {
     color: #ccc;
     cursor: not-allowed;
+}
+
+.ilchon-request-modal {
+    background-color: #fff;
+
+    .modal-header {
+        h2 {
+            text-transform: none;
+        }
+    }
+    .request-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .request-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+        text-transform: none;
+    }
+    .requester-name {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+    .request-message {
+        color: #888;
+        font-style: italic;
+    }
+    .request-actions {
+        display: flex;
+        gap: 8px;
+        button {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 2px;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+        .accept-btn {
+            background-color: #5a87af;
+            color: white;
+            border-color: #4a789f;
+        }
+        .reject-btn {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+    }
+    .no-requests {
+        text-align: center;
+        padding: 20px;
+        color: #888;
+        text-transform: none;
+    }
 }

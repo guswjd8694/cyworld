@@ -98,7 +98,10 @@ function Header() {
                             <button onClick={handleLogout} className="logout-button"><img src="/imgs/logo.png" alt="싸이월드 로고 이미지" />로그아웃</button>
                         </>
                     ) : (
-                        <Link to="/login">로그인</Link>
+                        <>
+                            <Link to="/signup">회원가입</Link>
+                            <Link to="/login"><img src="/imgs/logo.png" alt="싸이월드 로고 이미지" />로그인</Link>
+                        </>
                     )}
                 </nav>
             </div>
