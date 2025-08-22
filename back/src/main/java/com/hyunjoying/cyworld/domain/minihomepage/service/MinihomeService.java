@@ -8,6 +8,5 @@ import com.hyunjoying.cyworld.domain.user.entity.User;
 public interface MinihomeService {
     GetMinihomeResponseDto getMinihome(Integer userId);
     void updateMinihome(Integer userId, UpdateMinihomeRequestDto requestDto);
-    void recordVisitAndIncrementCounters(Integer userId, User visitor);
 }
 

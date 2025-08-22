@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -80,9 +83,13 @@ public class UserController {
             content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
     )
     @PostMapping("/find-id")
-    public ResponseEntity<String> findLoginId(@RequestBody FindLoginIdRequestDto requestDto) {
+    public ResponseEntity<Map<String, String>> findLoginId(@RequestBody FindLoginIdRequestDto requestDto) {
         String loginId = userService.findLoginId(requestDto);
-        return ResponseEntity.ok("사용자님의 아이디는 " + loginId + "입니다.");
+
+        Map<String, String> response = new HashMap<>();
+        response.put("loginId", loginId);
+
+        return ResponseEntity.ok(response);
     }
 
 

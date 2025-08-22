@@ -31,7 +31,7 @@ function HomePage({ userId, navigateTo, ilchonStatus }) {
             <section className="miniroom" aria-labelledby="miniroom">
                 <h2 id="miniroom-title">미니룸</h2>
                 <figure>
-                    <img src="/imgs/miniroom_08.gif" alt="미니룸 이미지" />
+                    <img src="/imgs/miniroom_03.gif" alt="미니룸 이미지" />
                 </figure>
             </section>
             

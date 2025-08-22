@@ -132,3 +132,71 @@
     &:hover { background: #4a789f; }
   }
 }
+
+
+
+/* --- Profile History Modal --- */
+.profile-history-modal {
+    width: 500px;
+
+    .modal-body {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 10px 20px;
+    }
+
+    .history-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .history-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .history-date {
+        font-size: 12px;
+        color: #888;
+        flex-shrink: 0;
+        width: 80px;
+    }
+
+    .history-content {
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .history-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    .history-bio {
+        font-size: 13px;
+        color: #555;
+        margin: 0;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        text-transform: none;
+    }
+
+    .no-history {
+        text-align: center;
+        padding: 30px;
+        color: #888;
+        font-size: 14px;
+        text-transform: none;
+    }
+}

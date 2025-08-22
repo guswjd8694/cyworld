@@ -42,8 +42,9 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         // 로그인, 회원가입, Swagger 등은 인증 없이 접근 허용
-                        .requestMatchers("/users/signup", "/users/login").permitAll()
+                        .requestMatchers("/users/signup", "/users/login", "/users/find-id", "/users/reset-password").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/images/**").permitAll()
                         // GET 요청은 일단 모두 허용 (개발 편의)
                         .requestMatchers(HttpMethod.GET).permitAll()
                         // 위에서 허용한 경로 외의 모든 요청은 반드시 인증(로그인)을 거쳐야 함
