@@ -69,18 +69,33 @@ function Diary({ userId }) {
         }
     };
 
+
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
+            
+            setSelectedPosts(prevSelectedPosts =>
+                prevSelectedPosts.filter(post => post.boardId !== boardId)
+            );
+
+            setPosts(prevPosts => {
+                const newPosts = { ...prevPosts };
+                for (const dateKey in newPosts) {
+                    newPosts[dateKey] = newPosts[dateKey].filter(post => post.boardId !== boardId);
+                }
+                return newPosts;
+            });
+
             try {
                 await apiClient.delete(`/boards/${boardId}`);
-                await fetchDiaryData();
             } catch (err) {
                 if (err.response?.status !== 401) {
-                    alert(err.response?.data?.message || '삭제에 실패했습니다.');
+                    alert(err.response?.data?.message || '삭제에 실패했습니다. 목록을 새로고침합니다.');
+                    fetchDiaryData(); // 데이터 원상 복구
                 }
             }
         }
     };
+
 
     const handleEditClick = (post) => {
         setEditingPost(post);

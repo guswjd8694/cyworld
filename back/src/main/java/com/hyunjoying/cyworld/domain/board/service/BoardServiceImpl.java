@@ -8,6 +8,7 @@ import com.hyunjoying.cyworld.domain.comment.dto.response.GetCommentResponseDto;
 import com.hyunjoying.cyworld.domain.board.entity.Board;
 import com.hyunjoying.cyworld.domain.comment.entity.Comment;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
+import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.board.repository.BoardRepository;
 import com.hyunjoying.cyworld.common.util.EntityFinder;
@@ -65,10 +66,10 @@ public class BoardServiceImpl implements BoardService {
 
             if ("ILCHONPYEONG".equals(board.getType())) {
                 nickname = ilchonRepository.findByUserAndFriend(board.getUser(), miniHomepage.getUser())
-                        .map(ilchon -> ilchon.getUserNickname())
+                        .map(Ilchon::getUserNickname)
                         .orElse("일촌명 없음");
             } else {
-                boardNo = totalElements - (pageable.getPageNumber() * pageable.getPageSize()) - i;
+                boardNo = totalElements - ((long) pageable.getPageNumber() * pageable.getPageSize()) - i;
             }
 
             dtoList.add(new GetBoardResponseDto(board, boardNo, nickname));
@@ -175,7 +176,7 @@ public class BoardServiceImpl implements BoardService {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
-        return boardRepository.findByMiniHomepageIdAndTypeAndCreatedAtBetween(miniHomepage.getId(), "DIARY", startOfDay, endOfDay)
+        return boardRepository.findByMiniHomepageIdAndTypeAndIsDeletedFalseAndCreatedAtBetween(miniHomepage.getId(), "DIARY", startOfDay, endOfDay)
                 .map(board -> new GetBoardResponseDto(board, null, null))
                 .orElse(null);
     }

@@ -12,20 +12,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board, Integer> {
-    @Query("SELECT b FROM Board b JOIN FETCH b.user WHERE b.miniHomepage.id = :miniHomepageId AND b.type = :type")
+    @Query("SELECT b FROM Board b JOIN FETCH b.user WHERE b.miniHomepage.id = :miniHomepageId AND b.type = :type AND b.isDeleted = false")
     Page<Board> findByMiniHomepageIdAndType(
             @Param("miniHomepageId") Integer miniHomepageId,
             @Param("type") String type,
             Pageable pageable
     );
 
-    @Query("SELECT b FROM Board b JOIN FETCH b.user WHERE b.miniHomepage.id = :miniHomepageId AND b.type = :type ORDER BY b.createdAt DESC")
+    @Query("SELECT b FROM Board b JOIN FETCH b.user WHERE b.miniHomepage.id = :miniHomepageId AND b.type = :type AND b.isDeleted = false ORDER BY b.createdAt DESC")
     List<Board> findAllByMiniHomepageIdAndType(
             @Param("miniHomepageId") Integer miniHomepageId,
             @Param("type") String type
     );
 
-    Optional<Board> findByMiniHomepageIdAndTypeAndCreatedAtBetween(
+    Optional<Board> findByMiniHomepageIdAndTypeAndIsDeletedFalseAndCreatedAtBetween(
             Integer miniHompageId, String type, LocalDateTime startOfDay, LocalDateTime endOfDay
     );
 }

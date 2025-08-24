@@ -1,13 +1,16 @@
 package com.hyunjoying.cyworld.domain.minihomepage.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
+
 import java.time.LocalDateTime;
 
 @Entity
+@SQLDelete(sql = "UPDATE bgm SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Filter(name = "deletedFilter")
 @Table(name = "bgm")
 @Getter
 @Setter
