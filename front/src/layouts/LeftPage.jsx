@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import ProfileSection from '../components/profile/ProfileSection';
 import BoardListSection from '../components/profile/BoardListSection';
+import apiClient from '../api/axiosConfig';
 
 function LeftPage({ userId, activeView }) {
     const [minihomeData, setMinihomeData] = useState({ todayVisit: 0, totalVisit: 0 });
@@ -15,14 +16,14 @@ function LeftPage({ userId, activeView }) {
         const fetchMinihomeData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:8080/users/${userId}/mini-homepage`);
-                if (!response.ok) {
-                    throw new Error('방문자 수 정보를 불러오는 데 실패했습니다.');
-                }
-                const data = await response.json();
-                setMinihomeData(data);
+                const response = await apiClient.get(`/users/${userId}/mini-homepage`);
+                
+                setMinihomeData(response.data);
+
             } catch (err) {
-                setError(err.message);
+                if (err.response?.status !== 401) {
+                    setError(err.message);
+                }
             } finally {
                 setLoading(false);
             }
@@ -31,9 +32,6 @@ function LeftPage({ userId, activeView }) {
         fetchMinihomeData();
     }, [userId]);
 
-    const handleLogout = () => {
-        logout();
-    };
 
     const showProfile = activeView === 'HOME' || activeView === 'GUESTBOOK';
 

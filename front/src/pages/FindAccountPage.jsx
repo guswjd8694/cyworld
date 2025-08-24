@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../styles/find-account.scss'; // 아이디/비번 찾기 전용 새 스타일 파일
+import apiClient from '../api/axiosConfig';
+import '../styles/find-account.scss';
 
 function FindAccountPage() {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('findId'); // 'findId' or 'resetPassword'
+    const [activeTab, setActiveTab] = useState('findId');
     
-    // 아이디 찾기 상태
     const [findIdData, setFindIdData] = useState({ name: '', email: '' });
     const [foundId, setFoundId] = useState('');
 
-    // 비밀번호 재설정 상태
     const [resetPwData, setResetPwData] = useState({ loginId: '', email: '', newPassword: '', confirmPassword: '' });
 
     const [error, setError] = useState('');
@@ -32,20 +31,12 @@ function FindAccountPage() {
         setSuccessMessage('');
         setFoundId('');
         try {
-            const response = await fetch('http://localhost:8080/users/find-id', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(findIdData)
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || '일치하는 사용자를 찾을 수 없습니다.');
-            }
-            const result = await response.json();
+            const response = await apiClient.post('/users/find-id', findIdData);
+            const result = response.data;
             setFoundId(result.loginId);
             setSuccessMessage(`회원님의 아이디는 [ ${result.loginId} ] 입니다.`);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || '일치하는 사용자를 찾을 수 없습니다.');
         }
     };
 
@@ -58,23 +49,15 @@ function FindAccountPage() {
             return;
         }
         try {
-            const response = await fetch('http://localhost:8080/users/reset-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    loginId: resetPwData.loginId,
-                    email: resetPwData.email,
-                    newPassword: resetPwData.newPassword
-                })
+            await apiClient.post('/users/reset-password', {
+                loginId: resetPwData.loginId,
+                email: resetPwData.email,
+                newPassword: resetPwData.newPassword
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || '비밀번호 재설정에 실패했습니다.');
-            }
             setSuccessMessage('비밀번호가 성공적으로 재설정되었습니다. 로그인 페이지로 이동합니다.');
-            setTimeout(() => navigate('/login'), 2000); // 2초 후 로그인 페이지로 이동
+            setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || '비밀번호 재설정에 실패했습니다.');
         }
     };
 

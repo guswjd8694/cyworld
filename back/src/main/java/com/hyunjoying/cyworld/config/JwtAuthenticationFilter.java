@@ -32,16 +32,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authorizationHeader.substring(7);
 
             try {
-                if (jwtUtil.validateToken(token)) {
-                    String loginId = jwtUtil.getLoginIdFromToken(token);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(loginId);
+                jwtUtil.validateToken(token);
 
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("DEBUG: SecurityContextHolder에 인증 정보 저장 완료 - 사용자: " + loginId);
-                }
+                String loginId = jwtUtil.getLoginIdFromToken(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(loginId);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
             } catch (Exception e) {
                 System.out.println("DEBUG: 토큰 처리 중 에러 발생 - " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
         filterChain.doFilter(request, response);

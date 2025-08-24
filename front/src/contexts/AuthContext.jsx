@@ -35,13 +35,27 @@ export function AuthProvider({ children }) {
             name: decodedUser.name 
         };
         setCurrentUser(user);
-        return user; // LoginPage에서 사용할 수 있도록 유저 정보를 반환합니다.
+        return user;
     };
 
     const logout = () => {
         localStorage.removeItem('jwt-token');
         setCurrentUser(null);
+        console.log('1. AuthProvider: logout called! currentUser is now null.');
     };
+
+    useEffect(() => {
+        const handleAuthError = () => {
+            alert('세션이 만료되어 로그아웃됩니다.');
+            logout();
+        };
+
+        window.addEventListener('auth-error', handleAuthError);
+
+        return () => {
+            window.removeEventListener('auth-error', handleAuthError);
+        };
+    }, []);
 
     const value = { currentUser, loading, login, logout };
 

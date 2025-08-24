@@ -9,7 +9,7 @@ function RightPageLayout({ children, owner, title, onTitleUpdate, onIlchonClick,
     const [newTitle, setNewTitle] = useState(title);
 
     useEffect(() => {
-        setNewTitle(title); // 부모로부터 받은 title이 바뀔 때마다 상태 업데이트
+        setNewTitle(title);
     }, [title]);
 
     const handleSave = () => {
