@@ -3,15 +3,17 @@ package com.hyunjoying.cyworld.domain.board.entity;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 
 @Entity
+@SQLDelete(sql = "UPDATE board SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Filter(name = "deletedFilter")
 @Table(name = "board")
 @Getter
 @Setter

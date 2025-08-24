@@ -52,17 +52,13 @@ function Guestbook({ userId }) {
                 type: 'GUESTBOOK',
                 isPublic: !isSecret 
             });
-
-            if (!response.ok) throw new Error('방명록 작성에 실패했습니다.');
             setNewContent('');
             setIsSecret(false);
-
             if (currentPage === 0) {
                 setRefetchTrigger(prev => prev + 1);
             } else {
                 setCurrentPage(0);
             }
-
         } catch (err) {
             if (err.response?.status !== 401) {
                 alert(err.response?.data?.message || '방명록 작성에 실패했습니다.');
@@ -72,15 +68,18 @@ function Guestbook({ userId }) {
 
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
+            setBoardPage(prevPage => ({
+                ...prevPage,
+                content: prevPage.content.filter(item => item.boardId !== boardId)
+            }));
+
             try {
-                const response = await fetch(`http://localhost:8080/boards/${boardId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-                });
-                if (!response.ok) throw new Error('삭제에 실패했습니다.');
-                setRefetchTrigger(prev => prev + 1);
+                await apiClient.delete(`/boards/${boardId}`);
             } catch (err) {
-                alert(err.message);
+                if (err.response?.status !== 401) {
+                    alert(err.response?.data?.message || '삭제에 실패했습니다. 목록을 새로고침합니다.');
+                    setRefetchTrigger(prev => prev + 1);
+                }
             }
         }
     };

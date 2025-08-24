@@ -59,14 +59,18 @@ function Ilchonpyeong({ userId, ilchonStatus }) {
 
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
-        try {
-            await apiClient.delete(`/boards/${boardId}`);
-            setRefetchTrigger(prev => prev + 1);
-        } catch (err) {
-            if (err.response?.status !== 401) {
-                alert(err.response?.data?.message || '삭제에 실패했습니다.');
+            setIlchonpyeongList(prevList => 
+                prevList.filter(item => item.boardId !== boardId)
+            );
+
+            try {
+                await apiClient.delete(`/boards/${boardId}`);
+            } catch (err) {
+                if (err.response?.status !== 401) {
+                    alert(err.response?.data?.message || '삭제에 실패했습니다. 목록을 새로고침합니다.');
+                    setRefetchTrigger(prev => prev + 1);
+                }
             }
-        }
         }
     };
 
