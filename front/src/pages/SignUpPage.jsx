@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../styles/signup.scss'; // 회원가입 전용 새 스타일 파일
+import apiClient from '../api/axiosConfig';
+import '../styles/signup.scss';
 
 function SignUpPage() {
     const navigate = useNavigate();
-    // [수정] DTO 필드명에 맞게 상태 이름을 변경합니다 (birthday -> birth, phoneNumber -> phone)
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -22,7 +22,6 @@ function SignUpPage() {
         setFormData(prevState => ({ ...prevState, [name]: value }));
     };
 
-    // 생년월일 입력 시 자동으로 하이픈(-) 추가
     const handleBirthdayChange = (e) => {
         let value = e.target.value.replace(/\D/g, '');
         if (value.length > 8) value = value.slice(0, 8);
@@ -35,7 +34,6 @@ function SignUpPage() {
         setFormData(prevState => ({ ...prevState, birth: value }));
     };
 
-    // [추가] 핸드폰 번호 입력 시 자동으로 하이픈(-) 추가
     const handlePhoneNumberChange = (e) => {
         let value = e.target.value.replace(/\D/g, '');
         if (value.length > 11) value = value.slice(0, 11);
@@ -58,31 +56,21 @@ function SignUpPage() {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/users/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                // [수정] DTO 필드명에 맞게 전송할 데이터를 수정합니다.
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    loginId: formData.loginId,
-                    password: formData.password,
-                    birth: formData.birth.replace(/-/g, ''), // 하이픈 제거 후 전송
-                    gender: formData.gender,
-                    phone: formData.phone.replace(/-/g, '') // 하이픈 제거 후 전송
-                })
+            await apiClient.post('/users/signup', {
+                name: formData.name,
+                email: formData.email,
+                loginId: formData.loginId,
+                password: formData.password,
+                birth: formData.birth.replace(/-/g, ''),
+                gender: formData.gender,
+                phone: formData.phone.replace(/-/g, '')
             });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || '회원가입에 실패했습니다.');
-            }
 
             alert('회원가입에 성공했습니다! 로그인 페이지로 이동합니다.');
             navigate('/login');
 
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || '회원가입에 실패했습니다.');
         }
     };
 

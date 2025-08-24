@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import ProfileHistoryModal from './ProfileHistoryModal';
+import apiClient from '../../api/axiosConfig';
 
 function ProfileSection({ userId }) {
     const { currentUser } = useContext(AuthContext);
@@ -27,19 +28,19 @@ function ProfileSection({ userId }) {
             setError(null);
             try {
                 const [profileRes, emotionRes, emotionListRes] = await Promise.all([
-                    fetch(`http://localhost:8080/users/${userId}/profile`),
-                    fetch(`http://localhost:8080/users/${userId}/emotion`),
-                    fetch(`http://localhost:8080/emotions`)
+                    apiClient.get(`/users/${userId}/profile`),
+                    apiClient.get(`/users/${userId}/emotion`),
+                    apiClient.get(`/emotions`)
                 ]);
-                if (!profileRes.ok || !emotionRes.ok || !emotionListRes.ok) throw new Error('프로필 정보를 불러오는 데 실패했습니다.');
-                const profileData = await profileRes.json();
-                const emotionData = await emotionRes.json();
-                const emotionListData = await emotionListRes.json();
-                setProfileData(profileData);
-                setCurrentEmotion(emotionData.emotion);
-                setEmotionOptions(emotionListData);
+                
+                setProfileData(profileRes.data);
+                setCurrentEmotion(emotionRes.data.emotion);
+                setEmotionOptions(emotionListRes.data);
+
             } catch (err) {
-                setError(err.message);
+                if (err.response?.status !== 401) {
+                    setError(err.message);
+                }
             } finally {
                 setLoading(false);
             }
@@ -52,18 +53,12 @@ function ProfileSection({ userId }) {
         setCurrentEmotion(emotionName);
         setIsEmotionListOpen(false);
         try {
-            const response = await fetch(`http://localhost:8080/users/${userId}/emotion`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({ emotionId })
-            });
-            if (!response.ok) throw new Error('감정 업데이트에 실패했습니다.');
+            await apiClient.put(`/users/${userId}/emotion`, { emotionId });
         } catch (err) {
-            alert(err.message);
-            setCurrentEmotion(originalEmotion);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '감정 업데이트에 실패했습니다.');
+                setCurrentEmotion(originalEmotion);
+            }
         }
     };
 
@@ -89,31 +84,22 @@ function ProfileSection({ userId }) {
             if (selectedFile) {
                 const formData = new FormData();
                 formData.append('image', selectedFile);
-                const uploadRes = await fetch('http://localhost:8080/upload/image', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` },
-                    body: formData,
-                });
-                if (!uploadRes.ok) throw new Error('이미지 업로드에 실패했습니다.');
-                const uploadData = await uploadRes.json();
-                finalImageUrl = uploadData.imageUrl;
+                
+                const uploadRes = await apiClient.post('/upload/image', formData);
+                finalImageUrl = uploadRes.data.imageUrl;
             }
-            const profileUpdateRes = await fetch(`http://localhost:8080/users/${userId}/profile`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({
-                    bio: editedBio,
-                    profileImageUrl: finalImageUrl
-                })
+            
+            await apiClient.post(`/users/${userId}/profile`, {
+                bio: editedBio,
+                profileImageUrl: finalImageUrl
             });
-            if (!profileUpdateRes.ok) throw new Error('프로필 수정에 실패했습니다.');
+
             setIsEditing(false);
             setRefetchTrigger(prev => prev + 1);
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '프로필 수정에 실패했습니다.');
+            }
         }
     };
 

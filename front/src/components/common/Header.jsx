@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
+import apiClient from '../../api/axiosConfig';
 
 function Header() {
     const { currentUser, logout } = useContext(AuthContext);
@@ -15,13 +16,13 @@ function Header() {
         if (currentUser) {
             const fetchIlchons = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/ilchons/users/${currentUser.id}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setIlchonList(data);
-                    }
+                    const response = await apiClient.get(`/ilchons/users/${currentUser.id}`);
+                    
+                    setIlchonList(response.data);
                 } catch (error) {
-                    console.error("일촌 목록을 불러오는 데 실패했습니다.", error);
+                    if (error.response?.status !== 401) {
+                        console.error("일촌 목록을 불러오는 데 실패했습니다.", error);
+                    }
                 }
             };
             fetchIlchons();

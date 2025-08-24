@@ -13,9 +13,12 @@ import MinihomePage from './pages/MinihomePage';
 import HomePage from './components/home/HomePage';
 import Guestbook from './components/guestbook/Guestbook';
 import Diary from './components/diary/Diary';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
     const { currentUser, loading } = useContext(AuthContext);
+
+    console.log('2. App component rendered. currentUser:', currentUser);
     
     if (loading) return <div>로딩 중...</div>;
 
@@ -27,13 +30,15 @@ function App() {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignUpPage />} />
                     <Route path="/find" element={<FindAccountPage />} />
-                    <Route 
-                        path="/:loginId" 
-                        element={<MinihomePage />}
-                    >
-                        <Route index element={<HomePage />} /> 
-                        <Route path="guestbook" element={<Guestbook />} />
-                        <Route path="diary" element={<Diary />} />
+                    <Route element={<PrivateRoute />}>
+                        <Route 
+                            path="/:loginId" 
+                            element={<MinihomePage />}
+                        >
+                            <Route index element={<HomePage />} /> 
+                            <Route path="guestbook" element={<Guestbook />} />
+                            <Route path="diary" element={<Diary />} />
+                        </Route>
                     </Route>
 
                     <Route path="/" element={

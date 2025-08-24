@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import apiClient from '../api/axiosConfig';
 import { AuthContext } from '../contexts/AuthContext';
 import LeftPage from '../layouts/LeftPage';
 import RightPageLayout from '../layouts/RightPage';
@@ -31,36 +32,24 @@ function MinihomePage() {
         if (!loginId || authLoading) return;
         setLoading(true);
         try {
-            const ownerRes = await fetch(`http://localhost:8080/users/by-login-id/${loginId}`);
-            if (!ownerRes.ok) throw new Error("미니홈피 주인을 찾을 수 없습니다.");
-            const ownerData = await ownerRes.json();
+            const ownerRes = await apiClient.get(`/users/by-login-id/${loginId}`);
+            const ownerData = ownerRes.data;
             setMinihomeOwner(ownerData);
 
-            const minihomeRes = await fetch(`http://localhost:8080/users/${ownerData.id}/mini-homepage`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-            });
-            if (!minihomeRes.ok) throw new Error("미니홈피 정보를 불러오는 데 실패했습니다.");
-            const minihomeData = await minihomeRes.json();
+            const minihomeRes = await apiClient.get(`/users/${ownerData.id}/mini-homepage`);
+            const minihomeData = minihomeRes.data;
             setMinihomeData(minihomeData);
 
             if (currentUser) {
                 if (currentUser.id === ownerData.id) {
                     setIlchonStatus('OWNER');
-                    const requestsRes = await fetch(`http://localhost:8080/ilchons/requests/received`, {
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-                    });
-                    if (requestsRes.ok) {
-                        const requestsData = await requestsRes.json();
-                        setReceivedRequests(requestsData);
-                    }
+                    const requestsRes = await apiClient.get(`/ilchons/requests/received`);
+                    const requestsData = requestsRes.data;
+                    setReceivedRequests(requestsData);
                 } else {
-                    const statusRes = await fetch(`http://localhost:8080/ilchons/status?targetUserId=${ownerData.id}`, {
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-                    });
-                    if (statusRes.ok) {
-                        const statusData = await statusRes.json();
-                        setIlchonStatus(statusData.status);
-                    }
+                    const statusRes = await apiClient.get(`/ilchons/status?targetUserId=${ownerData.id}`);
+                    const statusData = statusRes.data;
+                    setIlchonStatus(statusData.status);
                 }
             } else {
                 setIlchonStatus('NONE');
@@ -79,12 +68,7 @@ function MinihomePage() {
 
     const handleTitleUpdate = async (newTitle) => {
         try {
-            const response = await fetch(`http://localhost:8080/users/${minihomeOwner.id}/mini-homepage`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` },
-                body: JSON.stringify({ title: newTitle })
-            });
-            if (!response.ok) throw new Error('타이틀 수정에 실패했습니다.');
+            await apiClient.put(`/users/${minihomeOwner.id}/mini-homepage`, { title: newTitle });
             setMinihomeData(prev => ({ ...prev, title: newTitle }));
         } catch (err) {
             alert(err.message);

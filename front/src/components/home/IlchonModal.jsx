@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
+import apiClient from '../../api/axiosConfig';
 import '../../styles/Modal.scss';
 
 function IlchonModal({ onClose, targetUser }) {
@@ -43,29 +44,19 @@ function IlchonModal({ onClose, targetUser }) {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/ilchons`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({
-                    targetUserId: targetUser.id,
-                    friendNickname: finalFriendNickname,
-                    userNickname: finalUserNickname,
-                })
+            await apiClient.post(`/ilchons`, {
+                targetUserId: targetUser.id,
+                friendNickname: finalFriendNickname,
+                userNickname: finalUserNickname,
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || '일촌 신청에 실패했습니다.');
-            }
-            
             alert('일촌 신청을 보냈습니다.');
             onClose();
             window.location.reload();
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '일촌 신청에 실패했습니다.');
+            }
         }
     };
 

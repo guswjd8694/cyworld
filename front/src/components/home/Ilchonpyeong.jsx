@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
+import apiClient from '../../api/axiosConfig';
 
 function Ilchonpyeong({ userId, ilchonStatus }) {
     const { currentUser } = useContext(AuthContext);
@@ -19,13 +20,14 @@ function Ilchonpyeong({ userId, ilchonStatus }) {
     useEffect(() => {
         const fetchIlchonpyeong = async () => {
             setLoading(true);
+
             try {
-                const response = await fetch(`http://localhost:8080/users/${userId}/boards?type=ILCHONPYEONG`);
-                if (!response.ok) throw new Error('일촌평을 불러오는 데 실패했습니다.');
-                const data = await response.json();
-                setIlchonpyeongList(data.content);
+                const response = await apiClient.get(`/users/${userId}/boards?type=ILCHONPYEONG`);
+                setIlchonpyeongList(response.data.content);
             } catch (err) {
-                setError(err.message);
+                if (err.response?.status !== 401) {
+                    setError(err.message);
+                }
             } finally {
                 setLoading(false);
             }
@@ -41,38 +43,30 @@ function Ilchonpyeong({ userId, ilchonStatus }) {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/users/${userId}/boards`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({
-                    content: newContent,
-                    type: 'ILCHONPYEONG',
-                    isPublic: true
-                })
+            await apiClient.post(`/users/${userId}/boards`, {
+                content: newContent,
+                type: 'ILCHONPYEONG',
+                isPublic: true
             });
-            if (!response.ok) throw new Error('일촌평 작성에 실패했습니다.');
             setNewContent('');
             setRefetchTrigger(prev => prev + 1);
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '일촌평 작성에 실패했습니다.');
+            }
         }
     };
 
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
-            try {
-                const response = await fetch(`http://localhost:8080/boards/${boardId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-                });
-                if (!response.ok) throw new Error('삭제에 실패했습니다.');
-                setRefetchTrigger(prev => prev + 1);
-            } catch (err) {
-                alert(err.message);
+        try {
+            await apiClient.delete(`/boards/${boardId}`);
+            setRefetchTrigger(prev => prev + 1);
+        } catch (err) {
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '삭제에 실패했습니다.');
             }
+        }
         }
     };
 
@@ -85,19 +79,13 @@ function Ilchonpyeong({ userId, ilchonStatus }) {
         e.preventDefault();
         if (!editedContent.trim()) return;
         try {
-            const response = await fetch(`http://localhost:8080/boards/${boardId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({ content: editedContent })
-            });
-            if (!response.ok) throw new Error('수정에 실패했습니다.');
+            await apiClient.put(`/boards/${boardId}`, { content: editedContent });
             setEditingPostId(null);
             setRefetchTrigger(prev => prev + 1);
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '수정에 실패했습니다.');
+            }
         }
     };
 

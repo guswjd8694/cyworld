@@ -1,37 +1,33 @@
 import React from 'react';
+import apiClient from '../../api/axiosConfig';
 import '../../styles/Modal.scss';
 
 function IlchonRequestModal({ onClose, requests, onUpdate }) {
 
     const handleAccept = async (requestId) => {
         try {
-            const response = await fetch(`http://localhost:8080/ilchons/${requestId}/accept`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-            });
-            if (!response.ok) throw new Error('수락에 실패했습니다.');
+            await apiClient.put(`/ilchons/${requestId}/accept`);
             alert('일촌을 수락했습니다.');
             onUpdate();
             window.location.reload();
-
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '수락에 실패했습니다.');
+            }
         }
     };
 
     const handleReject = async (requestId) => {
         if (window.confirm('정말로 거절하시겠습니까?')) {
             try {
-                const response = await fetch(`http://localhost:8080/ilchons/requests/${requestId}/reject`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-                });
-                if (!response.ok) throw new Error('거절에 실패했습니다.');
+                await apiClient.delete(`/ilchons/requests/${requestId}/reject`);
                 alert('일촌 신청을 거절했습니다.');
                 onUpdate();
                 window.location.reload();
             } catch (err) {
-                alert(err.message);
+                if (err.response?.status !== 401) {
+                    alert(err.response?.data?.message || '거절에 실패했습니다.');
+                }
             }
         }
     };

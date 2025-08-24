@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/Modal.scss'; // 기존 모달 스타일 재사용
+import '../../styles/Modal.scss';
 
 function ProfileHistoryModal({ onClose, history }) {
 

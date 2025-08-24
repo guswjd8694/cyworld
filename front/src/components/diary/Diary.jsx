@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import DiaryEditor from './DiaryEditor';
 import '../../styles/Diary.scss';
+import apiClient from '../../api/axiosConfig';
 
 function Diary({ userId }) {
     const { currentUser } = useContext(AuthContext);
@@ -30,9 +31,9 @@ function Diary({ userId }) {
         const year = displayMonth.getFullYear();
         const month = displayMonth.getMonth() + 1;
         try {
-            const response = await fetch(`http://localhost:8080/users/${userId}/boards?type=DIARY&year=${year}&month=${month}`);
-            if (!response.ok) throw new Error('다이어리 데이터를 불러오는 데 실패했습니다.');
-            const data = await response.json();
+            const response = await apiClient.get(`/users/${userId}/boards?type=DIARY&year=${year}&month=${month}`);
+            const data = response.data;
+
             const postsObject = {};
             data.content.forEach(post => {
                 const dateKey = post.createdAt.split('T')[0];
@@ -56,33 +57,27 @@ function Diary({ userId }) {
     
     const handleSavePost = async (postData) => {
         try {
-            const response = await fetch(`http://localhost:8080/users/${userId}/boards`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` },
-                body: JSON.stringify({ ...postData, type: 'DIARY' })
-            });
-            if (!response.ok) throw new Error('일기 작성에 실패했습니다.');
-            
-            // ✨ [수정] 데이터를 먼저 불러온 후, 글쓰기 화면을 닫습니다.
-            await fetchDiaryData(); // 데이터 로딩이 끝날 때까지 기다립니다.
-            setIsWriting(false);    // 최신 데이터가 반영된 상태에서 목록 화면으로 돌아갑니다.
+            await apiClient.post(`/users/${userId}/boards`, { ...postData, type: 'DIARY' });
+
+            await fetchDiaryData();
+            setIsWriting(false);  
             
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '일기 작성에 실패했습니다.');
+            }
         }
     };
 
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
             try {
-                const response = await fetch(`http://localhost:8080/boards/${boardId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt-token')}` }
-                });
-                if (!response.ok) throw new Error('삭제에 실패했습니다.');
+                await apiClient.delete(`/boards/${boardId}`);
                 await fetchDiaryData();
             } catch (err) {
-                alert(err.message);
+                if (err.response?.status !== 401) {
+                    alert(err.response?.data?.message || '삭제에 실패했습니다.');
+                }
             }
         }
     };
@@ -102,24 +97,18 @@ function Diary({ userId }) {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/boards/${editingPost.boardId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({ 
-                    content: editedContent,
-                    weather: editedWeather,
-                    mood: editedMood,
-                    isPublic: editedIsPublic
-                })
+            await apiClient.put(`/boards/${editingPost.boardId}`, { 
+                content: editedContent,
+                weather: editedWeather,
+                mood: editedMood,
+                isPublic: editedIsPublic
             });
-            if (!response.ok) throw new Error('수정에 실패했습니다.');
             setEditingPost(null);
             await fetchDiaryData();
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '수정에 실패했습니다.');
+            }
         }
     };
 

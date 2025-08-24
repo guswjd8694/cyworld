@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import Pagination from '../common/Pagination';
+import apiClient from '../../api/axiosConfig';
 
 function Guestbook({ userId }) {
     const { currentUser } = useContext(AuthContext);
@@ -24,18 +25,19 @@ function Guestbook({ userId }) {
         const fetchGuestbook = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:8080/users/${userId}/boards?type=GUESTBOOK&page=${currentPage}&size=5&sort=createdAt,desc`);
-                if (!response.ok) throw new Error('방명록을 불러오는 데 실패했습니다.');
-                const data = await response.json();
-                setBoardPage(data);
+                const response = await apiClient.get(`/users/${userId}/boards?type=GUESTBOOK&page=${currentPage}&size=5&sort=createdAt,desc`);
+                setBoardPage(response.data);
             } catch (err) {
-                setError(err.message);
+                if (err.response?.status !== 401) {
+                    setError(err.message);
+                }
             } finally {
                 setLoading(false);
             }
         };
         fetchGuestbook();
     }, [userId, currentPage, refetchTrigger]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -45,28 +47,26 @@ function Guestbook({ userId }) {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/users/${userId}/boards`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({
-                    content: newContent,
-                    type: 'GUESTBOOK',
-                    isPublic: !isSecret 
-                })
+            await apiClient.post(`/users/${userId}/boards`, {
+                content: newContent,
+                type: 'GUESTBOOK',
+                isPublic: !isSecret 
             });
+
             if (!response.ok) throw new Error('방명록 작성에 실패했습니다.');
             setNewContent('');
             setIsSecret(false);
+
             if (currentPage === 0) {
                 setRefetchTrigger(prev => prev + 1);
             } else {
                 setCurrentPage(0);
             }
+
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '방명록 작성에 실패했습니다.');
+            }
         }
     };
 
@@ -95,39 +95,27 @@ function Guestbook({ userId }) {
         e.preventDefault();
         if (!editedContent.trim()) return;
         try {
-            const response = await fetch(`http://localhost:8080/boards/${boardId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({ 
-                    content: editedContent,
-                    isPublic: !editedIsSecret
-                })
+            await apiClient.put(`/boards/${boardId}`, { 
+                content: editedContent,
+                isPublic: !editedIsSecret
             });
-            if (!response.ok) throw new Error('수정에 실패했습니다.');
             setEditingPostId(null);
             setRefetchTrigger(prev => prev + 1);
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '수정에 실패했습니다.');
+            }
         }
     };
 
     const handleToggleSecret = async (post) => {
         try {
-            const response = await fetch(`http://localhost:8080/boards/${post.boardId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwt-token')}`
-                },
-                body: JSON.stringify({ isPublic: !post.isPublic })
-            });
-            if (!response.ok) throw new Error('공개 설정 변경에 실패했습니다.');
+            await apiClient.put(`/boards/${post.boardId}`, { isPublic: !post.isPublic });
             setRefetchTrigger(prev => prev + 1);
         } catch (err) {
-            alert(err.message);
+            if (err.response?.status !== 401) {
+                alert(err.response?.data?.message || '공개 설정 변경에 실패했습니다.');
+            }
         }
     };
 
