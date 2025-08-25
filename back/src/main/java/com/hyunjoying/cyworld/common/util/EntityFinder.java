@@ -30,17 +30,17 @@ public class EntityFinder {
     }
 
     public User getUserNameAndEmailOrThrow(String name, String email){
-        return userRepository.findByNameAndEmail(name, email)
+        return userRepository.findByNameAndEmailAndIsDeletedFalse(name, email)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
     }
 
     public User getLoginIdOrThrow(String loginId){
-        return userRepository.findByLoginId(loginId)
+        return userRepository.findByLoginIdAndIsDeletedFalse(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
     }
 
     public User getLoginIdAndEmailOrThrow(String loginId, String email){
-        return userRepository.findByLoginIdAndEmail(loginId, email)
+        return userRepository.findByLoginIdAndEmailAndIsDeletedFalse(loginId, email)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
     }
 

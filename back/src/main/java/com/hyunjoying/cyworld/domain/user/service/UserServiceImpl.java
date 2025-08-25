@@ -4,7 +4,7 @@ import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.common.util.JwtUtil;
 import com.hyunjoying.cyworld.domain.user.dto.request.*;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
-import com.hyunjoying.cyworld.domain.user.dto.response.UserResponseDto;
+import com.hyunjoying.cyworld.domain.user.dto.response.GetUserResponseDto;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.profile.entity.UserProfile;
 import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
@@ -28,11 +28,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void signUp(SignUpRequestDto requestDto) {
-        if (userRepository.existsByLoginId(requestDto.getLoginId())) {
+        if (userRepository.existsByLoginIdAndIsDeletedFalse(requestDto.getLoginId())) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
-        if (userRepository.existsByEmail(requestDto.getEmail())) {
+        if (userRepository.existsByEmailAndIsDeletedFalse(requestDto.getEmail())) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(LoginRequestDto requestDto) {
-        User user = userRepository.findByLoginId(requestDto.getLoginId())
+        User user = userRepository.findByLoginIdAndIsDeletedFalse(requestDto.getLoginId())
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(requestDto.getEmail());
         user.setPhone(requestDto.getPhone());
 
-        userRepository.save(user);
+        user.setUpdatedBy(userId);
     }
 
     @Override
@@ -127,12 +127,19 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    @Transactional
+    public void withdrawUser(Integer userId) {
+        User user = entityFinder.getUserOrThrow(userId);
+        userRepository.delete(user);
+    }
+
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDto getUserByLoginId(String loginId) {
+    public GetUserResponseDto getUserByLoginId(String loginId) {
         User user = entityFinder.getLoginIdOrThrow(loginId);
 
-        return new UserResponseDto(user);
+        return new GetUserResponseDto(user);
     }
 }

@@ -41,7 +41,6 @@ export function AuthProvider({ children }) {
     const logout = () => {
         localStorage.removeItem('jwt-token');
         setCurrentUser(null);
-        console.log('1. AuthProvider: logout called! currentUser is now null.');
     };
 
     useEffect(() => {

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './contexts/AuthContext';
 import Header from './components/common/Header'; 
+import PrivateRoute from './components/PrivateRoute';
 
 import './styles/reset.scss';
 import './styles/header.scss';
@@ -10,6 +11,7 @@ import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import FindAccountPage from './pages/FindAccountPage';
 import MinihomePage from './pages/MinihomePage';
+import SettingsPage from './pages/SettingsPage';
 import HomePage from './components/home/HomePage';
 import Guestbook from './components/guestbook/Guestbook';
 import Diary from './components/diary/Diary';
@@ -17,8 +19,6 @@ import Diary from './components/diary/Diary';
 function App() {
     const { currentUser, loading } = useContext(AuthContext);
 
-    console.log('2. App component rendered. currentUser:', currentUser);
-    
     if (loading) return <div>로딩 중...</div>;
 
     return (
@@ -36,6 +36,10 @@ function App() {
                         <Route index element={<HomePage />} /> 
                         <Route path="guestbook" element={<Guestbook />} />
                         <Route path="diary" element={<Diary />} />
+                    </Route>
+
+                    <Route element={<PrivateRoute />}>
+                        <Route path="/settings" element={<SettingsPage />} />
                     </Route>
 
                     <Route path="/" element={
