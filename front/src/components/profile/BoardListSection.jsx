@@ -16,7 +16,7 @@ function BoardListSection({ userId, boardType }) {
     return (
         <section className="bottom_area">
             <h3>{boardType}</h3>
-            {loading ? (
+            {/* {loading ? (
                 <p>목록 로딩 중...</p>
             ) : (
                 <ul>
@@ -24,7 +24,7 @@ function BoardListSection({ userId, boardType }) {
                         <li key={post.id}><a href="#">{post.title}</a></li>
                     ))}
                 </ul>
-            )}
+            )} */}
         </section>
     );
 }
