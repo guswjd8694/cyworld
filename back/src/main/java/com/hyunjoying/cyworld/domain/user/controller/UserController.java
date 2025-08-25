@@ -1,8 +1,10 @@
 package com.hyunjoying.cyworld.domain.user.controller;
 
 import com.hyunjoying.cyworld.common.dto.SuccessResponseDto;
+import com.hyunjoying.cyworld.common.util.EntityFinder;
+import com.hyunjoying.cyworld.domain.user.details.UserDetailsImpl;
 import com.hyunjoying.cyworld.domain.user.dto.request.*;
-import com.hyunjoying.cyworld.domain.user.dto.response.UserResponseDto;
+import com.hyunjoying.cyworld.domain.user.dto.response.GetUserResponseDto;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final EntityFinder entityFinder;
 
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 생성합니다.", tags = { "user" })
@@ -70,8 +73,10 @@ public class UserController {
     @PutMapping("/mypage")
     public ResponseEntity<SuccessResponseDto> updateUser(
             @RequestBody UpdateUserRequestDto requestDto,
-            @AuthenticationPrincipal User currentUser
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
+        User currentUser = userDetails.getUser();
+
         userService.updateUser(currentUser.getId(), requestDto);
         return ResponseEntity.ok(new SuccessResponseDto("개인정보가 성공적으로 수정되었습니다."));
     }
@@ -105,9 +110,27 @@ public class UserController {
     }
 
 
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 비활성화(소프트 딜리트)합니다.", tags = { "user" })
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<SuccessResponseDto> withdrawUser(@PathVariable Integer userId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.withdrawUser(userId);
+        return ResponseEntity.ok(new SuccessResponseDto("회원 탈퇴가 성공적으로 처리되었습니다."));
+    }
+
+
+
+    @Operation(summary = "로그인 ID 개별 사용자 정보 조회", description = "로그인 ID로 특정 사용자의 정보를 조회합니다.", tags = { "user" })
     @GetMapping("/by-login-id/{loginId}")
-    public ResponseEntity<UserResponseDto> getUserByLoginId(@PathVariable String loginId) {
-        UserResponseDto userDto = userService.getUserByLoginId(loginId);
+    public ResponseEntity<GetUserResponseDto> getUserByLoginId(@PathVariable String loginId) {
+        GetUserResponseDto userDto = userService.getUserByLoginId(loginId);
         return ResponseEntity.ok(userDto);
+    }
+
+    @Operation(summary = "유저 ID 개별 사용자 정보 조회", description = "ID로 특정 사용자의 정보를 조회합니다.", tags = { "user" })
+    @GetMapping("/{userId}")
+    public ResponseEntity<GetUserResponseDto> getUserById(@PathVariable Integer userId) {
+        User user = entityFinder.getUserOrThrow(userId);
+        GetUserResponseDto responseDto = new GetUserResponseDto(user);
+        return ResponseEntity.ok(responseDto);
     }
 }

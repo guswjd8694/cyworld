@@ -26,21 +26,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
-        System.out.println("DEBUG: 들어온 요청의 Authorization 헤더: " + authorizationHeader);
-
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
-
             try {
-                jwtUtil.validateToken(token);
+                if (jwtUtil.validateToken(token)) {
+                    String loginId = jwtUtil.getLoginIdFromToken(token);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(loginId);
 
-                String loginId = jwtUtil.getLoginIdFromToken(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(loginId);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             } catch (Exception e) {
-                System.out.println("DEBUG: 토큰 처리 중 에러 발생 - " + e.getMessage());
+                System.out.println("ERROR: 토큰 처리 중 예외 발생 - " + e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
