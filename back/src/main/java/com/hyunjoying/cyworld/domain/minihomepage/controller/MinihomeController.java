@@ -4,7 +4,7 @@ import com.hyunjoying.cyworld.common.dto.SuccessResponseDto;
 import com.hyunjoying.cyworld.domain.minihomepage.dto.request.UpdateMinihomeRequestDto;
 import com.hyunjoying.cyworld.domain.minihomepage.dto.response.GetMinihomeResponseDto;
 import com.hyunjoying.cyworld.domain.minihomepage.service.VisitService;
-import com.hyunjoying.cyworld.domain.profile.dto.response.GetProfileResponseDto;
+import com.hyunjoying.cyworld.domain.user.details.UserDetailsImpl;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.minihomepage.service.MinihomeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,10 +33,13 @@ public class MinihomeController {
     @GetMapping
     public ResponseEntity<GetMinihomeResponseDto> getMinihomeInfo(
             @PathVariable Integer userId,
-            @AuthenticationPrincipal User visitor
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
 
-        if (visitor != null && !visitor.getId().equals(userId)) {
+        User visitor = (userDetails != null) ? userDetails.getUser() : null;
+        boolean isOwner = (visitor != null && visitor.getId().equals(userId));
+
+        if (!isOwner) {
             visitService.recordVisitAndIncrementCounters(userId, visitor);
         }
 

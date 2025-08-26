@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +108,9 @@ public class IlchonController {
     @ApiResponse(description = "받은 신청 목록 조회 성공")
     @GetMapping("/requests/received")
     public ResponseEntity<List<GetIlchonResponseDto>> getReceivedIlchonRequests(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
         User currentUser = userDetails.getUser();
         List<GetIlchonResponseDto> requests = ilchonService.getReceivedIlchonRequests(currentUser.getId());
 
