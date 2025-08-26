@@ -13,6 +13,9 @@ function SettingsPage() {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
+    const [isConfirmingWithdrawal, setIsConfirmingWithdrawal] = useState(false);
+    const [confirmationText, setConfirmationText] = useState('');
+
     useEffect(() => {
         if (!currentUser) return;
         
@@ -52,17 +55,37 @@ function SettingsPage() {
     };
 
     const handleWithdraw = async () => {
-        if (window.confirm('정말로 회원 탈퇴를 하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-            try {
-                // 백엔드의 회원 탈퇴(소프트 딜리트) API를 호출합니다.
-                await apiClient.delete(`/users/${currentUser.id}`);
-                alert('회원 탈퇴가 처리되었습니다. 이용해 주셔서 감사합니다.');
-                logout(); // 프론트엔드 상태를 로그아웃으로 변경
-                navigate('/login'); // 로그인 페이지로 이동
-            } catch (err) {
-                if (err.response?.status !== 401) {
-                    setError(err.response?.data?.message || '회원 탈퇴에 실패했습니다.');
-                }
+        // if (window.confirm('정말로 회원 탈퇴를 하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        //     try {
+                
+        //         await apiClient.delete(`/users/${currentUser.id}`);
+        //         alert('회원 탈퇴가 처리되었습니다. 이용해 주셔서 감사합니다.');
+        //         logout(); // 프론트엔드 상태를 로그아웃으로 변경
+        //         navigate('/login'); // 로그인 페이지로 이동
+        //     } catch (err) {
+        //         if (err.response?.status !== 401) {
+        //             setError(err.response?.data?.message || '회원 탈퇴에 실패했습니다.');
+        //         }
+        //     }
+        // }
+
+        setIsConfirmingWithdrawal(true);
+    };
+
+    const handleConfirmWithdraw = async () => {
+        if (confirmationText !== '탈퇴하겠습니다') {
+            alert('문구를 정확히 입력해주세요.');
+            return;
+        }
+
+        try {
+            await apiClient.delete(`/users/${currentUser.id}`);
+            alert('회원 탈퇴가 처리되었습니다. 이용해 주셔서 감사합니다.');
+            logout();
+            navigate('/login');
+        } catch (err) {
+            if (err.response?.status !== 401) {
+                setError(err.response?.data?.message || '회원 탈퇴에 실패했습니다.');
             }
         }
     };
@@ -103,9 +126,37 @@ function SettingsPage() {
             </form>
 
             <div className="withdraw-section">
-                <button className="withdraw-button" onClick={handleWithdraw}>
-                    회원 탈퇴
-                </button>
+                
+                {isConfirmingWithdrawal ? (
+                    <div className="withdraw-confirm-box">
+                        <p>회원 탈퇴 시 작성하신 게시물과 정보는 복구할 수 없습니다.</p>
+                        <p>정말로 탈퇴하시려면 아래에 "탈퇴하겠습니다"를 입력한 후 확인 버튼을 눌러주세요.</p>
+                        <input 
+                            type="text" 
+                            value={confirmationText}
+                            onChange={(e) => setConfirmationText(e.target.value)}
+                            placeholder="탈퇴하겠습니다"
+                        />
+                        <div className="confirm-actions">
+                            <button 
+                                className="confirm-withdraw-button" 
+                                onClick={handleConfirmWithdraw}
+                                disabled={confirmationText !== '탈퇴하겠습니다'}
+                            >
+                                확인
+                            </button>
+                            <button className="cancel-button" onClick={() => setIsConfirmingWithdrawal(false)}>
+                                취소
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <button className="withdraw-button" onClick={handleWithdraw}>
+                            회원 탈퇴하기
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     );
