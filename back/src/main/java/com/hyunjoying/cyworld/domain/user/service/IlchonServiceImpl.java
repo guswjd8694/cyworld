@@ -2,6 +2,8 @@ package com.hyunjoying.cyworld.domain.user.service;
 
 import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.domain.user.dto.request.RequestIlchonDto;
+import com.hyunjoying.cyworld.domain.user.dto.request.UpdateIlchonNicknameRequestDto;
+import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonRequestResponseDto;
 import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonResponseDto;
 import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
@@ -11,9 +13,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +23,6 @@ public class IlchonServiceImpl implements IlchonService {
     private final IlchonRepository ilchonRepository;
     private final EntityFinder entityFinder;
 
-    // 일촌 신청
     @Override
     @Transactional
     public void requestIlchon(Integer currentUserId, RequestIlchonDto requestDto) {
@@ -32,106 +33,134 @@ public class IlchonServiceImpl implements IlchonService {
             throw new IllegalArgumentException("자기 자신에게 일촌을 신청할 수 없습니다.");
         }
 
-        ilchonRepository.findByUserAndFriend(currentUser, targetUser)
-                .ifPresent(ilchon -> {throw new IllegalArgumentException("이미 일촌 신청을 했거나 일촌 관계입니다.");});
+        Optional<Ilchon> latestInteraction = ilchonRepository.findTopByUserAndFriendOrderByCreatedAtDesc(currentUser, targetUser)
+                .or(() -> ilchonRepository.findTopByUserAndFriendOrderByCreatedAtDesc(targetUser, currentUser));
+
+        if (latestInteraction.isPresent()) {
+            Ilchon lastIlchon = latestInteraction.get();
+            if (lastIlchon.getStatus() == Ilchon.IlchonStatus.ACCEPTED && lastIlchon.isActive()) {
+                throw new IllegalArgumentException("이미 일촌 관계입니다.");
+            }
+            if (lastIlchon.getStatus() == Ilchon.IlchonStatus.PENDING && lastIlchon.isActive()) {
+                throw new IllegalArgumentException("이미 처리 대기 중인 일촌 신청이 있습니다.");
+            }
+        }
 
         Ilchon newRequest = new Ilchon();
         newRequest.setUser(currentUser);
         newRequest.setFriend(targetUser);
-        newRequest.setStatus("PENDING");
-        newRequest.setCreatedBy(currentUserId);
-        newRequest.setUpdatedBy(currentUserId);
+        newRequest.setStatus(Ilchon.IlchonStatus.PENDING);
         newRequest.setUserNickname(requestDto.getUserNickname());
         newRequest.setFriendNickname(requestDto.getFriendNickname());
         newRequest.setRequestMessage(requestDto.getRequestMessage());
-
         ilchonRepository.save(newRequest);
     }
 
-
-    // 일촌 신청 수락
     @Override
     @Transactional
     public void acceptIlchon(Integer currentUserId, Integer ilchonRequestId) {
         Ilchon request = entityFinder.getIlchonOrThrow(ilchonRequestId);
 
         if (!request.getFriend().getId().equals(currentUserId)) {
-            throw new SecurityException("일촌 수락 권한이 없습니다.");
+            throw new AccessDeniedException("일촌 수락 권한이 없습니다.");
+        }
+        if (request.getStatus() != Ilchon.IlchonStatus.PENDING || !request.isActive()) {
+            throw new IllegalStateException("이미 처리된 일촌 요청입니다.");
         }
 
-        request.setStatus("ACCEPTED");
-        request.setUpdatedBy(currentUserId);
+        request.setStatus(Ilchon.IlchonStatus.ACCEPTED);
 
         Ilchon reciprocalIlchon = new Ilchon();
         reciprocalIlchon.setUser(request.getFriend());
         reciprocalIlchon.setFriend(request.getUser());
-        reciprocalIlchon.setStatus("ACCEPTED");
-        reciprocalIlchon.setCreatedBy(currentUserId);
+        reciprocalIlchon.setStatus(Ilchon.IlchonStatus.ACCEPTED);
         reciprocalIlchon.setUserNickname(request.getFriendNickname());
         reciprocalIlchon.setFriendNickname(request.getUserNickname());
 
         ilchonRepository.save(reciprocalIlchon);
     }
 
+    @Override
+    @Transactional
+    public void updateIlchonNickname(Integer currentUserId, UpdateIlchonNicknameRequestDto requestDto) {
+        User currentUser = entityFinder.getUserOrThrow(currentUserId);
+        User targetUser = entityFinder.getUserOrThrow(requestDto.getTargetUserId());
 
-    // 일촌 신청 거절
+        Ilchon mySideOld = ilchonRepository.findByUserAndFriendAndStatusAndIsActiveTrue(currentUser, targetUser, Ilchon.IlchonStatus.ACCEPTED)
+                .orElseThrow(() -> new IllegalArgumentException("활성화된 일촌 관계를 찾을 수 없습니다."));
+        Ilchon theirSideOld = ilchonRepository.findByUserAndFriendAndStatusAndIsActiveTrue(targetUser, currentUser, Ilchon.IlchonStatus.ACCEPTED)
+                .orElseThrow(() -> new IllegalArgumentException("활성화된 일촌 관계를 찾을 수 없습니다."));
+
+        mySideOld.setActive(false);
+        theirSideOld.setActive(false);
+
+        Ilchon mySideNew = new Ilchon();
+        mySideNew.setUser(currentUser);
+        mySideNew.setFriend(targetUser);
+        mySideNew.setStatus(Ilchon.IlchonStatus.ACCEPTED);
+        mySideNew.setUserNickname(requestDto.getMyNicknameForFriend());
+        mySideNew.setFriendNickname(requestDto.getFriendNicknameForMe());
+
+        Ilchon theirSideNew = new Ilchon();
+        theirSideNew.setUser(targetUser);
+        theirSideNew.setFriend(currentUser);
+        theirSideNew.setStatus(Ilchon.IlchonStatus.ACCEPTED);
+        theirSideNew.setUserNickname(requestDto.getFriendNicknameForMe());
+        theirSideNew.setFriendNickname(requestDto.getMyNicknameForFriend());
+
+        ilchonRepository.saveAll(List.of(mySideNew, theirSideNew));
+    }
+
     @Override
     @Transactional
     public void rejectIlchon(Integer currentUserId, Integer ilchonRequestId) {
         Ilchon request = entityFinder.getIlchonOrThrow(ilchonRequestId);
-
-        if (!request.getFriend().getId().equals(currentUserId)){
+        if (!request.getFriend().getId().equals(currentUserId)) {
             throw new AccessDeniedException("일촌 거절 권한이 없습니다.");
         }
-
-        ilchonRepository.delete(request);
+        if (request.getStatus() != Ilchon.IlchonStatus.PENDING || !request.isActive()) {
+            throw new IllegalStateException("이미 처리된 일촌 요청입니다.");
+        }
+        request.setStatus(Ilchon.IlchonStatus.REJECTED);
+        request.setActive(false);
     }
 
-
-    // 일촌 신청 취소
     @Override
     @Transactional
     public void cancelIlchonRequest(Integer currentUserId, Integer ilchonRequestId) {
         Ilchon request = entityFinder.getIlchonOrThrow(ilchonRequestId);
-
-        if (!request.getUser().getId().equals(currentUserId)){
+        if (!request.getUser().getId().equals(currentUserId)) {
             throw new AccessDeniedException("일촌 신청을 취소할 권한이 없습니다.");
         }
-
-        if (!"PENDING".equals(request.getStatus())){
+        if (request.getStatus() != Ilchon.IlchonStatus.PENDING || !request.isActive()) {
             throw new IllegalStateException("이미 처리된 일촌 요청입니다.");
         }
-        ilchonRepository.delete(request);
+        request.setStatus(Ilchon.IlchonStatus.CANCELED);
+        request.setActive(false);
     }
 
-
-
-    // 일촌 끊기
     @Override
     @Transactional
     public void breakIlchon(Integer currentUserId, Integer targetUserId) {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
         User targetUser = entityFinder.getUserOrThrow(targetUserId);
 
-        Optional<Ilchon> mySide = ilchonRepository.findByUserAndFriend(currentUser, targetUser);
-        Optional<Ilchon> theirSide = ilchonRepository.findByUserAndFriend(targetUser, currentUser);
+        Ilchon mySide = ilchonRepository.findByUserAndFriendAndStatusAndIsActiveTrue(currentUser, targetUser, Ilchon.IlchonStatus.ACCEPTED)
+                .orElseThrow(() -> new IllegalArgumentException("두 사용자 사이에 활성화된 일촌 관계가 존재하지 않습니다."));
+        Ilchon theirSide = ilchonRepository.findByUserAndFriendAndStatusAndIsActiveTrue(targetUser, currentUser, Ilchon.IlchonStatus.ACCEPTED)
+                .orElseThrow(() -> new IllegalArgumentException("두 사용자 사이에 활성화된 일촌 관계가 존재하지 않습니다."));
 
-        if (mySide.isEmpty() || theirSide.isEmpty()) {
-            throw new IllegalArgumentException("두 사용자 사이에 일촌 관계가 존재하지 않습니다.");
-        }
-
-        mySide.ifPresent(ilchonRepository::delete);
-        theirSide.ifPresent(ilchonRepository::delete);
+        mySide.setStatus(Ilchon.IlchonStatus.BROKEN);
+        mySide.setActive(false);
+        theirSide.setStatus(Ilchon.IlchonStatus.BROKEN);
+        theirSide.setActive(false);
     }
 
-
-    // 일촌 목록 보기
     @Override
     @Transactional(readOnly = true)
-    public List<GetIlchonResponseDto> getIlchon(Integer userId) {
+    public List<GetIlchonResponseDto> getIlchons(Integer userId) {
         User user = entityFinder.getUserOrThrow(userId);
-        List<Ilchon> ilchons = ilchonRepository.findAllByUserAndStatus(user, "ACCEPTED");
-
+        List<Ilchon> ilchons = ilchonRepository.findAllByUserAndStatusAndIsActiveTrue(user, Ilchon.IlchonStatus.ACCEPTED);
         return ilchons.stream()
                 .map(ilchon -> new GetIlchonResponseDto(
                         ilchon.getId(),
@@ -143,44 +172,29 @@ public class IlchonServiceImpl implements IlchonService {
                 .collect(Collectors.toList());
     }
 
-
-    // 받은 일촌 신청 보기
     @Override
     @Transactional(readOnly = true)
-    public List<GetIlchonResponseDto> getReceivedIlchonRequests(Integer currentUserId) {
+    public List<GetIlchonRequestResponseDto> getReceivedIlchonRequests(Integer currentUserId) {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
-        List<Ilchon> requests = ilchonRepository.findAllByFriendAndStatus(currentUser, "PENDING");
-
-        return requests.stream()
-                .map(request -> new GetIlchonResponseDto(
-                        request.getId(),
-                        request.getUser(),
-                        request.getFriendNickname(),
-                        request.getUserNickname(),
-                        request.getRequestMessage()
-                ))
-                .collect(Collectors.toList());
+        List<Ilchon> requests = ilchonRepository.findAllByFriendAndStatusAndIsActiveTrue(currentUser, Ilchon.IlchonStatus.PENDING);
+        return requests.stream().map(GetIlchonRequestResponseDto::new).collect(Collectors.toList());
     }
 
-
-    // 건넨 일촌 신청 보기
     @Override
     @Transactional(readOnly = true)
     public List<GetIlchonResponseDto> getSentIlchonRequests(Integer currentUserId) {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
-        List<Ilchon> requests = ilchonRepository.findAllByUserAndStatus(currentUser, "PENDING");
-
+        List<Ilchon> requests = ilchonRepository.findAllByUserAndStatusAndIsActiveTrue(currentUser, Ilchon.IlchonStatus.PENDING);
         return requests.stream()
-                .map(request -> new GetIlchonResponseDto(
-                        request.getId(),
-                        request.getFriend(),
-                        request.getUserNickname(),
-                        request.getFriendNickname(),
-                        request.getRequestMessage()
+                .map(req -> new GetIlchonResponseDto(
+                        req.getId(),
+                        req.getFriend(),
+                        req.getUserNickname(),
+                        req.getFriendNickname(),
+                        req.getRequestMessage()
                 ))
                 .collect(Collectors.toList());
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -188,14 +202,48 @@ public class IlchonServiceImpl implements IlchonService {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
         User targetUser = entityFinder.getUserOrThrow(targetUserId);
 
-        // 내가 보낸 신청 확인
-        Optional<Ilchon> sentRequest = ilchonRepository.findByUserAndFriend(currentUser, targetUser);
-        if (sentRequest.isPresent()) {
-            return sentRequest.get().getStatus();
+        Optional<Ilchon> latestInteraction = ilchonRepository.findTopByUserAndFriendOrderByCreatedAtDesc(currentUser, targetUser)
+                .or(() -> ilchonRepository.findTopByUserAndFriendOrderByCreatedAtDesc(targetUser, currentUser));
+
+        if (latestInteraction.isEmpty() || !latestInteraction.get().isActive()) {
+            return "NONE";
         }
 
-        // 상대방이 보낸 신청 확인
-        Optional<Ilchon> receivedRequest = ilchonRepository.findByUserAndFriend(targetUser, currentUser);
-        return receivedRequest.map(ilchon -> ilchon.getStatus().equals("PENDING") ? "PENDING_RECEIVED" : ilchon.getStatus()).orElse("NONE");
+        Ilchon lastIlchon = latestInteraction.get();
+        if (lastIlchon.getStatus() == Ilchon.IlchonStatus.PENDING) {
+            if (lastIlchon.getUser().getId().equals(targetUserId)) {
+                return "PENDING_RECEIVED";
+            } else {
+                return "PENDING";
+            }
+        }
+
+        return lastIlchon.getStatus().name();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer calculateRelationshipDegree(Integer currentUserId, Integer targetUserId) {
+        if (currentUserId.equals(targetUserId)) return 0;
+        return ilchonRepository.findShortestPathDegree(currentUserId, targetUserId).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer countMutualIlchons(Integer currentUserId, Integer targetUserId) {
+        Set<User> currentUserIlchons = getAcceptedIlchons(currentUserId);
+        Set<User> targetUserIlchons = getAcceptedIlchons(targetUserId);
+        currentUserIlchons.retainAll(targetUserIlchons);
+        return currentUserIlchons.size();
+    }
+
+    private Set<User> getAcceptedIlchons(Integer userId) {
+        User user = entityFinder.getUserOrThrow(userId);
+        Stream<User> friendsAsUser = ilchonRepository.findAllByUserAndStatusAndIsActiveTrue(user, Ilchon.IlchonStatus.ACCEPTED)
+                .stream().filter(Objects::nonNull).map(Ilchon::getFriend).filter(Objects::nonNull);
+        Stream<User> friendsAsFriend = ilchonRepository.findAllByFriendAndStatusAndIsActiveTrue(user, Ilchon.IlchonStatus.ACCEPTED)
+                .stream().filter(Objects::nonNull).map(Ilchon::getUser).filter(Objects::nonNull);
+        return Stream.concat(friendsAsUser, friendsAsFriend).collect(Collectors.toSet());
     }
 }
+

@@ -5,7 +5,6 @@ function BoardListSection({ userId, boardType }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        console.log(`${userId}번 유저의 ${boardType} 목록을 불러옵니다.`);
         setPosts([
             { id: 1, title: `${boardType} 첫 번째 글` },
             { id: 2, title: `${boardType} 두 번째 글` },

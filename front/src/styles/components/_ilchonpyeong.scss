@@ -1,0 +1,197 @@
+@use '../variables' as *; 
+
+.ilchon { 
+    grid-area: ilchone; 
+    margin-top: 20px;
+    h2 {
+        border-bottom: 1px solid $border-color;
+        margin-bottom: 10px;
+    }
+    form {
+        background-color: #f0f0f0;
+        border: 1px solid #d3d3d3;
+        padding: 6px 20px;
+
+
+        label {
+            margin-right: 10px;
+            color: #46abbc;
+            font-weight: bold;
+            text-transform: none;
+        }
+            
+        input {
+            width: 460px;
+            background-color: #fff;
+            padding: 2px 14px;
+            margin-right: 10px;
+            border: 1px solid $border-color;
+            border-radius: 3px;
+            margin-right: 2px;
+        }
+        button {
+            padding: 2px 14px;
+            border: 1px solid $border-color;
+            border-radius: 3px;
+        }
+    }
+
+    .common-list {
+        margin-top: 6px;
+
+        li {
+            border-bottom: 1px solid $border-color;
+            padding: 6px 0;
+        }
+
+        .list-item-content {
+
+            .list-item-meta {
+                margin-left: 6px;
+            
+                .author_name {
+                    margin-left: 4px;
+                }
+            }
+        }
+    }
+
+    @media screen and (max-width: 1600px) and (min-width: 1221px) {
+        
+    }
+    @media screen and (max-width: 1220px) {
+        form {
+            padding: 6px 10px;
+            label {
+                margin-right: 10px;
+                font-size: 12px;
+            }
+            input {
+                width: 340px;
+                padding: 2px 14px;
+                margin-right: 2px;
+                font-size: 12px;
+            }
+            button {
+                padding: 2px 12px;
+                font-size: 12px;
+            }
+        }
+        
+    }
+}
+
+.ilchon-actions {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 10px;
+
+    button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        text-transform: none;
+
+        img {
+            width: 15px;
+        }
+    }
+}
+
+.ilchon-edit-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 0;
+
+    input {
+        flex-grow: 1;
+        padding: 4px 8px;
+        font-size: 13px;
+        border: 1px solid #2094b8;
+        border-radius: 3px;
+        text-transform: none;
+    }
+
+    .edit-actions {
+        display: flex;
+        gap: 6px;
+
+        button {
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+
+            &[type="submit"] {
+                background-color: #2094b8;
+                color: white;
+                border-color: #2094b8;
+            }
+        }
+    }
+}
+
+
+.ilchon-request-modal {
+    background-color: #fff;
+
+    .modal-header {
+        h2 {
+            text-transform: none;
+        }
+    }
+    .request-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .request-item {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        padding: 10px 0;
+        border-bottom: 1px solid $gray-border;
+        font-size: 13px;
+        text-transform: none;
+    }
+    .requester-name {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+    .request-message {
+        color: #888;
+        font-style: italic;
+    }
+    .request-actions {
+        display: flex;
+        gap: 8px;
+        button {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 2px;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+        .accept-btn {
+            background-color: #5a87af;
+            color: white;
+            border-color: #4a789f;
+        }
+        .reject-btn {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+    }
+    .no-requests {
+        text-align: center;
+        padding: 20px;
+        color: #888;
+        text-transform: none;
+    }
+}

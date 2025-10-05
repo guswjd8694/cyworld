@@ -1,21 +1,21 @@
 package com.hyunjoying.cyworld.domain.minihomepage.entity;
 
+import com.hyunjoying.cyworld.common.BaseEntity;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.*;
-
-import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE visits SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Filter(name = "deletedFilter")
 @Table(name = "visits")
-@Getter
-@Setter
-public class Visit {
+public class Visit extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,21 +29,8 @@ public class Visit {
     @JoinColumn(name = "visitor_id")
     private User visitor;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private Integer createdBy;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    private Integer updatedBy;
-
-    private LocalDateTime deletedAt;
-
-    @Column(nullable = false)
-    private boolean isDeleted = false;
+    public Visit(MiniHomepage miniHomepage, User visitor) {
+        this.miniHomepage = miniHomepage;
+        this.visitor = visitor;
+    }
 }

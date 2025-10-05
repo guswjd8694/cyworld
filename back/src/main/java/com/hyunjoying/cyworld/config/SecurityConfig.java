@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.data.domain.AuditorAware;
 
 import java.util.List;
 
@@ -30,14 +31,15 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
+    public AuditorAware<Integer> auditorProvider() {
+        return new AuditorAwareImpl();
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/images/**");
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,11 +50,19 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         // 로그인, 회원가입, Swagger 등은 인증 없이 접근 허용
-                        .requestMatchers("/users/signup", "/users/login", "/users/find-id", "/users/reset-password").permitAll()
+                        .requestMatchers(
+                                "/users/signup",
+                                "/users/login",
+                                "/users/find-id",
+                                "/users/reset-password",
+                                "/users/check-loginId",
+                                "/users/*/mini-homepage/visit",
+                                "/upload/**",
+                                "/images/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // GET 요청은 일단 모두 허용 (개발 편의)
+                        // GET 요청은 개발 편의를 위해 일단 모두 허용
                         .requestMatchers(HttpMethod.GET).permitAll()
-                        // 위에서 허용한 경로 외의 모든 요청은 반드시 인증(로그인)을 거쳐야 함
+                        // 위에서 허용한 경로 외의 모든 요청은 반드시 인증(로그인) 팔요
                         .anyRequest().authenticated()
                 );
 
@@ -62,7 +72,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://d1h4znmb6e9q3l.cloudfront.net"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

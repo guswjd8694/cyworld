@@ -1,0 +1,55 @@
+.simple-tiptap-editor {
+  position: relative; // BubbleMenu 위치 기준점
+
+  /* 실제 글 쓰는 영역 */
+  .ProseMirror {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 12px;
+    min-height: 200px;
+    outline: none;
+
+    &:focus {
+      border-color: #333;
+    }
+
+    /* Placeholder 스타일 */
+    p.is-editor-empty:first-child::before {
+      content: attr(data-placeholder);
+      float: left;
+      color: #adb5bd;
+      pointer-events: none;
+      height: 0;
+    }
+  }
+}
+
+/* 텍스트 선택 시 뜨는 버블 메뉴 */
+.bubble-menu {
+  display: flex;
+  background-color: #333;
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    padding: 6px;
+    cursor: pointer;
+    margin: 0 2px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #555;
+    }
+
+    &.is-active {
+      background-color: #007bff;
+    }
+  }
+}
+

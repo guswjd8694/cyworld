@@ -19,7 +19,7 @@ function ProfileHistoryModal({ onClose, history }) {
                     {history && history.length > 0 ? (
                         <ul className="history-list">
                             {history.map(item => (
-                                <li key={item.id} className="history-item">
+                                <li key={item.profileId} className="history-item">
                                     <span className="history-date">{formatDate(item.createdAt)}</span>
                                     <div className="history-content">
                                         <img src={item.imageUrl} alt="프로필 사진" className="history-image" />

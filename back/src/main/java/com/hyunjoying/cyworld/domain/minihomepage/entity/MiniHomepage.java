@@ -1,9 +1,12 @@
 package com.hyunjoying.cyworld.domain.minihomepage.entity;
 
+import com.hyunjoying.cyworld.common.BaseEntity;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.*;
 
@@ -15,7 +18,8 @@ import java.time.LocalDateTime;
 @Table(name = "mini_homepages")
 @Getter
 @Setter
-public class MiniHomepage {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class MiniHomepage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,21 +38,24 @@ public class MiniHomepage {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    public MiniHomepage(User user) {
+        this.user = user;
+        this.title = user.getName() + "님의 미니홈피";
+        this.todayVisits = 0;
+        this.totalVisits = 0;
+    }
 
-    @Column(nullable = false)
-    private Integer createdBy;
+    public void updateTitle(String title) {
+        this.title = title;
+    }
 
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    public void incrementTodayAndTotalVisits() {
+        this.todayVisits++;
+        this.totalVisits++;
+    }
 
-    private Integer updatedBy;
 
-    private LocalDateTime deletedAt;
-
-    @Column(nullable = false)
-    private boolean isDeleted = false;
+    public void resetTodayVisits() {
+        this.todayVisits = 0;
+    }
 }

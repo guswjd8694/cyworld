@@ -1,3 +1,5 @@
+@use './variables' as *;
+
 /* Diary.scss */
 
 .sr-only {
@@ -21,7 +23,7 @@
   align-items: center;
   gap: 16px;
   padding: 0px 10px;
-  border: 1px solid #ddd;
+  border: 1px solid $gray-border;
   border-radius: 2px;
   background-color: #ffffff;
 }
@@ -107,7 +109,7 @@
   }
 
   button {
-    background: #eee;
+    background: $gray-background;
     border: 1px solid #ccc;
     border-radius: 2px;
     width: 14px;
@@ -139,7 +141,7 @@
 .calendar-day-item {
   background: none;
   border: none;
-  width: 28px;
+  width: 26px;
   height: 24px;
   display: flex;
   align-items: center;
@@ -204,20 +206,8 @@
   }
 }
 
-.diary-editor-container {
-  border: 1px solid #c9c9c9;
-  border-radius: 2px;
-  background: #fff;
-}
 
-.editor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid #ddd;
-  background: #f0f0f0;
-}
+
 
 .weather-selection {
   display: flex;
@@ -265,24 +255,12 @@
   }
 }
 
-.ck-editor-wrapper {
-  .ck.ck-editor__main > .ck-editor__editable {
-    min-height: 250px;
-    background: #fff;
-    border-color: #c9c9c9;
-  }
-  .ck.ck-toolbar {
-    background: #f0f0f0;
-    border-color: #c9c9c9;
-  }
-}
-
 .editor-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid $gray-border;
   background: #f0f0f0;
 }
 
@@ -407,7 +385,7 @@
     text-decoration: underline;
   }
   blockquote {
-    border-left: 3px solid #eee;
+    border-left: 3px solid $gray-border;
     padding-left: 1rem;
     margin-left: 0;
     color: #666;

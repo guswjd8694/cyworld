@@ -1,8 +1,6 @@
 import React from 'react';
 
-// 이 컴포넌트는 현재 페이지, 전체 페이지 수, 페이지 변경 함수를 props로 받습니다.
 function Pagination({ currentPage, totalPages, onPageChange }) {
-    // 페이지 번호 목록을 생성하는 헬퍼 함수
     const getPageNumbers = () => {
         const pageNumbers = [];
         for (let i = 0; i < totalPages; i++) {
@@ -14,7 +12,6 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     return (
         <nav className="pagination" aria-label="페이지 네비게이션">
             <ul>
-                {/* [추가] 처음으로 가는 버튼 */}
                 <li>
                     <a href="#"
                         className={currentPage === 0 ? 'disabled' : 'first'}
@@ -26,7 +23,6 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
                         &lt;&lt;
                     </a>
                 </li>
-                {/* '이전' 버튼 */}
                 <li>
                     <a href="#" 
                         className={currentPage === 0 ? 'disabled' : 'prev'}
@@ -39,7 +35,6 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
                     </a>
                 </li>
 
-                {/* 페이지 번호 목록 */}
                 {getPageNumbers().map(pageNumber => (
                     <li key={pageNumber}>
                         <a href="#"
@@ -54,7 +49,6 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
                     </li>
                 ))}
 
-                {/* '다음' 버튼 */}
                 <li>
                     <a href="#"
                         className={currentPage === totalPages - 1 ? 'disabled' : 'next'}
@@ -66,7 +60,6 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
                         &gt;
                     </a>
                 </li>
-                {/* [추가] 마지막으로 가는 버튼 */}
                 <li>
                     <a href="#"
                         className={currentPage === totalPages - 1 ? 'disabled' : 'last'}

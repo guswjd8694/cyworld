@@ -1,0 +1,299 @@
+@import 'variables'; 
+
+// --- 메인 모달 컨테이너 ---
+.ilchon-manage-modal {
+    background-color: #fff;
+    border: 1px solid $border-color;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    width: 400px;
+    height: 500px;
+    max-width: 90vw;
+    overflow-y: scroll;
+    animation: fadeIn 0.3s ease-out;
+
+    // --- 모달 헤더 ---
+    .modal-header {
+        background-color: white;
+        border-bottom: 1px solid $border-color;
+        padding: 10px 15px;
+
+        h2 {
+            font-size: 14px;
+            font-weight: bold;
+            color: $cyworld-blue;
+        }
+
+        .close-btn {
+            font-size: 20px;
+            font-weight: bold;
+            color: $text-color-light;
+        }
+    }
+
+    // --- 탭 네비게이션 ---
+    .modal-tabs {
+        display: flex;
+        background-color: #fff;
+        border-bottom: 1px solid $border-color;
+        
+        button {
+            flex: 1;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: $text-color-base;
+            border: none;
+            border-right: 1px solid $border-color;
+            background-color: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:last-child {
+                border-right: none;
+            }
+
+            &:hover {
+                background-color: white;
+            }
+
+            &.active {
+                background-color: white;
+                color: $cyworld-blue;
+                border-bottom: 2px solid $cyworld-blue;
+                margin-bottom: -1px; 
+            }
+        }
+    }
+
+    // --- 모달 바디 (탭 내용) ---
+    .modal-body {
+        padding: 8px;
+        min-height: 300px;
+        max-height: 60vh;
+        overflow-y: auto;
+        background-color: white;
+        
+        p { // "일촌이 없습니다" 같은 안내 문구
+            font-size: 13px;
+            text-align: center;
+            padding: 40px 0;
+            color: $text-color-light;
+        }
+
+        // --- 공통 리스트 스타일 ---
+        .ilchon-list, .request-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            
+            li {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 5px;
+                border-bottom: 1px dotted $border-color;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+        }
+
+        // --- 1. 내 일촌 목록 탭 & 2. 보낸 신청 탭 ---
+        .ilchon-link, .edit-nickname-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+            font-size: 12px;
+            
+            .separator {
+                color: #aaa;
+                font-size: 12px;
+            }
+
+            .friend-info, .my-info {
+                color: #888;
+
+                strong {
+                    font-weight: bold;
+                    color: #555;
+                }
+
+                a {
+                    text-decoration: none;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+        
+        .edit-nickname-form {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .nickname-inputs {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+
+                input[type="text"] {
+                    width: 100px;
+                    padding: 4px;
+                    border: 1px solid $border-color;
+                    font-size: 11px;
+                    &:focus {
+                        outline: 1px solid $cyworld-blue;
+                    }
+                }
+            }
+        }
+        
+        // --- 3. 받은 신청 탭 ---
+        .request-list.accordion {
+            .request-item {
+                flex-direction: column;
+                align-items: stretch; // 자식 요소들이 꽉 차도록
+                padding: 0; // li 자체의 패딩은 제거
+                
+            }
+            
+            .request-summary {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 10px;
+                font-size: 12px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+
+                &:hover {
+                    background-color: #f9f9f9;
+                }
+
+                a {
+                    font-weight: bold;
+                    color: $cyworld-blue;
+                    text-decoration: none;
+                    &:hover { text-decoration: underline; }
+                }
+
+                .arrow {
+                    font-size: 10px;
+                    color: #999;
+                    transition: transform 0.3s ease;
+                    &.up {
+                        transform: rotate(180deg);
+                    }
+                }
+            }
+
+            .request-details {
+                padding: 34px 15px;
+                background-color: #fafafa;
+                border-top: 1px dotted $border-color;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                .request-body {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .minimi-figure {
+                        margin: 0;
+                    }
+                    .request-text {
+                        font-size: 12px;
+                        p { text-align: left; padding: 0; margin: 2px 0; }
+                    }
+                }
+
+                .request-message-box, .nickname-info {
+                    background-color: white;
+                    border: 1px solid $border-color;
+                    padding: 8px;
+                    width: calc(100% - 16px);
+                    height: 80px;
+                    border-radius: 3px;
+                    font-size: 12px;
+                    color: $text-color-base;
+                    overflow-y: scroll;
+                    p { padding: 0; margin: 3px 0; text-align: left; }
+                    
+                    .nickname-display { color: $cyworld-blue; font-weight: bold; }
+                }
+
+                .nickname-info {
+                    background: none;
+                    border: none;
+                    padding: 0;
+                    height: auto;
+                }
+
+                .modal-footer {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 100%;
+
+                    p { 
+                        padding: 0; 
+                        margin: 0; 
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+        
+        // --- 공통 액션 버튼 ---
+        .ilchon-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            font-size: 11px;
+            padding: 4px 8px;
+            border: 1px solid $border-color;
+            background-color: white;
+            color: $text-color-base;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+                background-color: $gray-background;
+                border-color: $border-color-dark;
+            }
+            
+            &.danger {
+                border-color: $cyworld-orange;
+                color: $cyworld-orange;
+                
+                &:hover {
+                    background-color: $gray-background;
+                    border-color: $cyworld-orange;
+                }
+            }
+        }
+    }
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+

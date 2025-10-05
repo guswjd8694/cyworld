@@ -43,7 +43,7 @@ function App() {
                     </Route>
 
                     <Route path="/" element={
-                        currentUser ? <Navigate to={`/${currentUser.loginId}`} /> : <Navigate to="/login" />
+                        currentUser ? <Navigate to={`/${currentUser.loginId}`} /> : <Navigate to="/user1" />
                     } />
                 </Routes>
             </main>

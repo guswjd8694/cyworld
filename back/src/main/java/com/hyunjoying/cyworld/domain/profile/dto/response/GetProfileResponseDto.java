@@ -2,6 +2,8 @@ package com.hyunjoying.cyworld.domain.profile.dto.response;
 
 
 import com.hyunjoying.cyworld.domain.profile.dto.response.schema.ProfileHistoryDto;
+import com.hyunjoying.cyworld.domain.profile.entity.UserProfile;
+import com.hyunjoying.cyworld.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,14 +34,18 @@ public class GetProfileResponseDto {
     @Schema(example = "답답하면<br>너희들이<br>가서뛰던지~", description = "프로필 한 줄 메시지", requiredMode = Schema.RequiredMode.REQUIRED)
     private String bio;
 
-    public GetProfileResponseDto(List<ProfileHistoryDto> history, String name, String gender, LocalDate birthday, String email, String imageUrl, String bio) {
+    @Schema(example = "💓 사랑", description = "오늘의 감정", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String emotion;
+
+    public GetProfileResponseDto(User user, UserProfile activeProfile, List<ProfileHistoryDto> history) {
         this.history = history;
-        this.name = name;
-        this.gender = gender;
-        this.birthday = birthday;
-        this.email = email;
-        this.imageUrl = imageUrl;
-        this.bio = bio;
+        this.name = user.getName();
+        this.gender = user.getGender().toString();
+        this.birthday = user.getBirth() != null ? LocalDate.parse(user.getBirth()) : null;
+        this.email = user.getEmail();
+        this.imageUrl = activeProfile.getImageUrl();
+        this.bio = activeProfile.getBio();
+        this.emotion = user.getEmotion() != null ? user.getEmotion().getName() : "\uD83C\uDF37 행복";
     }
 }
 

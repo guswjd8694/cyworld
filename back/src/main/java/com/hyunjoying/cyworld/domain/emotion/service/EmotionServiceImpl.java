@@ -1,6 +1,5 @@
 package com.hyunjoying.cyworld.domain.emotion.service;
 
-
 import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.domain.emotion.dto.GetEmotionListDto;
 import com.hyunjoying.cyworld.domain.emotion.dto.request.UpdateEmotionRequestDto;
@@ -17,10 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class EmotionServiceImpl implements EmotionService  {
+public class EmotionServiceImpl implements EmotionService {
     private final EmotionRepository emotionRepository;
     private final EntityFinder entityFinder;
-
 
     @Override
     @Transactional(readOnly = true)
@@ -28,11 +26,10 @@ public class EmotionServiceImpl implements EmotionService  {
         User user = entityFinder.getUserOrThrow(userId);
         Emotion currentEmotion = user.getEmotion();
 
-        if (user.getEmotion() == null) {
-            currentEmotion = emotionRepository.findById(1)
-                    .orElseThrow(() -> new IllegalArgumentException("기본 감정(ID=1)을 찾을 수 없습니다. DB를 확인해주세요."));
+        if (currentEmotion == null) {
+            currentEmotion = entityFinder.getEmotionOrThrow(1);
         }
-        return new GetEmotionResponseDto(currentEmotion.getName());
+        return new GetEmotionResponseDto(currentEmotion);
     }
 
     @Override
@@ -43,13 +40,12 @@ public class EmotionServiceImpl implements EmotionService  {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
     public void updateEmotion(Integer userId, UpdateEmotionRequestDto requestDto) {
         User user = entityFinder.getUserOrThrow(userId);
         Emotion newEmotion = entityFinder.getEmotionOrThrow(requestDto.getEmotionId());
 
-        user.setEmotion(newEmotion);
+        user.updateEmotion(newEmotion);
     }
 }

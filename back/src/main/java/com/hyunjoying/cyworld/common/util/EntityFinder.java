@@ -2,6 +2,8 @@ package com.hyunjoying.cyworld.common.util;
 
 import com.hyunjoying.cyworld.domain.board.entity.Board;
 import com.hyunjoying.cyworld.domain.board.repository.BoardRepository;
+import com.hyunjoying.cyworld.domain.comment.entity.Comment;
+import com.hyunjoying.cyworld.domain.comment.repository.CommentRepository;
 import com.hyunjoying.cyworld.domain.emotion.entity.Emotion;
 import com.hyunjoying.cyworld.domain.emotion.repository.EmotionRepository;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
@@ -22,6 +24,7 @@ public class EntityFinder {
     private final EmotionRepository emotionRepository;
     private final UserProfileRepository userProfileRepository;
     private final IlchonRepository ilchonRepository;
+    private final CommentRepository commentRepository;
 
 
     public User getUserOrThrow(Integer currentUserId){
@@ -50,6 +53,11 @@ public class EntityFinder {
     }
 
     public MiniHomepage getMiniHomepageByUserIdOrThrow(Integer userId) {
+        return minihomeRepository.findByUserIdAndIsDeletedFalse(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
+    }
+
+    public MiniHomepage getMiniHomepageByUserIdWithLockOrThrow(Integer userId) {
         return minihomeRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
     }
@@ -62,12 +70,17 @@ public class EntityFinder {
     public UserProfile getActiveUserProfileOrThrow(Integer userId) {
         User user = getUserOrThrow(userId);
 
-        return userProfileRepository.findByUserAndIsActiveTrue(user)
+        return userProfileRepository.findFirstByUserAndIsActiveTrueOrderByCreatedAtDesc(user)
                 .orElseThrow(() -> new IllegalArgumentException("활성화된 프로필을 찾을 수 없습니다. User ID: " + userId));
     }
 
     public Ilchon getIlchonOrThrow(Integer ilchonRequestId) {
         return ilchonRepository.findById(ilchonRequestId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일촌 요청입니다."));
+    }
+
+    public Comment getCommentOrThrow(Integer commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 댓글을 찾을 수 없습니다: " + commentId));
     }
 }

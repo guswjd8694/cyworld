@@ -1,5 +1,6 @@
 package com.hyunjoying.cyworld.domain.emotion.entity;
 
+import com.hyunjoying.cyworld.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "emotions")
 @Getter
 @Setter
-public class Emotion {
+public class Emotion extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,22 +26,4 @@ public class Emotion {
 
     @Column(nullable = false, length = 50)
     private String name;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private Integer createdBy;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    private Integer updatedBy;
-
-    private LocalDateTime deletedAt;
-
-    @Column(nullable = false)
-    private boolean isDeleted = false;
 }

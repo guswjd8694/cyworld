@@ -1,96 +1,51 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
-import apiClient from '../../api/axiosConfig';
+import { useBoard } from '../../hooks/useBoard';
+import { FaTruckMonster } from 'react-icons/fa';
 
 function Ilchonpyeong({ userId, ilchonStatus }) {
     const { currentUser } = useContext(AuthContext);
     const isOwner = currentUser && currentUser.id === userId;
 
-    const [ilchonpyeongList, setIlchonpyeongList] = useState([]);
-    const [newContent, setNewContent] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    
-    const [refetchTrigger, setRefetchTrigger] = useState(0);
+    const {
+        posts: ilchonpyeongList,
+        loading,
+        error,
+        handleSavePost,
+        handleDelete,
+    } = useBoard(userId, 'ILCHONPYEONG');
 
+    const [newContent, setNewContent] = useState('');
     const [editingPostId, setEditingPostId] = useState(null);
     const [editedContent, setEditedContent] = useState('');
 
-    useEffect(() => {
-        const fetchIlchonpyeong = async () => {
-            setLoading(true);
-
-            try {
-                const response = await apiClient.get(`/users/${userId}/boards?type=ILCHONPYEONG`);
-                setIlchonpyeongList(response.data.content);
-            } catch (err) {
-                if (err.response?.status !== 401) {
-                    setError(err.message);
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchIlchonpyeong();
-    }, [userId, refetchTrigger]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!newContent.trim()) return;
-        if (!currentUser) {
-            alert("로그인이 필요합니다.");
-            return;
-        }
-        try {
-            await apiClient.post(`/users/${userId}/boards`, {
-                content: newContent,
-                type: 'ILCHONPYEONG',
-                isPublic: true
-            });
-            setNewContent('');
-            setRefetchTrigger(prev => prev + 1);
-        } catch (err) {
-            if (err.response?.status !== 401) {
-                alert(err.response?.data?.message || '일촌평 작성에 실패했습니다.');
-            }
-        }
-    };
+        if (!newContent.trim() || !currentUser) return;
+        
+        await handleSavePost({
+            content: newContent,
+            isPublic: FaTruckMonster
+        });
 
-    const handleDelete = async (boardId) => {
-        if (window.confirm('정말로 삭제하시겠습니까?')) {
-            setIlchonpyeongList(prevList => 
-                prevList.filter(item => item.boardId !== boardId)
-            );
-
-            try {
-                await apiClient.delete(`/boards/${boardId}`);
-            } catch (err) {
-                if (err.response?.status !== 401) {
-                    alert(err.response?.data?.message || '삭제에 실패했습니다. 목록을 새로고침합니다.');
-                    setRefetchTrigger(prev => prev + 1);
-                }
-            }
-        }
-    };
-
-    const handleEditClick = (post) => {
-        setEditingPostId(post.boardId);
-        setEditedContent(post.content);
+        setNewContent('');
     };
 
     const handleUpdateSubmit = async (e, boardId) => {
         e.preventDefault();
         if (!editedContent.trim()) return;
-        try {
-            await apiClient.put(`/boards/${boardId}`, { content: editedContent });
-            setEditingPostId(null);
-            setRefetchTrigger(prev => prev + 1);
-        } catch (err) {
-            if (err.response?.status !== 401) {
-                alert(err.response?.data?.message || '수정에 실패했습니다.');
-            }
-        }
+        
+        await handleSavePost({
+            boardId: boardId,
+            content: editedContent
+        });
+        setEditingPostId(null);
+    };
+
+    const handleEditClick = (post) => {
+        setEditingPostId(post.boardId);
+        setEditedContent(post.content);
     };
 
     const isIlchon = ilchonStatus === 'ACCEPTED';
@@ -115,16 +70,17 @@ function Ilchonpyeong({ userId, ilchonStatus }) {
             {loading && <p>일촌평 로딩 중...</p>}
             {error && <p style={{ color: 'red' }}>{error}</p>}
             
-            <ul className="ilchon_lists">
+            <ul className="common-list">
                 {ilchonpyeongList.map(item => {
                     const isAuthor = currentUser && currentUser.loginId === item.writerLoginId;
                     const canDelete = isAuthor || isOwner;
                     const canEdit = isAuthor;
+                    const isPostByOwner = item.writerId === userId;
 
                     return (
                         <li key={item.boardId}>
                             {editingPostId === item.boardId ? (
-                                <form className="ilchon-edit-form" onSubmit={(e) => handleUpdateSubmit(e, item.boardId)}>
+                                <form className="list-item-edit-form" onSubmit={(e) => handleUpdateSubmit(e, item.boardId)}>
                                     <input 
                                         type="text"
                                         value={editedContent}
@@ -137,21 +93,28 @@ function Ilchonpyeong({ userId, ilchonStatus }) {
                                     </div>
                                 </form>
                             ) : (
-                                <p className="message">
+                                <p className="list-item-content">
                                     {item.content}
-                                    <span className="meta">
-                                        (
-                                        {item.writerNickname && (
-                                            <span className="nickname">{item.writerNickname}</span>
+                                    <span className="list-item-meta">
+                                        {isPostByOwner ? (
+                                            <Link to={`/${item.writerLoginId}`} className="owner author_name">{item.writerName}</Link>
+                                        ) : (
+                                            <>
+                                                (
+                                                {item.writerNickname && (
+                                                    <span className="nickname">{item.writerNickname}</span>
+                                                )}
+                                                <Link to={`/${item.writerLoginId}`} className="author_name">{item.writerName}</Link>
+                                                )
+                                            </>
                                         )}
-                                        <Link to={`/${item.writerLoginId}`} className="friend_name">{item.writerName}</Link>)
                                         <time dateTime={item.createdAt}>
                                             {new Date(item.createdAt).toLocaleString('ko-KR', {
                                                 year: 'numeric', month: '2-digit', day: '2-digit',
                                                 hour: '2-digit', minute: '2-digit', hour12: false
                                             }).replace(/\. /g, '.').replace(/,/, '')}
                                         </time>
-                                        <span className="ilchon-actions">
+                                        <span className="list-item-actions">
                                             {canEdit && <button onClick={() => handleEditClick(item)}><img src="/imgs/icon_eraser.png" alt="수정 아이콘" /></button>}
                                             {canDelete && <button onClick={() => handleDelete(item.boardId)}><img src="/imgs/icon_delete.png" alt="삭제 아이콘" /></button>}
                                         </span>

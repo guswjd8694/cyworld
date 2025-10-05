@@ -1,20 +1,20 @@
 package com.hyunjoying.cyworld.domain.user.entity;
 
+import com.hyunjoying.cyworld.common.BaseEntity;
+import com.hyunjoying.cyworld.domain.user.converter.IlchonStatusConverter;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.*;
-
-import java.time.LocalDateTime;
 
 @Entity
-@SQLDelete(sql = "UPDATE ilchons SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@Filter(name = "deletedFilter")
-@Table(name = "ilchons")
 @Getter
 @Setter
-public class Ilchon {
+@NoArgsConstructor
+@Table(name = "ilchons", uniqueConstraints = {
+        // @UniqueConstraint(columnNames = {"user_id", "friend_id", "status", "isActive"})
+})
+public class Ilchon extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,27 +34,22 @@ public class Ilchon {
     @Column(length = 100)
     private String friendNickname;
 
-    @Column(nullable = false, length = 50)
-    private String status;
+    @Convert(converter = IlchonStatusConverter.class)
+    @Column(nullable = false, length = 50, columnDefinition = "ENUM('PENDING', 'ACCEPTED', 'REJECTED', 'CANCELED', 'BROKEN')")
+    private IlchonStatus status;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     private String requestMessage;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @Column(nullable = false)
-    private Integer createdBy;
+    private boolean isActive = true;
 
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    private Integer updatedBy;
-
-    private LocalDateTime deletedAt;
-
-    @Column(nullable = false)
-    private boolean isDeleted = false;
+    public enum IlchonStatus {
+        PENDING,    // 신청 중
+        ACCEPTED,   // 수락됨 (일촌 관계)
+        REJECTED,   // 거절됨
+        CANCELED,   // 신청자가 취소
+        BROKEN      // 관계 끊김
+    }
 }
+

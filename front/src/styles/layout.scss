@@ -9,10 +9,6 @@
 
 * {
     box-sizing: border-box;
-
-    &:not(input, textarea) {
-        text-transform: uppercase;
-    }
 }
 
 body {
@@ -35,14 +31,12 @@ div.container {
 
 main.main_container {
     display: flex;
-    width: 1250px;
-    height: 800px;
+    width: 1020px;
+    height: 670px;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        width: 1020px;
-        height: 670px;
     }
 
     @media screen and (max-width: 1220px) {
@@ -75,14 +69,16 @@ section.book_cover {
 }
 
 section.left_page {
-    max-width: 210px;
+    max-width: 250px;
     width: 100%;
-    padding: 26px 0 26px 26px;
+    padding: 20px 0 20px 20px;
     border-right: none !important;
 
     &::after {
-        left: 13px;
-        border-right: none;
+        left: 10px;
+        top: 10px;
+        width: calc(100% - 10px);
+        height: calc(100% - 20px);
     }
     .inner_page {
         border-right: none;
@@ -95,18 +91,10 @@ section.left_page {
     }
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        padding: 20px 0 20px 20px;
-        max-width: 250px;
-
-        &::after {
-            left: 10px;
-            top: 10px;
-            width: calc(100% - 10px);
-            height: calc(100% - 20px);
-        }
     }
 
     @media screen and (max-width: 1220px) {
+        max-width: 200px;
         padding: 18px 0 18px 18px;
 
         &::after {
@@ -123,12 +111,14 @@ section.left_page {
 
 section.right_page {
     width: 1180px;
-    padding: 26px 26px 26px 0;
+    padding: 20px 20px 20px 0;
     border-left: none !important;
 
     &::after {
-        right: 13px;
-        border-left: none;
+        right: 10px;
+        top: 10px;
+        width: calc(100% - 10px);
+        height: calc(100% - 20px);
     }
     .inner_page {
         border-left: none;
@@ -136,14 +126,6 @@ section.right_page {
     }
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        padding: 20px 20px 20px 0;
-
-        &::after {
-            right: 10px;
-            top: 10px;
-            width: calc(100% - 10px);
-            height: calc(100% - 20px);
-        }
     }
 
     
@@ -183,22 +165,25 @@ section.right_page {
         width: 100%;
         max-height: 680px;
         height: 100%;
-        padding: 20px 28px;
+        padding: 16px 18px;
         border-radius: 14px;
         border: 1px solid #999;
         overflow-y: scroll;
-    }
 
-    @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        .bottom_area {
-            padding: 16px 18px;
+        &.profile_area {
+            overflow: visible;
         }
     }
 
+    @media screen and (max-width: 1600px) and (min-width: 1221px) {
+    }
+
     @media screen and (max-width: 1220px) {
+        padding: 12px;
         border-radius: 14px;
+
         .bottom_area {
-            padding: 10px 15px;
+            padding: 10px 14px;
             border-radius: 10px;
         }
     }
@@ -216,6 +201,7 @@ section.left_page {
             align-items: center;
             justify-content: center;
             margin-top: 10px;
+            text-transform: uppercase;
 
             dt, dd {
                 margin: 0;
@@ -258,16 +244,21 @@ section.left_page {
 .profile_footer {
     flex-shrink: 0;
     margin-top: auto;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .profile_pic {
     position: relative;
     width: 100%;
-    max-height: 250px;
-    min-height: 250px;
+    max-height: 200px;
+    min-height: 180px;
     margin-bottom: 10px;
     overflow: hidden;
+
+    @media screen and (max-width: 1220px) {
+        min-height: 150px;
+        max-height: 170px;
+    }
 
     figure {
         margin: 0;
@@ -301,13 +292,6 @@ section.left_page {
     }
 }
 
-.profile_intro {
-    font-size: 12px;
-    p {
-        white-space: pre-wrap;
-        text-transform: none;
-    }
-}
 
 .profile-edit-form {
     .profile_pic.edit-mode {
@@ -353,13 +337,16 @@ section.left_page {
     margin-bottom: 8px;
     
     p {
+        display: flex;
+        align-items: center;
         font-size: 9px;
         font-weight: bold;
         color: $secondary-color;
+        text-transform: uppercase;
     }
     button, span {
         margin-left: 6px;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: normal;
         color: #000;
     }
@@ -408,8 +395,6 @@ section.left_page {
 .profile_pic {
     position: relative;
     width: 100%;
-    max-height: 250px;
-    min-height: 250px;
     margin-bottom: 10px;
     overflow: hidden;
 
@@ -418,22 +403,17 @@ section.left_page {
         width: 100%;
         object-fit: cover;
     }
-
-    @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        max-height: 210px;
-        min-height: 210px;
-    }
-    @media screen and (max-width: 1220px) {
-        max-height: 160px;
-        min-height: 160px;
-    }
 }
 
 .profile_intro {
-    height: 200px;
+    height: 160px;
     overflow-y: scroll;
+    font-size: 12px;
+
     p {
-        font-size: 14px;
+        font-size: 13px;
+        white-space: pre-wrap;
+        text-transform: none;
     }
 
     textarea {
@@ -443,7 +423,6 @@ section.left_page {
     }
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        height: 160px;
     }
     @media screen and (max-width: 1220px) {
         height: 110px;
@@ -462,6 +441,8 @@ section.left_page {
         align-items: center;
         font-size: 9px;
         font-weight: bold;
+        text-transform: uppercase;
+
         &::before {
             content: '';
             display: inline-block;
@@ -532,7 +513,7 @@ section.left_page {
     .user_name {
         display: inline-block;
         margin-right: 2px;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: bold;
         color: $primary-color;
     }
@@ -573,7 +554,7 @@ section.left_page {
     h3 {
         font-size: 21px;
         font-weight: bold;
-        color: $primary-color;
+        color: #42506e;
     }
     .flex-wrap {
         display: flex;
@@ -603,7 +584,6 @@ section.left_page {
         display: flex;
         align-items: flex-end;
         gap: 14px;
-        margin-bottom: 5px;
 
         h3 {
             margin: 0;
@@ -719,10 +699,16 @@ section.left_page {
         border-bottom: 1px solid $border-color;
         margin-bottom: 6px;
     }
+    .no-posts {
+        font-size: 14px;
+        padding: 15px;
+        text-align: center;
+        background-color: #f8f8f8;
+    }
     .post_lists {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
 
         article > a {
             display: flex;
@@ -739,9 +725,10 @@ section.left_page {
         .tag_pink { background-color: #c243a4; }
         .tag_green { background-color: #4ed938; }
         .tag_orange { background-color: #d97537; }
+
         h3 {
             display: inline-block;
-            max-width: 200px;
+            max-width: 260px;
             font-size: 14px;
             font-weight: normal;
             overflow: hidden;
@@ -759,6 +746,7 @@ section.left_page {
     grid-area: links; 
     margin-top: 30px;
     border-top: 1px dashed $border-color;
+
     ul {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -769,10 +757,32 @@ section.left_page {
             border-bottom: 1px dashed;
             font-size: 14px;
             height: 32px;
+
+            a {
+                display: flex;
+                align-items: center;
+            }
+
             strong {
                 font-weight: normal;
                 margin-right: 15px;
             }
+
+            .new_icon {
+                width: 10px;
+                margin-left: 5px;
+                animation: sparkle 1.2s infinite ease-in-out;
+            }
+
+            @keyframes sparkle {
+                0%, 100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.1;
+                }
+            }
+
             .post_count {
                 font-size: 12px;
                 color: #0e2fed;
@@ -800,171 +810,18 @@ section.left_page {
         border: 1px solid #d3d3d3;
     }
 }
-.ilchon { 
-    grid-area: ilchone; 
-    margin-top: 20px;
-    h2 {
-        border-bottom: 1px solid $border-color;
-        margin-bottom: 10px;
-    }
-    form {
-        background-color: #f0f0f0;
-        border: 1px solid #d3d3d3;
-        padding: 10px 20px;
-        label {
-            margin-right: 10px;
-            color: #46abbc;
-            font-weight: bold;
-            text-transform: none;
-        }
-        input {
-            width: 560px;
-            background-color: #fff;
-            padding: 6px 20px;
-            margin-right: 10px;
-            border: 1px solid $border-color;
-            border-radius: 3px;
-        }
-        button {
-            padding: 6px 20px;
-            border: 1px solid $border-color;
-            border-radius: 3px;
-        }
-    }
-    .ilchon_lists {
-        margin-top: 10px;
-        li {
-            border-bottom: 1px solid $border-color;
-            padding: 6px 0;
-        }
-        .message {
-            color: #333;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .meta {
-            font-size: 14px;
-            color: #333;
-            margin-left: 6px;
-        }
-        .nickname {
-            font-weight: 600;
-        }
-        .friend_name {
-            color: #1177cc;
-            margin-left: 4px;
-        }
-        time {
-            font-size: 12px;
-            color: $text-color-light;
-            margin-left: 4px;
-        }
-    }
 
-    @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        form {
-            padding: 6px 20px;
-            input {
-                width: 460px;
-                padding: 2px 14px;
-                margin-right: 2px;
-            }
-            button {
-                padding: 2px 14px;
-            }
-        }
-    }
-    @media screen and (max-width: 1220px) {
-        form {
-            padding: 6px 10px;
-            label {
-                margin-right: 10px;
-                font-size: 12px;
-            }
-            input {
-                width: 340px;
-                padding: 2px 14px;
-                margin-right: 2px;
-                font-size: 12px;
-            }
-            button {
-                padding: 2px 12px;
-                font-size: 12px;
-            }
-        }
-        .ilchon_lists {
-            .message, .meta { font-size: 12px; }
-            time { font-size: 10px; }
-        }
-    }
-}
-
-.ilchon-actions {
-    display: inline-flex;
-    gap: 8px;
-    margin-left: 10px;
-
-    button {
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        text-transform: none;
-
-        img {
-            width: 15px;
-        }
-    }
-}
-
-.ilchon-edit-form {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 6px 0;
-
-    input {
-        flex-grow: 1;
-        padding: 4px 8px;
-        font-size: 13px;
-        border: 1px solid #2094b8;
-        border-radius: 3px;
-        text-transform: none;
-    }
-
-    .edit-actions {
-        display: flex;
-        gap: 6px;
-
-        button {
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
-            padding: 4px 10px;
-            font-size: 12px;
-            border-radius: 2px;
-            cursor: pointer;
-            text-transform: uppercase;
-
-            &[type="submit"] {
-                background-color: #2094b8;
-                color: white;
-                border-color: #2094b8;
-            }
-        }
-    }
-}
 
 /* Nav */
 .nav {
     position: absolute;
     z-index: 10;
     top: 100px;
-    right: -36px;
+    right: -43px;
     ul {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 3px;
     }
     li {
         display: flex;
@@ -986,7 +843,7 @@ section.left_page {
     }
 
     @media screen and (max-width: 1600px) and (min-width: 1221px) {
-        right: -31px;
+        right: -38px;
         li {
             width: 75px;
             height: 45px;
@@ -994,7 +851,7 @@ section.left_page {
     }
     @media screen and (max-width: 1220px) {
         top: 85px;
-        right: -28px;
+        right: -32px;
         ul { gap: 3px; }
         li {
             width: 64px;
@@ -1023,7 +880,7 @@ section.left_page {
     display: flex;
     gap: 10px;
     padding: 10px 10px 30px 10px;
-    background-color: #eee;
+    background-color: $gray-background;
 }
 
 .guestbook_form {
@@ -1081,8 +938,9 @@ section.left_page {
     padding: 2px 8px;
     border-radius: 2px;
     transition: background .3s;
+
     &:hover {
-        background-color: #ddd;
+        background-color: $gray-background;
         transition: background .3s;
     }
 }
@@ -1117,9 +975,9 @@ section.left_page {
     justify-content: space-between;
     align-items: center;
     gap: 3px;
-    background-color: #eee;
+    background-color: $gray-background;
     padding: 4px 10px;
-    border-top: 2px solid #ddd;
+    border-top: 2px solid $gray-border;
 
     .guestbook_header_left {
         display: flex;
@@ -1301,60 +1159,128 @@ input:disabled {
     cursor: not-allowed;
 }
 
-.ilchon-request-modal {
-    background-color: #fff;
 
-    .modal-header {
-        h2 {
-            text-transform: none;
-        }
+
+
+
+
+
+
+.pado_taki_area {
+
+}
+
+.pado_taki_area .dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.pado_taki_area .pado-button {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 100%;
+    padding: 3px 5px;
+    font-size: 12px;
+    color: #333;
+    background-color: white;
+    border: 1px solid #d3d3d3;
+    cursor: pointer;
+
+    @media screen and (max-width: 1220px) {
+        padding: 0px 3px;
+        font-size: 11px;
     }
-    .request-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+
+    &:active {
+        border-top-color: #FFFFFF;
+        border-left-color: #FFFFFF;
+        border-right-color: #808080;
+        border-bottom-color: #808080;
     }
-    .request-item {
+
+    .arrow {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-        font-size: 13px;
-        text-transform: none;
-    }
-    .requester-name {
-        font-weight: bold;
-        margin-right: 10px;
-    }
-    .request-message {
-        color: #888;
-        font-style: italic;
-    }
-    .request-actions {
-        display: flex;
-        gap: 8px;
-        button {
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 2px;
-            border: 1px solid #999;
-            cursor: pointer;
-        }
-        .accept-btn {
-            background-color: #5a87af;
-            color: white;
-            border-color: #4a789f;
-        }
-        .reject-btn {
-            background-color: #f0f0f0;
-            color: #333;
-        }
-    }
-    .no-requests {
-        text-align: center;
-        padding: 20px;
-        color: #888;
-        text-transform: none;
+        justify-content: center;
+        height: 12px;
+        width: 12px;
+        border: 1px solid #d3d3d3;
     }
 }
+
+
+
+.pado_taki_area .dropdown-menu {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 100%; 
+    
+    border: 1px solid;
+    border-top-color: #FFFFFF;
+    border-left-color: #FFFFFF;
+    border-right-color: #808080;
+    border-bottom-color: #808080;
+
+    background-color: white;
+    list-style: none;
+    padding: 2px;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.pado_taki_area .dropdown-menu li a {
+    font-size: 12px;
+    color: black;
+    text-decoration: none;
+    display: block;
+    padding: 2px 3px;
+
+    @media screen and (max-width: 1220px) {
+        font-size: 11px;
+    }
+}
+
+.pado_taki_area .dropdown-menu li a:hover {
+    background-color: #0A246A;
+    color: white;
+}
+
+
+
+
+.common-editor-container {
+
+    @media screen and (max-width: 1220px) {
+        max-width: 534px;
+    }
+}
+
+
+
+.editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid $gray-border;
+    background: #f0f0f0;
+
+    @media screen and (max-width: 1220px) {
+        font-size: 12px;
+    }
+
+    .title-input-group {
+        width: 100%;
+
+        input {
+            width: 100%;
+        }
+    }
+}
+
+

@@ -1,8 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import apiClient from '../../api/axiosConfig';
+import PadoTaki from '../common/PadoTaki';
 
-function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger }) {
+function ProfileSection({ userId, profileData, setProfileData, onHistoryClick, setRefetchTrigger }) {
     const { currentUser } = useContext(AuthContext);
     const isOwner = currentUser && currentUser.id === userId;
 
@@ -16,23 +17,24 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
     const [previewUrl, setPreviewUrl] = useState('');
 
     useEffect(() => {
-        if (!userId) return;
-        const fetchEmotionData = async () => {
+        const fetchEmotionOptions = async () => {
             try {
-                const [emotionRes, emotionListRes] = await Promise.all([
-                    apiClient.get(`/users/${userId}/emotion`),
-                    apiClient.get(`/emotions`)
-                ]);
-                setCurrentEmotion(emotionRes.data.emotion);
-                setEmotionOptions(emotionListRes.data);
+                const response = await apiClient.get(`/emotions`);
+                setEmotionOptions(response.data);
             } catch (err) {
                 if (err.response?.status !== 401) {
-                    console.error("감정 데이터 로딩 실패", err);
+                    console.error("감정 목록 로딩 실패", err);
                 }
             }
         };
-        fetchEmotionData();
-    }, [userId]);
+        fetchEmotionOptions();
+    }, []);
+
+    useEffect(() => {
+        if (profileData) {
+            setCurrentEmotion(profileData.emotion || "🌷 행복");
+        }
+    }, [profileData]);
 
     const handleEmotionChange = async (emotionId, emotionName) => {
         const originalEmotion = currentEmotion;
@@ -40,7 +42,7 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
         setIsEmotionListOpen(false);
         try {
             await apiClient.put(`/users/${userId}/emotion`, { emotionId });
-        } catch (err) {
+        } catch (err) { 
             if (err.response?.status !== 401) {
                 alert(err.response?.data?.message || '감정 업데이트에 실패했습니다.');
                 setCurrentEmotion(originalEmotion);
@@ -49,6 +51,7 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
     };
 
     const handleEditClick = () => {
+        if (!profileData) return; 
         setIsEditing(true);
         setEditedBio(profileData.bio);
         setPreviewUrl(profileData.imageUrl);
@@ -63,8 +66,7 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
         }
     };
 
-    const handleUpdateSubmit = async (e) => {
-        e.preventDefault();
+    const handleUpdateSubmit = async () => {
         let finalImageUrl = profileData.imageUrl;
         try {
             if (selectedFile) {
@@ -75,12 +77,16 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
                 finalImageUrl = uploadRes.data.imageUrl;
             }
             
-            await apiClient.post(`/users/${userId}/profile`, {
+            const response = await apiClient.post(`/users/${userId}/profile`, {
                 bio: editedBio,
-                profileImageUrl: finalImageUrl
+                imageUrl: finalImageUrl 
             });
+
+            setProfileData(response.data);
             setIsEditing(false);
+            
             setRefetchTrigger(prev => prev + 1);
+
         } catch (err) {
             if (err.response?.status !== 401) {
                 alert(err.response?.data?.message || '프로필 수정에 실패했습니다.');
@@ -95,15 +101,13 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
     return (
         <section className="profile_area bottom_area">
             {isEditing ? (
-                <form className="profile-edit-form" onSubmit={handleUpdateSubmit}>
+                <form className="profile-edit-form">
                     <div className="profile_main">
                         <article className="mood">
                             <div className="today_mood"><p>today is.. <span>{currentEmotion}</span></p></div>
                         </article>
                         <article className="profile_pic edit-mode">
-                            <figure>
-                                <img src={previewUrl || profileData.imageUrl} alt="프로필 미리보기" />
-                            </figure>
+                            <img src={previewUrl || profileData.imageUrl} alt="프로필 미리보기" />
                             <label htmlFor="file-input" className="file-upload-btn">사진 바꾸기</label>
                             <input id="file-input" type="file" accept="image/*" onChange={handleFileChange} />
                         </article>
@@ -115,7 +119,7 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
                     <footer className="profile_footer">
                         <div className="profile_util edit-mode">
                             <button type="button" onClick={() => setIsEditing(false)}>CANCLE</button>
-                            <button type="submit">SAVE</button>
+                            <button type="button" onClick={handleUpdateSubmit}>SAVE</button>
                         </div>
                         <article className="profile_info">
                             <div className="profile_info_wrap">
@@ -151,9 +155,7 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
                             </div>
                         </article>
                         <article className="profile_pic">
-                            <figure>
-                                <img src={profileData.imageUrl} alt="프로필 사진" />
-                            </figure>
+                            <img src={profileData.imageUrl} alt="프로필 사진" />
                         </article>
                         <article className="profile_intro">
                             <p>{profileData.bio}</p>
@@ -173,6 +175,7 @@ function ProfileSection({ userId, profileData, onHistoryClick, setRefetchTrigger
                             <p className="user_email"><a href={`mailto:${profileData.email}`}>{profileData.email}</a></p>
                         </article>
                     </footer>
+                    <PadoTaki userId={userId} />
                 </>
             )}
         </section>

@@ -12,7 +12,6 @@ function DiaryEditor({ onSave, onCancel }) {
     const moodOptions = { 'HAPPY': '^ㅅ^ 해피', 'SAD': 'T_T 슬퍼', 'ANGRY': '-_-^ 아오', 'LOVE': '사랑해 S2' };
 
     const handleSave = () => {
-        // CKEditor는 내용이 비어있을 때 '<p>&nbsp;</p>' 와 같은 형태로 저장될 수 있음
         const pureText = content.replace(/<[^>]*>/g, '').trim();
         if (!pureText) {
             alert('내용을 입력해주세요.');
@@ -57,7 +56,6 @@ function DiaryEditor({ onSave, onCancel }) {
                         setContent(data);
                     } }
                     config={{
-                        // 툴바 옵션을 설정할 수 있습니다.
                         toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'mediaEmbed', 'undo', 'redo' ]
                     }}
                 />

@@ -1,6 +1,7 @@
 package com.hyunjoying.cyworld.domain.board.service;
 
 import com.hyunjoying.cyworld.domain.board.dto.request.CreateBoardRequestDto;
+import com.hyunjoying.cyworld.domain.board.dto.response.BoardCountDto;
 import com.hyunjoying.cyworld.domain.comment.dto.request.CreateCommentRequestDto;
 import com.hyunjoying.cyworld.domain.board.dto.request.UpdateBoardRequestDto;
 import com.hyunjoying.cyworld.domain.board.dto.response.GetBoardResponseDto;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface BoardService {
     Page<GetBoardResponseDto> getBoards(Integer userId, String type, Pageable pageable);
@@ -26,4 +28,8 @@ public interface BoardService {
     List<GetCommentResponseDto> getComments(Integer boardId);
 
     GetBoardResponseDto getDiaryByDate(Integer userId, LocalDate date);
+
+    List<GetBoardResponseDto> getRecentBoards(Integer userId);
+
+    Map<String, BoardCountDto> getBoardCounts(Integer userId);
 }

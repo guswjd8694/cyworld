@@ -20,7 +20,7 @@ function IlchonRequestModal({ onClose, requests, onUpdate }) {
     const handleReject = async (requestId) => {
         if (window.confirm('정말로 거절하시겠습니까?')) {
             try {
-                await apiClient.delete(`/ilchons/requests/${requestId}/reject`);
+                await apiClient.delete(`/api/ilchons/requests/${requestId}/reject`);
                 alert('일촌 신청을 거절했습니다.');
                 onUpdate();
                 window.location.reload();

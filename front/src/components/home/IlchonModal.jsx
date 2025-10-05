@@ -2,15 +2,19 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import apiClient from '../../api/axiosConfig';
 import '../../styles/Modal.scss';
+import '../../styles/IlchonModal.scss';
 
-function IlchonModal({ onClose, targetUser }) {
+function IlchonModal({ onClose, targetUser, onUpdatePage }) {
     const { currentUser } = useContext(AuthContext);
 
     const [friendNickname, setFriendNickname] = useState('');
     const [friendRelationDropdown, setFriendRelationDropdown] = useState('직접입력');
-
     const [userNickname, setUserNickname] = useState('');
     const [userRelationDropdown, setUserRelationDropdown] = useState('직접입력');
+    const [requestMessage, setRequestMessage] = useState('');
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
 
     const getCurrentDateTime = () => {
         const now = new Date();
@@ -24,13 +28,14 @@ function IlchonModal({ onClose, targetUser }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        setError('');
+
         let finalFriendNickname = friendRelationDropdown === '직접입력' 
             ? friendNickname.trim() 
             : friendRelationDropdown;
             
         if (!finalFriendNickname) {
-            alert(`'${targetUser.name}'님을 부를 일촌명을 입력하거나 선택해주세요.`);
+            setError(`'${targetUser.name}'님을 부를 일촌명을 입력하거나 선택해주세요.`);
             return;
         }
 
@@ -39,28 +44,31 @@ function IlchonModal({ onClose, targetUser }) {
             : userRelationDropdown;
 
         if (!finalUserNickname) {
-            alert(`'${currentUser.name}'님을 부를 일촌명을 입력하거나 선택해주세요.`);
+            setError(`'${currentUser.name}'님을 부를 일촌명을 입력하거나 선택해주세요.`);
             return;
         }
-
+        
+        setIsSubmitting(true);
         try {
             await apiClient.post(`/ilchons`, {
                 targetUserId: targetUser.id,
                 friendNickname: finalFriendNickname,
                 userNickname: finalUserNickname,
+                requestMessage: requestMessage
             });
-
-            alert('일촌 신청을 보냈습니다.');
+            
+            onUpdatePage();
             onClose();
-            window.location.reload();
+
         } catch (err) {
-            if (err.response?.status !== 401) {
-                alert(err.response?.data?.message || '일촌 신청에 실패했습니다.');
-            }
+            const message = err.response?.data?.message || '일촌 신청에 실패했습니다.';
+            setError(message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const relationOptions = ["직접입력", "친한친구", "직장동료", "학교동창", "가족", "평생지기", "나의반쪽"];
+    const relationOptions = ["직접입력", "친한친구", "직장동료", "학교동창", "가족", "평생지기", "나의반쪽", "공주", "왕자"];
 
     if (!currentUser) {
         return null; 
@@ -71,10 +79,11 @@ function IlchonModal({ onClose, targetUser }) {
             <div className="modal-content ilchon-modal" onClick={(e) => e.stopPropagation()}>
                 <header className="modal-header">
                     <h2>일촌 신청</h2>
+                    <button className="close-btn" onClick={onClose}>&times;</button>
                 </header>
                 <div className="modal-body">
                     <div className="sender-info">
-                        보낸이 : {currentUser.name} ({getCurrentDateTime()})
+                        보낸이 : {currentUser.name} <time>({getCurrentDateTime()})</time>
                     </div>
                     <div className="request-body">
                         <figure className="minimi-figure">
@@ -92,8 +101,9 @@ function IlchonModal({ onClose, targetUser }) {
                                 type="text" 
                                 value={friendNickname} 
                                 onChange={(e) => setFriendNickname(e.target.value)}
+                                placeholder=""
                             />
-                            <span>로</span>
+                            <span>(으)로</span>
                             <select value={friendRelationDropdown} onChange={(e) => setFriendRelationDropdown(e.target.value)}>
                                 {relationOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                             </select>
@@ -104,16 +114,35 @@ function IlchonModal({ onClose, targetUser }) {
                                 type="text" 
                                 value={userNickname} 
                                 onChange={(e) => setUserNickname(e.target.value)}
+                                placeholder=""
                             />
-                            <span>로</span>
+                            <span>(으)로</span>
                             <select value={userRelationDropdown} onChange={(e) => setUserRelationDropdown(e.target.value)}>
                                 {relationOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                             </select>
                         </div>
+
+                        <textarea
+                            className="request-message-input"
+                            placeholder="일촌 신청 메시지를 남겨보세요."
+                            value={requestMessage}
+                            onChange={(e) => setRequestMessage(e.target.value)}
+                            maxLength="100"
+                        />
+
                         <p className="agreement-text">상대방이 동의하시면 일촌이 맺어집니다.</p>
+                        
+                        {error && <p className="error-message">{error}</p>}
+
                         <footer className="modal-footer">
-                            <button type="submit" className="submit-btn">보내기</button>
-                            <button type="button" className="cancel-btn" onClick={onClose}>취소</button>
+                            {isSubmitting ? (
+                                <p>보내는 중...</p>
+                            ) : (
+                                <>
+                                    <button type="submit" className="submit-btn">보내기</button>
+                                    <button type="button" className="cancel-btn" onClick={onClose}>취소</button>
+                                </>
+                            )}
                         </footer>
                     </form>
                 </div>
@@ -123,3 +152,4 @@ function IlchonModal({ onClose, targetUser }) {
 }
 
 export default IlchonModal;
+

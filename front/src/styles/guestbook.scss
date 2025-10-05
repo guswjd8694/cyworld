@@ -8,7 +8,7 @@
     font-weight: bold;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid $gray-border$gray-border;
   }
 }
 
@@ -60,7 +60,7 @@
     color: #888;
     padding-bottom: 0.75rem;
     margin-bottom: 0.75rem;
-    border-bottom: 1px dotted #ddd;
+    border-bottom: 1px dotted $gray-border;
 
     .writer-info strong {
       color: #333;

@@ -1,21 +1,22 @@
 package com.hyunjoying.cyworld.domain.user.entity;
 
+import com.hyunjoying.cyworld.common.BaseEntity;
 import com.hyunjoying.cyworld.domain.emotion.entity.Emotion;
+import com.hyunjoying.cyworld.domain.user.converter.GenderConverter;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.*;
-
-import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE users SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Filter(name = "deletedFilter")
 @Table(name = "users")
-@Getter
-@Setter
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +26,7 @@ public class User {
     @JoinColumn(name = "emotion_id")
     private Emotion emotion;
 
-    @Column(name = "login_id", nullable = false)
+    @Column(name = "login_id", nullable = false, unique = true)
     private String loginId;
 
     @Column(nullable = false)
@@ -34,7 +35,7 @@ public class User {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false, length = 50)
@@ -43,30 +44,36 @@ public class User {
     @Column(nullable = false, length = 50)
     private String birth;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Convert(converter = GenderConverter.class)
+    @Column(nullable = false, columnDefinition = "ENUM('MALE', 'FEMALE')")
     private Gender gender;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private Integer createdBy;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    private Integer updatedBy;
-
-    private LocalDateTime deletedAt;
-
-    @Column(nullable = false)
-    private boolean isDeleted = false;
-
-
     public enum Gender {
-        Male, Female
+        MALE, FEMALE
     }
+
+    public User(String loginId, String password, String name, String email, String phone, String birth, Gender gender) {
+        this.loginId = loginId;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.birth = birth;
+        this.gender = gender;
+    }
+
+    public void updateUserInfo(String email, String phone) {
+        this.email = email;
+        this.phone = phone;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public void updateEmotion(Emotion emotion) {
+        this.emotion = emotion;
+    }
+
+
 }

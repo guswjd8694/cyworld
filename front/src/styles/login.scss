@@ -1,3 +1,5 @@
+@use './variables' as *;
+
 
 main.login-container {
     display: flex;
@@ -28,7 +30,7 @@ main.login-container {
 
 .form-group input {
     width: 100%;
-    border: 1px solid #ddd;
+    border: 1px solid $gray-border;
     padding: 10px 20px;
     border-radius: 40px;
     font-size: 14px;
@@ -60,5 +62,5 @@ main.login-container {
 .sub-links li:not(:last-child)::after {
     content: "|";
     margin-left: 10px;
-    color: #ddd;
+    color: $gray-border;
 }

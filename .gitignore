@@ -3,7 +3,7 @@
 
 # Node / React
 /front/node_modules
-/dist
+/front/dist
 /.vite
 .npm
 npm-debug.log*
@@ -14,10 +14,17 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-HELP.md
+# HELP.md
 .gradle
 build/
 /build
+
+# 스프링 부트 실행 로그 및 빌드 결과물
+*.log
+*.jar
+*.war
+
+
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

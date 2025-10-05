@@ -1,0 +1,240 @@
+@use './variables' as *;
+
+
+.bgm-player {
+    background-color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+
+    .recommend-friend {
+
+        .tab-menu {
+            font-size: 12px;
+
+            .tab-btn {
+                width: 50%;
+                background-color: #ededed;
+                padding: 4px;
+                text-align: left;
+                border: 1px solid #bbb;
+    
+                &.active {
+                    background-color: #fff;
+                    border: none;
+                }
+            }
+        }
+
+        .tab-content {
+            padding: 10px;
+
+            .recommend-content {
+
+                .recommend-item {
+                    display: flex;
+                    gap: 10px;
+
+                    .img-link {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 60px;
+                        height: 70px;
+                        border: 1px solid $gray-border;
+                        overflow: hidden;
+                    }
+                }
+
+                .recommend-info {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+                    font-size: 12px;
+
+                    span {
+                        color: #555;
+                        font-size: 11px;
+
+                        strong {
+                            color: $cyworld-orange;
+                        }
+                    }
+                }
+
+                
+            }
+
+            .fan-content {
+                text-align: center;
+                padding: 20px 0;
+
+                strong {
+                        color: $cyworld-orange;
+                    }
+                }
+        }
+
+        .relationship-content {
+            text-align: center;
+            padding: 20px 0;
+
+
+            .relationship-tag {
+                background-color: $cyworld-blue-light;
+                color: #fff;
+                padding: 4px 10px;
+                border-radius: 20px;
+            }
+        }
+    }
+
+    .player-wrap {
+        position: relative;
+        background-color: #ededed;
+        padding: 10px;
+
+        .controls {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: space-between;
+            
+        }
+        
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color .2s;
+
+            &:hover {
+                color: $cyworld-orange;
+                transition: color .2s;
+            }
+        }
+
+        svg {
+            width: 12px;  
+            height: 12px;
+        }
+
+        .track-info {
+            width: 170px;
+            padding: 2px 4px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #c8c8c8;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+
+            .track-title {
+                display: inline-block;
+                color: #444;
+            }
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+
+            .volume-icon {
+                color: #333;
+                margin-right: 3px;
+            }
+
+            input[type=range] {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 45px;
+                height: 10px;
+                background: transparent;
+                cursor: pointer;
+                accent-color: #ff5500;
+                
+                &::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    border: 1px solid #999;
+                    height: 8px;
+                    width: 11px;
+                    border-radius: 2px;
+                    background: $gray-background;
+                    margin-top: -3px;
+                }
+                
+                &::-moz-range-thumb {
+                    border: 1px solid #999;
+                    height: 8px;
+                    width: 11px;
+                    border-radius: 2px;
+                    background: $gray-background;
+                }
+
+                &::-webkit-slider-runnable-track {
+                    width: 100%;
+                    height: 4px;
+                    background: #d3d3d3;
+                    border: 1px solid #999;
+                    border-radius: 2px;
+                }
+            }
+        }
+
+        .list-btn {
+            background-color: #7b7b7b;
+            padding: 0px 3px;
+            font-size: 9px;
+            color: #fff;
+
+            &:hover {
+                background-color: $cyworld-orange;
+                color: #fff;
+                transition: background-color .2s;
+            }
+        }
+        
+        .playlist-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            list-style: none;
+            margin: 0;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+
+            li {
+                padding: 4px;
+                font-size: 9px;
+                cursor: pointer;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                &:hover {
+                    background-color: #f0f0f0;
+                }
+
+                &.active {
+                    color: $primary-color;
+                    font-weight: bold;
+                }
+
+                &:not(:first-child) {
+                    border-top: 1px solid $gray-border;
+                }
+            }
+        }
+
+    }
+
+}
