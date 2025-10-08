@@ -1,7 +1,9 @@
 # 싸이월드
 
 추억이 담긴 싸이월드의 향수를 다시 불러 일으키고 싶어 시작한 프로젝트 입니다.
-사이트 주소 : https://d1h4znmb6e9q3l.cloudfront.net/guswjd8694
+<p>
+사이트 주소 : https://daiks060spghp.cloudfront.net/guswjd8694
+</p>
 
 <br>
 
