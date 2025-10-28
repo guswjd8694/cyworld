@@ -73,7 +73,9 @@ function ProfileSection({ userId, profileData, setProfileData, onHistoryClick, s
                 const formData = new FormData();
                 formData.append('image', selectedFile);
                 
-                const uploadRes = await apiClient.post('/upload/image', formData);
+                const uploadRes = await apiClient.post('/upload/image', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
                 finalImageUrl = uploadRes.data.imageUrl;
             }
             

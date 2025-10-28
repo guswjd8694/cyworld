@@ -1,5 +1,5 @@
 import { NodeSelection, Selection, TextSelection } from "@tiptap/pm/state"
-import axios from 'axios'; // axios를 import 합니다.
+import apiClient from "@/api/axiosConfig";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
@@ -262,7 +262,7 @@ export const handleImageUpload = async (file) => {
   formData.append('image', file);
 
   try {
-    const response = await axios.post('/upload/image', formData, {
+    const response = await apiClient.post('/upload/image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

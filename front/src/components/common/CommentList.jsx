@@ -76,7 +76,7 @@ function CommentList({ comments, currentUser, isOwner, onUpdate, onDelete }) {
                         ) : (
                             <p className="list-item-content">
                                 <span className="list-item-meta">
-                                    <Link to={`/users/${comment.writerId}`} className="author_name">{comment.writer}</Link> : {comment.content}
+                                    <Link to={`/${comment.writerLoginId}`} className="author_name">{comment.writer}</Link> : {comment.content}
                                     <time dateTime={new Date(comment.createAt).toISOString()}>
                                         {formatDateTime(comment.createAt)}
                                     </time>

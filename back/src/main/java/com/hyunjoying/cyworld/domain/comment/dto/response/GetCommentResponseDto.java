@@ -19,8 +19,12 @@ public class GetCommentResponseDto {
     @Schema(example = "김현정", description = "댓글 작성자의 이름", requiredMode = Schema.RequiredMode.REQUIRED)
     private final String writer;
 
+    @Schema(example = "user1", description = "작성자 로그인 아이디", requiredMode = Schema.RequiredMode.REQUIRED)
+    private final String writerLoginId;
+
     @Schema(example = "아싸 내가 1빠", description = "댓글 내용", requiredMode = Schema.RequiredMode.REQUIRED)
     private final String content;
+
 
     @Schema(example = "2025-10-05T21:43:00", description = "댓글 작성 시간", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -30,6 +34,7 @@ public class GetCommentResponseDto {
         this.commentId = comment.getId();
         this.writerId = comment.getUser().getId();
         this.writer = comment.getUser().getName();
+        this.writerLoginId = comment.getUser().getLoginId();
         this.content = comment.getContent();
         this.createAt = comment.getCreatedAt();
     }

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Getter
@@ -16,6 +17,7 @@ import org.hibernate.annotations.SQLDelete;
 @SQLDelete(sql = "UPDATE users SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Filter(name = "deletedFilter")
 @Table(name = "users")
+@Audited
 public class User extends BaseEntity {
 
     @Id

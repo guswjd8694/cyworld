@@ -28,7 +28,7 @@ function App() {
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignUpPage />} />
-                    <Route path="/find" element={<FindAccountPage />} />
+                    {/* <Route path="/find" element={<FindAccountPage />} /> */}
                     <Route 
                         path="/:loginId" 
                         element={<MinihomePage />}
@@ -43,7 +43,7 @@ function App() {
                     </Route>
 
                     <Route path="/" element={
-                        currentUser ? <Navigate to={`/${currentUser.loginId}`} /> : <Navigate to="/user1" />
+                        currentUser ? <Navigate to={`/${currentUser.loginId}`} /> : <Navigate to="/guswjd8694" />
                     } />
                 </Routes>
             </main>

@@ -1,5 +1,6 @@
 package com.hyunjoying.cyworld.domain.board.controller;
 
+import com.hyunjoying.cyworld.domain.board.dto.request.UpdateBoardPrivacyDto;
 import com.hyunjoying.cyworld.domain.board.dto.response.BoardCountDto;
 import com.hyunjoying.cyworld.domain.user.details.UserDetailsImpl;
 import com.hyunjoying.cyworld.common.dto.SuccessResponseDto;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,6 +88,15 @@ public class BoardController {
         boardService.updateBoard(boardId, writer.getId(), requestDto);
         return ResponseEntity.ok(new SuccessResponseDto("게시글이 성공적으로 수정되었습니다."));
     }
+
+//    @PutMapping("/api/boards/{boardId}/privacy")
+//    public void updateBoardPrivacy(
+//            @PathVariable Integer boardId,
+//            @Valid @RequestBody UpdateBoardPrivacyDto requestDto,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails
+//    ) {
+//        boardService.updateBoardPrivacy(boardId, requestDto.getIsPublic(), userDetails.getUser());
+//    }
 
 
     @Operation(summary = "게시글 삭제", description = "로그인한 사용자가 자신의 게시글을 삭제합니다.", tags = {"board"})

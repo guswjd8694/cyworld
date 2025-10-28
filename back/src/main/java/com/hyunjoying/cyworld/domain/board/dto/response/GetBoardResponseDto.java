@@ -74,7 +74,7 @@ public class GetBoardResponseDto {
         this.writerName = writer.getName();
         this.title = board.getTitle();
         this.content = board.getContent();
-        this.images = board.getImages().stream()
+        this.images = board.getActiveImages().stream()
                 .map(BoardImage::getImageUrl)
                 .collect(Collectors.toList());
         this.type = board.getType();

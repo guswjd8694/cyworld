@@ -36,8 +36,6 @@ CREATE TABLE `board` (
     `weather`             VARCHAR(255)   NULL,
     `mood`                VARCHAR(255)   NULL,
     `title`               VARCHAR(30)    NULL,
-    `version`             INT            NULL,
-    `original_board_id`   INT            NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY (`mini_homepage_id`) REFERENCES `mini_homepages`(`id`)
@@ -75,8 +73,6 @@ CREATE TABLE `comments` (
     `updated_by`          INT            NULL       COMMENT '수정자',
     `deleted_at`          DATETIME(6)    NULL       COMMENT '삭제 시간',
     `is_deleted`          TINYINT(1)     NOT NULL   DEFAULT 0 COMMENT '삭제 여부',
-    `original_comment_id` INT            NULL,
-    `version`             INT            NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY (`board_id`) REFERENCES `board`(`id`)

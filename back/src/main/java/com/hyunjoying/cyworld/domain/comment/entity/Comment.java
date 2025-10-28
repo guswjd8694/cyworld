@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.envers.Audited;
 
 @Entity
 @SQLDelete(sql = "UPDATE comments SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -18,6 +19,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Table(name = "comments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Audited
 public class Comment extends BaseEntity {
 
     @Id
@@ -35,29 +37,14 @@ public class Comment extends BaseEntity {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    @Column(name = "original_comment_id")
-    private Integer originalCommentId;
-
-    @Column(name = "version")
-    private Integer version = 1;
-
     @Builder
-    public Comment(User user, Board board, String content, Integer originalCommentId, Integer version) {
+    public Comment(User user, Board board, String content) {
         this.user = user;
         this.board = board;
         this.content = content;
-        this.originalCommentId = originalCommentId;
-        this.version = (version != null) ? version : 1;
     }
 
-    public void updateContent(String newContent) {
-        this.content = newContent;
-    }
-
-    @PostPersist
-    public void setOriginalIdOnFirstSave() {
-        if (this.originalCommentId == null) {
-            this.originalCommentId = this.id;
-        }
+    public void update(String content) {
+        this.content = content;
     }
 }

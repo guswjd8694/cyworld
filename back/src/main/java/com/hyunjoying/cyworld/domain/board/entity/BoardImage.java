@@ -6,11 +6,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Table(name = "board_images")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Audited
 public class BoardImage extends BaseEntity {
 
     @Id
@@ -27,6 +29,9 @@ public class BoardImage extends BaseEntity {
     @Column(name = "sequence")
     private Integer sequence;
 
+    @Column(name = "is_active", columnDefinition = "TINYINT(1) default 1")
+    private Boolean isActive = true;
+
     @Builder
     public BoardImage(Board board, String imageUrl, Integer sequence) {
         this.board = board;
@@ -36,5 +41,9 @@ public class BoardImage extends BaseEntity {
 
     public void disassociateBoard() {
         this.board = null;
+    }
+
+    public void deactivate() {
+        this.isActive = false;
     }
 }

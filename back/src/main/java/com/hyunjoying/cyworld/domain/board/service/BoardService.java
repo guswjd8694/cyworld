@@ -2,10 +2,12 @@ package com.hyunjoying.cyworld.domain.board.service;
 
 import com.hyunjoying.cyworld.domain.board.dto.request.CreateBoardRequestDto;
 import com.hyunjoying.cyworld.domain.board.dto.response.BoardCountDto;
+import com.hyunjoying.cyworld.domain.board.entity.Board;
 import com.hyunjoying.cyworld.domain.comment.dto.request.CreateCommentRequestDto;
 import com.hyunjoying.cyworld.domain.board.dto.request.UpdateBoardRequestDto;
 import com.hyunjoying.cyworld.domain.board.dto.response.GetBoardResponseDto;
 import com.hyunjoying.cyworld.domain.comment.dto.response.GetCommentResponseDto;
+import com.hyunjoying.cyworld.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,6 +23,8 @@ public interface BoardService {
 
     void updateBoard(Integer boardId, Integer writerId, UpdateBoardRequestDto updateBoardRequestDto);
 
+//    void updateBoardPrivacy(Integer boardId, boolean isPublic, User user);
+
     void deleteBoard(Integer boardId, Integer writerId);
 
     void createComment(Integer boardId, Integer writerId, CreateCommentRequestDto requestDto);
@@ -32,4 +36,6 @@ public interface BoardService {
     List<GetBoardResponseDto> getRecentBoards(Integer userId);
 
     Map<String, BoardCountDto> getBoardCounts(Integer userId);
+
+    List<Board> getBoardHistory(Integer boardId);
 }

@@ -164,7 +164,7 @@ export function SimpleEditor({ content, onUpdate }) {
         autocorrect: "off",
         autocapitalize: "off",
         "aria-label": "Main content area, start typing to enter text.",
-        class: "simple-editor",
+        class: "simple-editor prose focus:outline-none",
       },
     },
     extensions: [
@@ -205,11 +205,6 @@ export function SimpleEditor({ content, onUpdate }) {
       if (onUpdate) {
         onUpdate(editor.getHTML());
       }
-    },
-    editorProps: {
-      attributes: {
-        class: 'prose focus:outline-none',
-      },
     },
   }, [])
 

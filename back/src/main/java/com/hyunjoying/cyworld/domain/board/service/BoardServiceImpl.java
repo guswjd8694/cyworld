@@ -17,7 +17,10 @@ import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
 import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.user.repository.IlchonRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.data.domain.Page;
@@ -41,7 +44,7 @@ public class BoardServiceImpl implements BoardService {
     private final CommentRepository commentRepository;
     private final IlchonRepository ilchonRepository;
     private final EntityFinder entityFinder;
-    private final BoardImageRepository boardImageRepository;
+    private final EntityManager entityManager;
 
     @Override
     public Page<GetBoardResponseDto> getBoards(Integer userId, String type, Pageable pageable) {
@@ -149,7 +152,7 @@ public class BoardServiceImpl implements BoardService {
 
         Board newBoard = boardBuilder.build();
 
-        if ("PHOTO".equals(requestDto.getType())) {
+        if ("PHOTO".equals(requestDto.getType()) || "DIARY".equals(requestDto.getType())) {
             List<BoardImage> imageEntities = requestDto.getImageUrls().stream()
                     .map(url -> BoardImage.builder()
                             .board(newBoard)
@@ -167,36 +170,14 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void updateBoard(Integer boardId, Integer currentUserId, UpdateBoardRequestDto requestDto) {
-        Board originalBoard = entityFinder.getBoardOrThrow(boardId);
+        Board board = entityFinder.getBoardOrThrow(boardId);
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
 
-        if (!originalBoard.getUser().getId().equals(currentUser.getId())) {
+        if (!board.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("게시글을 수정할 권한이 없습니다.");
         }
 
-        boardRepository.delete(originalBoard);
-
-        Board updatedBoard = Board.builder()
-                .user(currentUser)
-                .miniHomepage(originalBoard.getMiniHomepage())
-                .title(requestDto.getTitle())
-                .content(requestDto.getContent())
-                .type(originalBoard.getType())
-                .weather(requestDto.getWeather())
-                .mood(requestDto.getMood())
-                .isPublic(requestDto.getIsPublic())
-                .originalBoardId(originalBoard.getOriginalBoardId())
-                .version(originalBoard.getVersion() + 1)
-                .build();
-
-        if ("PHOTO".equals(updatedBoard.getType()) && requestDto.getImageUrls() != null) {
-            List<BoardImage> imageEntities = requestDto.getImageUrls().stream()
-                    .map(url -> BoardImage.builder().board(updatedBoard).imageUrl(url).build())
-                    .toList();
-            updatedBoard.addImages(imageEntities);
-        }
-
-        boardRepository.save(updatedBoard);
+        board.update(requestDto);
     }
 
     @Override
@@ -261,6 +242,20 @@ public class BoardServiceImpl implements BoardService {
         }
 
         return counts;
+    }
+
+
+    public List<Board> getBoardHistory(Integer boardId) {
+        AuditReader reader = AuditReaderFactory.get(entityManager);
+
+        List<Number> revisions = reader.getRevisions(Board.class, boardId);
+
+        List<Board> history = new ArrayList<>();
+        for (Number rev : revisions) {
+            Board pastBoard = reader.find(Board.class, boardId, rev);
+            history.add(pastBoard);
+        }
+        return history;
     }
 }
 

@@ -388,7 +388,8 @@ section.left_page {
 
     @media screen and (max-width: 1220px) {
         padding: 2px 8px;
-        button { font-size: 12px; }
+        
+        button { font-size: 11px; }
     }
 }
 
@@ -1228,9 +1229,13 @@ input:disabled {
     list-style: none;
     padding: 2px;
     margin: 0;
-    max-height: 200px;
+    max-height: 115px;
     overflow-y: auto;
     z-index: 10;
+
+    @media screen and (max-width: 1220px) {
+        max-height: 200px;
+    }
 }
 
 .pado_taki_area .dropdown-menu li a {

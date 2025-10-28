@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Getter
@@ -14,6 +15,7 @@ import lombok.Setter;
 @Table(name = "ilchons", uniqueConstraints = {
         // @UniqueConstraint(columnNames = {"user_id", "friend_id", "status", "isActive"})
 })
+@Audited
 public class Ilchon extends BaseEntity {
 
     @Id

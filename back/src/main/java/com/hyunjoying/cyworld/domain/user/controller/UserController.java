@@ -157,7 +157,7 @@ public class UserController {
     }
 
 
-    @Operation(summary = "랜덤 사용자 조회 (파도타기용)", description = "자기 자신을 제외한 모든 활성 사용자 중 랜덤으로 한 명의 정보를 조회합니다.", tags = { "user" })
+    @Operation(summary = "랜덤 사용자 조회", description = "자기 자신을 제외한 모든 활성 사용자 중 랜덤으로 한 명의 정보를 조회합니다.", tags = { "user" })
     @ApiResponse(responseCode = "200", description = "랜덤 사용자 조회 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetUserResponseDto.class)))
     @ApiResponse(responseCode = "204", description = "추천할 사용자가 없음")
     @GetMapping("/random")

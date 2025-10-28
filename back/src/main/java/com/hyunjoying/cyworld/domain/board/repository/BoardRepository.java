@@ -22,7 +22,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     Optional<Board> findByMiniHomepageIdAndTypeAndCreatedAtBetween(
             Integer miniHomepageId, String type, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user"})
+    @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user", "images"})
     List<Board> findTop4ByMiniHomepageIdAndTypeInOrderByCreatedAtDesc(Integer miniHomepageId, List<String> types);
 
     long countByMiniHomepageIdAndType(Integer miniHomepageId, String type);

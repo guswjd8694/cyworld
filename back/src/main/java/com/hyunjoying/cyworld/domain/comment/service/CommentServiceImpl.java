@@ -55,24 +55,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void updateComment(Integer commentId, UpdateCommentRequestDto requestDto, Integer currentUserId) {
-        Comment originalComment = entityFinder.getCommentOrThrow(commentId);
+        Comment comment = entityFinder.getCommentOrThrow(commentId);
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
 
-        if (!originalComment.getUser().getId().equals(currentUser.getId())) {
+        if (!comment.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("댓글을 수정할 권한이 없습니다.");
         }
 
-        commentRepository.delete(originalComment);
-
-        Comment updatedComment = Comment.builder()
-                .board(originalComment.getBoard())
-                .user(currentUser)
-                .content(requestDto.getContent())
-                .originalCommentId(originalComment.getOriginalCommentId())
-                .version(originalComment.getVersion() + 1)
-                .build();
-
-        commentRepository.save(updatedComment);
+        comment.update(requestDto.getContent());
     }
 
 
