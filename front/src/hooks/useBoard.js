@@ -104,6 +104,7 @@ export function useBoard(userId, boardType) {
         handleDelete,
         handleEditClick,
         handleWriteClick,
-        handleCancelEdit
+        handleCancelEdit,
+        triggerRefetch
     };
 }

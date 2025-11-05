@@ -4,15 +4,16 @@ import com.hyunjoying.cyworld.common.BaseEntity;
 import com.hyunjoying.cyworld.domain.emotion.entity.Emotion;
 import com.hyunjoying.cyworld.domain.user.converter.GenderConverter;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Getter
+@Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE users SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @Filter(name = "deletedFilter")
@@ -77,5 +78,11 @@ public class User extends BaseEntity {
         this.emotion = emotion;
     }
 
+    public static User createForAuthentication(Integer id, String loginId, String role) {
+        User user = new User();
+        user.id = id;
+        user.loginId = loginId;
+        return user;
+    }
 
 }

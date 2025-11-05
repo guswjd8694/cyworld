@@ -49,10 +49,18 @@ function Guestbook({ userId }) {
 
     const handleToggleSecret = async (post) => {
         try {
-            await apiClient.put(`/boards/${post.boardId}`, { isPublic: !post.isPublic });
-            triggerRefetch();
+            await apiClient.patch(`/boards/${post.boardId}/privacy`, {
+                isPublic: !post.isPublic 
+            });
         } catch (err) {
             alert(err.response?.data?.message || '공개 설정 변경에 실패했습니다.');
+            return;
+        }
+
+        try {
+            triggerRefetch();
+        } catch (refetchError) {
+            alert('데이터는 변경되었으나, 화면을 새로고침하는데 실패했습니다.');
         }
     };
 

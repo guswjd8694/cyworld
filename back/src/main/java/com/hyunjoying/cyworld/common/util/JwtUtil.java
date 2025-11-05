@@ -30,6 +30,7 @@ public class JwtUtil {
         claims.put("userId", userId);
         claims.put("loginId", loginId);
         claims.put("name", name);
+        claims.put("auth", "ROLE_USER");
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + this.accessTokenValidityInMilliseconds);
@@ -42,9 +43,24 @@ public class JwtUtil {
                 .compact();
     }
 
-    // JWT에서 정보 추출
+    private Claims getClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     public String getLoginIdFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+        return getClaimsFromToken(token).getSubject();
+    }
+
+    public Integer getUserIdFromToken(String token) {
+        return getClaimsFromToken(token).get("userId", Integer.class);
+    }
+
+    public String getRoleFromToken(String token) {
+        return getClaimsFromToken(token).get("auth", String.class);
     }
 
     // JWT 유효성 검증

@@ -1,13 +1,16 @@
 package com.hyunjoying.cyworld.domain.board.dto.request;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UpdateBoardPrivacyDto {
-
-    private Boolean isPublic;
+    @Schema(example = "true", description = "공개 여부 설정 (기본값: true)")
+    @JsonProperty("isPublic")
+    private Boolean publicSetting;
 }

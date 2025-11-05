@@ -2,15 +2,15 @@ package com.hyunjoying.cyworld.domain.board.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class CreateBoardRequestDto {
     @Schema(hidden = true)
     private Integer minihomepageOwnerId;

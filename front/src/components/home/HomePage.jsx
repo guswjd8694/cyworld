@@ -95,7 +95,6 @@ function HomePage({ userId, navigateTo, ilchonStatus }) {
                         <a href="#" className="grid-item" onClick={(e) => { e.preventDefault(); navigateTo('JUKEBOX'); }}>
                             <strong>쥬크박스</strong>
                             <span className="post_count">{boardCounts ? `${boardCounts.JUKEBOX.newCount}/${boardCounts.JUKEBOX.totalCount}` : '...'}</span>
-                            {/* ✨ boardCounts를 사용하도록 수정 */}
                             {boardCounts && boardCounts.JUKEBOX.newCount > 0 &&
                                 <img src="/imgs/icon_new.png" alt="새 글 아이콘" className="new_icon" />
                             }
@@ -105,7 +104,6 @@ function HomePage({ userId, navigateTo, ilchonStatus }) {
                         <a href="#" className="grid-item" onClick={(e) => { e.preventDefault(); navigateTo('PHOTO'); }}>
                             <strong>사진첩</strong>
                             <span className="post_count">{boardCounts ? `${boardCounts.PHOTO.newCount}/${boardCounts.PHOTO.totalCount}` : '...'}</span>
-                             {/* ✨ boardCounts를 사용하도록 수정 */}
                             {boardCounts && boardCounts.PHOTO.newCount > 0 &&
                                 <img src="/imgs/icon_new.png" alt="새 글 아이콘" className="new_icon" />
                             }
@@ -115,7 +113,6 @@ function HomePage({ userId, navigateTo, ilchonStatus }) {
                         <a href="#" className="grid-item" onClick={(e) => { e.preventDefault(); navigateTo('DIARY'); }}>
                             <strong>다이어리</strong>
                             <span className="post_count">{boardCounts ? `${boardCounts.DIARY.newCount}/${boardCounts.DIARY.totalCount}` : '...'}</span>
-                             {/* ✨ boardCounts를 사용하도록 수정 */}
                             {boardCounts && boardCounts.DIARY.newCount > 0 &&
                                 <img src="/imgs/icon_new.png" alt="새 글 아이콘" className="new_icon" />
                             }

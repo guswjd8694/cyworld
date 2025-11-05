@@ -1,6 +1,7 @@
 package com.hyunjoying.cyworld.domain.board.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class UpdateBoardRequestDto {
     @Schema(example = "생각에 잠김", description = "수정할 다이어리 기분")
     private String mood;
 
-    @Schema(example = "false", description = "수정할 공개 여부")
-    private Boolean isPublic;
+    @Schema(example = "true", description = "공개 여부 설정 (기본값: true)")
+    @JsonProperty("isPublic")
+    private Boolean publicSetting;
 }
