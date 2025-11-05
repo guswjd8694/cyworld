@@ -51,11 +51,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // 로그인, 회원가입, Swagger 등은 인증 없이 접근 허용
                         .requestMatchers(
-                                "/users/signup",
-                                "/users/login",
-                                "/users/find-id",
-                                "/users/reset-password",
-                                "/users/check-loginId",
+                                "/auth/**",
+                                "/users",
+                                "/upload/**",
                                 "/users/*/mini-homepage/visit",
                                 "/upload/**",
                                 "/images/**").permitAll()

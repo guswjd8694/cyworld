@@ -1,12 +1,12 @@
-package com.hyunjoying.cyworld.domain.user.controller;
+package com.hyunjoying.cyworld.domain.ilchon.controller;
 
 import com.hyunjoying.cyworld.common.dto.SuccessResponseDto;
 import com.hyunjoying.cyworld.domain.user.details.UserDetailsImpl;
-import com.hyunjoying.cyworld.domain.user.dto.request.RequestIlchonDto;
-import com.hyunjoying.cyworld.domain.user.dto.request.UpdateIlchonNicknameRequestDto;
-import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonRequestResponseDto;
-import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonResponseDto;
-import com.hyunjoying.cyworld.domain.user.service.IlchonService;
+import com.hyunjoying.cyworld.domain.ilchon.dto.request.RequestIlchonDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.request.UpdateIlchonNicknameRequestDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonRequestResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.service.IlchonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

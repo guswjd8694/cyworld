@@ -26,7 +26,7 @@ function LoginPage() {
         setError(''); 
 
         try {
-            const response = await apiClient.post('/users/login', { loginId, password });
+            const response = await apiClient.post('/auth/login', { loginId, password });
 
             const token = response.headers['authorization'];
 

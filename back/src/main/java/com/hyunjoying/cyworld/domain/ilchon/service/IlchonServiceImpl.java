@@ -1,13 +1,13 @@
-package com.hyunjoying.cyworld.domain.user.service;
+package com.hyunjoying.cyworld.domain.ilchon.service;
 
 import com.hyunjoying.cyworld.common.util.EntityFinder;
-import com.hyunjoying.cyworld.domain.user.dto.request.RequestIlchonDto;
-import com.hyunjoying.cyworld.domain.user.dto.request.UpdateIlchonNicknameRequestDto;
-import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonRequestResponseDto;
-import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonResponseDto;
-import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.dto.request.RequestIlchonDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.request.UpdateIlchonNicknameRequestDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonRequestResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
-import com.hyunjoying.cyworld.domain.user.repository.IlchonRepository;
+import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

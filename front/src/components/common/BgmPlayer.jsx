@@ -52,7 +52,7 @@ function BgmPlayer({ userId, ownerName }) {
 
             if (isOwner) {
                 try {
-                    const response = await apiClient.get('/users/recommendations/random');
+                    const response = await apiClient.get('/users/random-recommendation');
                     setRecommendations(response.data ? [response.data] : []);
                 } catch (error) {
                     if (error.response && error.response.status !== 204) {

@@ -1,4 +1,4 @@
-package com.hyunjoying.cyworld.domain.user.dto.request;
+package com.hyunjoying.cyworld.domain.auth.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

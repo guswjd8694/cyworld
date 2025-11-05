@@ -1,6 +1,6 @@
-package com.hyunjoying.cyworld.domain.user.repository;
+package com.hyunjoying.cyworld.domain.ilchon.repository;
 
-import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

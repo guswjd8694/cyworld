@@ -6,6 +6,8 @@ import com.hyunjoying.cyworld.domain.comment.entity.Comment;
 import com.hyunjoying.cyworld.domain.comment.repository.CommentRepository;
 import com.hyunjoying.cyworld.domain.emotion.entity.Emotion;
 import com.hyunjoying.cyworld.domain.emotion.repository.EmotionRepository;
+import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRepository;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
 import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
 import com.hyunjoying.cyworld.domain.profile.entity.UserProfile;

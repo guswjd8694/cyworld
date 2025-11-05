@@ -41,7 +41,7 @@ function MinihomePage() {
         setPageError(false);
 
         try {
-            const ownerRes = await apiClient.get(`/users/by-login-id/${loginId}`);
+            const ownerRes = await apiClient.get(`/users?loginId=${loginId}`);
             const ownerData = ownerRes.data;
 
             if (!ownerData || !ownerData.id) {
