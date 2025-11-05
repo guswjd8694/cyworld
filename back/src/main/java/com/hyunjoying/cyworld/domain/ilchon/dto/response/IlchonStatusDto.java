@@ -1,4 +1,4 @@
-package com.hyunjoying.cyworld.domain.user.dto.response;
+package com.hyunjoying.cyworld.domain.ilchon.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

@@ -109,7 +109,7 @@ function GuestbookItem({
                         </form>
                     ) : (
                         <div className="guestbook_content">
-                            {canView ? <p className="guestbook_text">{item.content}</p> : <p className="guestbook_text secret-text">(이 글은 홈주인과 작성자만 볼 수 있어요)</p>}
+                            {canView ? <p className="guestbook_text">{item.content}</p> : <p className="guestbook_text secret-text"><img src="../imgs/icon_secret.png" alt="비밀글 자물쇠 아이콘" />(이 글은 홈주인과 작성자만 볼 수 있어요)</p>}
                         </div>
                     )}
                 </div>

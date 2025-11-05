@@ -1,7 +1,6 @@
 package com.hyunjoying.cyworld.config;
 
 import com.hyunjoying.cyworld.common.util.JwtUtil;
-import com.hyunjoying.cyworld.domain.user.details.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -30,11 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authorizationHeader.substring(7);
             try {
                 if (jwtUtil.validateToken(token)) {
-                    Integer userId = jwtUtil.getUserIdFromToken(token);
                     String loginId = jwtUtil.getLoginIdFromToken(token);
-                    String role = jwtUtil.getRoleFromToken(token);
-
-                    UserDetails userDetails = UserDetailsImpl.create(userId, loginId, role);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(loginId);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);

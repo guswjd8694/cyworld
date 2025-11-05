@@ -1,9 +1,9 @@
-package com.hyunjoying.cyworld.domain.user.service;
+package com.hyunjoying.cyworld.domain.ilchon.service;
 
-import com.hyunjoying.cyworld.domain.user.dto.request.RequestIlchonDto;
-import com.hyunjoying.cyworld.domain.user.dto.request.UpdateIlchonNicknameRequestDto;
-import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonRequestResponseDto;
-import com.hyunjoying.cyworld.domain.user.dto.response.GetIlchonResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.request.RequestIlchonDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.request.UpdateIlchonNicknameRequestDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonRequestResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonResponseDto;
 
 import java.util.List;
 

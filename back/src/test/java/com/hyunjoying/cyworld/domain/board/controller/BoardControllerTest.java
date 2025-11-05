@@ -9,9 +9,9 @@ import com.hyunjoying.cyworld.domain.board.entity.Board;
 import com.hyunjoying.cyworld.domain.board.repository.BoardRepository;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
 import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
-import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
-import com.hyunjoying.cyworld.domain.user.repository.IlchonRepository;
+import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRepository;
 import com.hyunjoying.cyworld.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -584,7 +584,7 @@ class BoardControllerTest {
                     .type("PHOTO")
                     .title("내 첫 사진")
                     .content("내용입니다")
-                    .imageUrls(List.of("http://example.com/image.jpg"))
+                    .imageUrls(List.of("https://example.com/image.jpg"))
                     .publicSetting(true)
                     .build();
 
@@ -740,7 +740,7 @@ class BoardControllerTest {
                     .type("PHOTO")
                     // .title(null)
                     .content("제목이 없어요")
-                    .imageUrls(List.of("http://example.com/image.jpg"))
+                    .imageUrls(List.of("https://example.com/image.jpg"))
                     .publicSetting(true)
                     .build();
 

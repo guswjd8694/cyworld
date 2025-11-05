@@ -1,6 +1,6 @@
-package com.hyunjoying.cyworld.domain.user.dto.response;
+package com.hyunjoying.cyworld.domain.ilchon.dto.response;
 
-import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 

@@ -1,7 +1,7 @@
-package com.hyunjoying.cyworld.domain.user.converter;
+package com.hyunjoying.cyworld.domain.ilchon.converter;
 
 import com.hyunjoying.cyworld.common.converter.AbstractEnumConverter;
-import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import jakarta.persistence.Converter;
 
 @Converter
