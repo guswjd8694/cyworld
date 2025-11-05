@@ -82,7 +82,7 @@ public class Board extends BaseEntity {
         this.content = requestDto.getContent();
         this.weather = requestDto.getWeather();
         this.mood = requestDto.getMood();
-        this.isPublic = requestDto.getIsPublic();
+        this.isPublic = requestDto.getPublicSetting();
 
         if (requestDto.getImageUrls() != null) {
             List<String> newImageUrls = requestDto.getImageUrls();
@@ -103,33 +103,11 @@ public class Board extends BaseEntity {
         }
     }
 
-
     public List<BoardImage> getActiveImages() {
         return this.images.stream()
                 .filter(BoardImage::getIsActive)
                 .collect(Collectors.toList());
     }
-
-
-//    public void updateContent(String newContent, User currentUser) {
-//        if (!this.user.getId().equals(currentUser.getId())) {
-//            throw new AccessDeniedException("게시글 내용을 수정할 권한이 없습니다.");
-//        }
-//        this.content = newContent;
-//        this.setUpdatedBy(currentUser.getId());
-//    }
-//
-//
-//    public void updatePrivacy(boolean isPublic, User currentUser) {
-//        if ("ILCHONPYEONG".equals(this.type)) {
-//            throw new IllegalArgumentException("일촌평은 공개/비공개 설정을 지원하지 않습니다.");
-//        }
-//        if (!this.user.getId().equals(currentUser.getId()) && !this.miniHomepage.getUser().getId().equals(currentUser.getId())) {
-//            throw new AccessDeniedException("공개/비공개 설정을 변경할 권한이 없습니다.");
-//        }
-//        this.isPublic = isPublic;
-//        this.setUpdatedBy(currentUser.getId());
-//    }
 
 
     public void checkDeletionPermission(User currentUser) {
@@ -149,6 +127,11 @@ public class Board extends BaseEntity {
     public void clearImages() {
         this.images.forEach(BoardImage::disassociateBoard);
         this.images.clear();
+    }
+
+
+    public void updatePrivacy(Boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }
 

@@ -77,7 +77,7 @@ public class SecurityConfig {
 //                "https://d1h4znmb6e9q3l.cloudfront.net",
                 "https://daiks060spghp.cloudfront.net"
         ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("Authorization"));

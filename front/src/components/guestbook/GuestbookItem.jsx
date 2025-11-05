@@ -69,48 +69,52 @@ function GuestbookItem({
     return (
         <li className={`guestbook_item ${!item.isPublic ? 'secret' : ''}`}>
             <article className="guestbook_card">
-                {isEditing ? (
-                    <form className="guestbook-edit-form" onSubmit={(e) => onUpdateSubmit(e, item.boardId)}>
-                        <textarea value={editedContent} onChange={(e) => setEditedContent(e.target.value)} required autoFocus />
-                        <div className="edit-actions">
-                            <label className="secret_checkbox">
-                                <input type="checkbox" checked={editedIsSecret} onChange={(e) => setEditedIsSecret(e.target.checked)} />
-                                비밀로 하기
-                            </label>
-                            <div className="edit-buttons">
-                                <button type="button" onClick={onCancelEdit}>취소</button>
-                                <button type="submit">저장</button>
-                            </div>
+                <header className="guestbook_header">
+                    <div className="guestbook_header_left">
+                        <em className="guestbook_number">No.{item.boardNo}</em>
+                        <Link to={`/${item.writerLoginId}`}><h4 className="guestbook_writer">{item.writerName}</h4></Link>
+                        <Link to={`/${item.writerLoginId}`} className="mini_home_btn" role="button">미니홈피</Link>
+                        <time dateTime={item.createdAt}>
+                            ({new Date(item.createdAt).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).replace(/\. /g, '.').replace(/,/, '')})
+                        </time>
+                    </div>
+
+                    {!isEditing && (
+                        <div className="guestbook-actions">
+                            {(isAuthor || isOwner) && <button onClick={() => onToggleSecret(item)}>{item.isPublic ? '비밀로 하기' : '공개하기'}</button>}
+                            {isAuthor && <button onClick={() => onEdit(item)}>수정</button>}
+                            {(isAuthor || isOwner) && <button onClick={() => onDelete(item.boardId)}>삭제</button>}
                         </div>
-                    </form>
-                ) : (
-                    <>
-                        <header className="guestbook_header">
-                            <div className="guestbook_header_left">
-                                <em className="guestbook_number">No.{item.boardNo}</em>
-                                <Link to={`/${item.writerLoginId}`}><h4 className="guestbook_writer">{item.writerName}</h4></Link>
-                                <Link to={`/${item.writerLoginId}`} className="mini_home_btn" role="button">미니홈피</Link>
-                                <time dateTime={item.createdAt}>
-                                    ({new Date(item.createdAt).toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).replace(/\. /g, '.').replace(/,/, '')})
-                                </time>
+                    )}
+                </header>
+
+                <div className="guestbook_body">
+                    <figure className="guestbook_figure">
+                        <img src="/imgs/minimi_guest.jpg" alt={`${item.writerName}의 미니미`} />
+                    </figure>
+
+                    {isEditing ? (
+                        <form className="guestbook-edit-form" onSubmit={(e) => onUpdateSubmit(e, item.boardId)}>
+                            <textarea value={editedContent} onChange={(e) => setEditedContent(e.target.value)} required autoFocus />
+                            <div className="edit-actions">
+                                <label className="secret_checkbox">
+                                    <input type="checkbox" checked={editedIsSecret} onChange={(e) => setEditedIsSecret(e.target.checked)} />
+                                    비밀로 하기
+                                </label>
+                                <div className="edit-buttons">
+                                    <button type="button" onClick={onCancelEdit}>취소</button>
+                                    <button type="submit">저장</button>
+                                </div>
                             </div>
-                            <div className="guestbook-actions">
-                                {(isAuthor || isOwner) && <button onClick={() => onToggleSecret(item)}>{item.isPublic ? '비밀로 하기' : '공개하기'}</button>}
-                                {isAuthor && <button onClick={() => onEdit(item)}>수정</button>}
-                                {(isAuthor || isOwner) && <button onClick={() => onDelete(item.boardId)}>삭제</button>}
-                            </div>
-                        </header>
-                        <div className="guestbook_body">
-                            <figure className="guestbook_figure">
-                                <img src="/imgs/minimi_guest.jpg" alt={`${item.writerName}의 미니미`} />
-                            </figure>
-                            <div className="guestbook_content">
-                                {canView ? <p className="guestbook_text">{item.content}</p> : <p className="guestbook_text secret-text">(이 글은 홈주인과 작성자만 볼 수 있어요)</p>}
-                            </div>
+                        </form>
+                    ) : (
+                        <div className="guestbook_content">
+                            {canView ? <p className="guestbook_text">{item.content}</p> : <p className="guestbook_text secret-text">(이 글은 홈주인과 작성자만 볼 수 있어요)</p>}
                         </div>
-                    </>
-                )}
-                {canView && !isEditing && (
+                    )}
+                </div>
+                
+                {canView && (
                     <section className="comments-section">
                         {isLoadingComments ? (
                             <p>댓글 로딩 중...</p>

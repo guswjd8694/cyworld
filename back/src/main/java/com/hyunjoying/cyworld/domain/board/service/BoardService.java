@@ -1,6 +1,7 @@
 package com.hyunjoying.cyworld.domain.board.service;
 
 import com.hyunjoying.cyworld.domain.board.dto.request.CreateBoardRequestDto;
+import com.hyunjoying.cyworld.domain.board.dto.request.UpdateBoardPrivacyDto;
 import com.hyunjoying.cyworld.domain.board.dto.response.BoardCountDto;
 import com.hyunjoying.cyworld.domain.board.entity.Board;
 import com.hyunjoying.cyworld.domain.comment.dto.request.CreateCommentRequestDto;
@@ -17,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface BoardService {
-    Page<GetBoardResponseDto> getBoards(Integer userId, String type, Pageable pageable);
+    Page<GetBoardResponseDto> getBoards(Integer userId, User viewer, String type, LocalDate date, Pageable pageable);
 
     void createBoard(Integer userId, CreateBoardRequestDto createBoardRequestDto);
 
     void updateBoard(Integer boardId, Integer writerId, UpdateBoardRequestDto updateBoardRequestDto);
 
-//    void updateBoardPrivacy(Integer boardId, boolean isPublic, User user);
+    void updateBoardPrivacy(Integer boardId, Integer currentUserId, UpdateBoardPrivacyDto requestDto);
 
     void deleteBoard(Integer boardId, Integer writerId);
 
@@ -31,9 +32,7 @@ public interface BoardService {
 
     List<GetCommentResponseDto> getComments(Integer boardId);
 
-    GetBoardResponseDto getDiaryByDate(Integer userId, LocalDate date);
-
-    List<GetBoardResponseDto> getRecentBoards(Integer userId);
+    List<GetBoardResponseDto> getRecentBoards(Integer userId, User viewer);
 
     Map<String, BoardCountDto> getBoardCounts(Integer userId);
 

@@ -9,11 +9,14 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface IlchonRepository extends JpaRepository<Ilchon, Integer> {
 
     @EntityGraph(attributePaths = {"user", "friend"})
     Optional<Ilchon> findByUserAndFriendAndStatusAndIsActiveTrue(User user, User friend, Ilchon.IlchonStatus status);
+
+    List<Ilchon> findByUserAndFriendInAndStatusAndIsActiveTrue(User user, Set<User> friends, Ilchon.IlchonStatus status);
 
     @EntityGraph(attributePaths = {"user", "friend"})
     List<Ilchon> findAllByUserAndStatusAndIsActiveTrue(User user, Ilchon.IlchonStatus status);
