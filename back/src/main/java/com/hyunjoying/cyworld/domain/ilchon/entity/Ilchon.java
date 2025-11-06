@@ -1,18 +1,20 @@
 package com.hyunjoying.cyworld.domain.ilchon.entity;
 
+import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.common.BaseEntity;
 import com.hyunjoying.cyworld.domain.ilchon.converter.IlchonStatusConverter;
-import com.hyunjoying.cyworld.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.envers.Audited;
+
+import java.sql.ConnectionBuilder;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "ilchons", uniqueConstraints = {
         // @UniqueConstraint(columnNames = {"user_id", "friend_id", "status", "isActive"})
 })
@@ -46,6 +48,7 @@ public class Ilchon extends BaseEntity {
 
     @Column(nullable = false)
     private boolean isActive = true;
+
 
     public enum IlchonStatus {
         PENDING,    // 신청 중
