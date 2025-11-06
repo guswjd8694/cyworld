@@ -81,7 +81,7 @@ public class AuthController {
             description = "아이디 중복 체크 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class, example = "{\"isAvailable\": true}"))
     )
-    @GetMapping("/check-loginId")
+    @GetMapping("/check-availability")
     public ResponseEntity<Map<String, Boolean>> checkLoginId(
             @RequestParam String loginId
     ) {
