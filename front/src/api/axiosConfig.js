@@ -23,6 +23,9 @@ apiClient.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             window.dispatchEvent(new Event('auth-error'));
+        } 
+        else if (error.response && error.response.status === 429) {
+            alert('요청 횟수가 너무 많습니다. 1분 후 다시 시도해 주세요.');
         }
         return Promise.reject(error);
     }
