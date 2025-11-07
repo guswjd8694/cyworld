@@ -4,11 +4,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,15 +20,25 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
-    private static final int MAX_REQUESTS = 20;
-    private static final long TIME_FRAME_IN_MILLIS = 60 * 1000;
+    private static final int MAX_REQUESTS = 50;
+    private static final long TIME_FRAME_IN_MILLIS = 5 * 1000;
 
     private final Map<String, Queue<Long>> requestCounts = new ConcurrentHashMap<>();
+
+    @Value("${rate-limiter.exclude-paths}")
+    private List<String> excludePaths;
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        if (excludePaths.stream().anyMatch(pattern -> pathMatcher.match(pattern, path))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String ip = getIp(request);
         long currentTime = System.currentTimeMillis();
 
@@ -48,6 +61,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
     private String getIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
+
         if (ip == null || ip.isBlank()) {
             ip = request.getRemoteAddr();
         }

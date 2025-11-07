@@ -12,7 +12,7 @@ function BgmPlayer({ userId, ownerName }) {
     const [playlist, setPlaylist] = useState([]);
     const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(0.5);
+    const [volume, setVolume] = useState(0.1);
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
     const audioRef = useRef(null);
     const marqueeRef = useRef(null);
