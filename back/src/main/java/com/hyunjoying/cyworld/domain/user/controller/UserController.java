@@ -5,12 +5,15 @@ import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.domain.auth.dto.request.CheckLoginIdRequestDto;
 import com.hyunjoying.cyworld.domain.auth.dto.request.LoginRequestDto;
 import com.hyunjoying.cyworld.domain.auth.dto.request.ResetPasswordRequestDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.service.IlchonService;
 import com.hyunjoying.cyworld.domain.user.details.UserDetailsImpl;
 import com.hyunjoying.cyworld.domain.user.dto.request.*;
 import com.hyunjoying.cyworld.domain.user.dto.response.GetUserResponseDto;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,6 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final IlchonService ilchonService;
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 생성합니다.", tags = { "user" })
     @ApiResponse(
@@ -132,5 +137,17 @@ public class UserController {
         }
 
         return ResponseEntity.ok(randomUserDto);
+    }
+
+
+    @Operation(summary = "특정 사용자의 일촌 목록 조회", description = "특정 사용자의 일촌 목록을 조회합니다.", tags = {"ilchon"})
+    @ApiResponse(
+            description = "일촌 목록 조회 성공",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GetIlchonResponseDto.class)))
+    )
+    @GetMapping("/{userId}/ilchons")
+    public ResponseEntity<List<GetIlchonResponseDto>> getIlchons(@PathVariable Integer userId) {
+        List<GetIlchonResponseDto> ilchons = ilchonService.getIlchons(userId);
+        return ResponseEntity.ok(ilchons);
     }
 }

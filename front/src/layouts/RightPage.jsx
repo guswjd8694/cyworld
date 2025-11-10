@@ -17,7 +17,7 @@ function RightPageLayout({ children, owner, title, onTitleUpdate, onIlchonClick,
         setIsEditingTitle(false);
     };
 
-    const showIlchonButton = ilchonStatus === 'NONE';
+    const showIlchonButton = ilchonStatus !== 1 && ilchonStatus !== 0 && ilchonStatus !== -2;
 
     return (
         <section className="section_right book_cover right_page">

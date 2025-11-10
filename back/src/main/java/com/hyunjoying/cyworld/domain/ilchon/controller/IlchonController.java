@@ -1,6 +1,9 @@
 package com.hyunjoying.cyworld.domain.ilchon.controller;
 
 import com.hyunjoying.cyworld.common.dto.SuccessResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.request.UpdateIlchonRequestStatusDto;
+import com.hyunjoying.cyworld.domain.ilchon.dto.response.GetIlchonRelationshipResponseDto;
+import com.hyunjoying.cyworld.domain.ilchon.service.IlchonRequestService;
 import com.hyunjoying.cyworld.domain.user.details.UserDetailsImpl;
 import com.hyunjoying.cyworld.domain.ilchon.dto.request.RequestIlchonDto;
 import com.hyunjoying.cyworld.domain.ilchon.dto.request.UpdateIlchonNicknameRequestDto;
@@ -22,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/ilchons")
 @RequiredArgsConstructor
 public class IlchonController {
     private final IlchonService ilchonService;
+    private final IlchonRequestService ilchonRequestService;
 
 
     @Operation(summary = "일촌 신청", description = "다른 사용자에게 일촌을 신청합니다.", tags = {"ilchon"})
@@ -33,12 +36,12 @@ public class IlchonController {
             description = "일촌 신청 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PostMapping
+    @PostMapping("/ilchons-requests")
     public ResponseEntity<SuccessResponseDto> requestIlchon(
             @RequestBody RequestIlchonDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        ilchonService.requestIlchon(userDetails.getUser().getId(), requestDto);
+        ilchonRequestService.createIlchonRequest(userDetails.getUser().getId(), requestDto);
         return ResponseEntity.ok(new SuccessResponseDto("일촌 신청을 보냈습니다."));
     }
 
@@ -48,42 +51,39 @@ public class IlchonController {
             description = "일촌 신청 취소 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @DeleteMapping("/requests/{ilchonRequestId}/cancel")
+    @DeleteMapping("/ilchons-requests/{ilchonRequestId}")
     public ResponseEntity<SuccessResponseDto> cancelIlchonRequest(
             @PathVariable Integer ilchonRequestId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ilchonService.cancelIlchonRequest(userDetails.getUser().getId(), ilchonRequestId);
+        ilchonRequestService.cancelIlchonRequest(userDetails.getUser().getId(), ilchonRequestId);
         return ResponseEntity.ok(new SuccessResponseDto("일촌 신청을 취소했습니다."));
     }
 
 
-    @Operation(summary = "일촌 수락", description = "받은 일촌 신청을 수락합니다.", tags = {"ilchon"})
+    @Operation(summary = "일촌 신청 상태 변경 (수락/거절)", description = "받은 일촌 신청을 수락하거나 거절합니다.", tags = {"ilchon"})
     @ApiResponse(
-            description = "일촌 수락 성공",
+            description = "일촌 신청 상태 변경 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/{ilchonRequestId}/accept")
-    public ResponseEntity<SuccessResponseDto> acceptIlchon(
+    @PatchMapping("/ilchons-requests/{ilchonRequestId}")
+    public ResponseEntity<SuccessResponseDto> updateIlchonRequestStatus(
             @PathVariable Integer ilchonRequestId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ){
-        ilchonService.acceptIlchon(userDetails.getUser().getId(), ilchonRequestId);
-        return ResponseEntity.ok(new SuccessResponseDto("일촌을 수락했습니다."));
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UpdateIlchonRequestStatusDto requestDto
+    ) {
+        ilchonRequestService.updateIlchonRequestStatus(
+                userDetails.getUser().getId(),
+                ilchonRequestId,
+                requestDto
+        );
+
+        String message = "ACCEPTED".equalsIgnoreCase(requestDto.getStatus())
+                ? "일촌 신청을 수락했습니다."
+                : "일촌 신청을 거절했습니다.";
+
+        return ResponseEntity.ok(new SuccessResponseDto(message));
     }
 
-
-    @Operation(summary = "일촌 거절", description = "받은 일촌 신청을 거절합니다.", tags = {"ilchon"})
-    @ApiResponse(
-            description = "일촌 신청 거절 성공",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
-    )
-    @DeleteMapping("/requests/{ilchonRequestId}/reject")
-    public ResponseEntity<SuccessResponseDto> rejectIlchon(
-            @PathVariable Integer ilchonRequestId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ilchonService.rejectIlchon(userDetails.getUser().getId(), ilchonRequestId);
-        return ResponseEntity.ok(new SuccessResponseDto("일촌 신청을 거절했습니다."));
-    }
 
 
     @Operation(summary = "일촌 끊기", description = "기존 일촌 관계를 끊습니다.", tags = {"ilchon"})
@@ -91,7 +91,7 @@ public class IlchonController {
             description = "일촌 끊기 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @DeleteMapping("/{targetUserId}")
+    @DeleteMapping("/ilchons/{targetUserId}")
     public ResponseEntity<SuccessResponseDto> breakIlchon(
             @PathVariable Integer targetUserId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -100,26 +100,18 @@ public class IlchonController {
     }
 
 
-    @Operation(summary = "일촌 목록 조회", description = "특정 사용자의 일촌 목록을 조회합니다.", tags = {"ilchon"})
-    @ApiResponse(
-            description = "일촌 목록 조회 성공",
-            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GetIlchonResponseDto.class)))
-    )
-    @GetMapping("/users/{userId}")
-    public ResponseEntity<List<GetIlchonResponseDto>> getIlchons(@PathVariable Integer userId) {
-        List<GetIlchonResponseDto> ilchons = ilchonService.getIlchons(userId);
-        return ResponseEntity.ok(ilchons);
-    }
-
 
     @Operation(summary = "받은 일촌 신청 목록 조회", description = "내가 받은 일촌 신청 목록을 조회합니다.", tags = {"ilchon"})
     @ApiResponse(
             description = "받은 신청 목록 조회 성공",
             content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GetIlchonRequestResponseDto.class)))
     )
-    @GetMapping("/requests/received")
-    public ResponseEntity<List<GetIlchonRequestResponseDto>> getReceivedIlchonRequests(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<GetIlchonRequestResponseDto> requests = ilchonService.getReceivedIlchonRequests(userDetails.getUser().getId());
+    @GetMapping(value = "/ilchons-requests", params = "toUser=me")
+    public ResponseEntity<List<GetIlchonRequestResponseDto>> getReceivedIlchonRequests(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(name = "status", defaultValue = "PENDING") String status
+    ) {
+        List<GetIlchonRequestResponseDto> requests = ilchonRequestService.getReceivedIlchonRequests(userDetails.getUser().getId(), status);
         return ResponseEntity.ok(requests);
     }
 
@@ -127,56 +119,41 @@ public class IlchonController {
     @Operation(summary = "보낸 일촌 신청 목록 조회", description = "내가 보낸 일촌 신청 목록을 조회합니다.", tags = {"ilchon"})
     @ApiResponse(
             description = "보낸 신청 목록 조회 성공",
-            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GetIlchonResponseDto.class)))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GetIlchonRequestResponseDto.class)))
     )
-    @GetMapping("/requests/sent")
-    public ResponseEntity<List<GetIlchonResponseDto>> getSentIlchonRequests(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<GetIlchonResponseDto> requests = ilchonService.getSentIlchonRequests(userDetails.getUser().getId());
+    @GetMapping(value = "/ilchons-requests", params = "fromUser=me")
+    public ResponseEntity<List<GetIlchonRequestResponseDto>> getSentIlchonRequests(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(name = "status", defaultValue = "PENDING") String status
+    ) {
+        List<GetIlchonRequestResponseDto> requests = ilchonRequestService.getSentIlchonRequests(userDetails.getUser().getId(), status);
         return ResponseEntity.ok(requests);
     }
 
 
-    @Operation(summary = "일촌 상태 조회", description = "나와 특정 사용자 간의 일촌 상태를 조회합니다.", tags = {"ilchon"})
+
+    @Operation(summary = "촌수 및 관계 조회", description = "두 사용자 간의 촌수와 닉네임을 조회합니다.", tags = { "ilchon" })
     @ApiResponse(
-            description = "일촌 상태 조회 성공",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class, example = "{\"status\": \"ACCEPTED\"}"))
+            description = "촌수 관계 조회 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetIlchonRelationshipResponseDto.class))
     )
-    @GetMapping("/status")
-    public ResponseEntity<Map<String, String>> getIlchonStatus(
-            @RequestParam Integer targetUserId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+    @GetMapping("/ilchons")
+    public ResponseEntity<GetIlchonRelationshipResponseDto> getRelationship(
+             @RequestParam Integer currentUserId,
+             @RequestParam Integer targetUserId
     ) {
-        String status = ilchonService.getIlchonStatus(userDetails.getUser().getId(), targetUserId);
-        Map<String, String> response = new HashMap<>();
-        response.put("status", status);
-        return ResponseEntity.ok(response);
+        GetIlchonRelationshipResponseDto responseDto = ilchonService.getRelationship(currentUserId, targetUserId);
+
+        return ResponseEntity.ok(responseDto);
     }
 
 
-    @Operation(summary = "촌수 관계 계산", description = "두 사용자 간의 촌수 관계를 계산합니다.", tags = { "ilchon" })
-    @ApiResponse(
-            description = "촌수 관계 계산 성공. -1은 관계 없음을 의미합니다.",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class, example = "{\"degree\": 1}"))
-    )
-    @GetMapping("/relationship")
-    public ResponseEntity<Map<String, Integer>> getRelationship(
-            @RequestParam Integer currentUserId,
-            @RequestParam Integer targetUserId
-    ) {
-        Integer degree = ilchonService.calculateRelationshipDegree(currentUserId, targetUserId);
-
-        Integer degreeValue = (degree == null) ? -1 : degree;
-
-        return ResponseEntity.ok(Map.of("degree", degreeValue));
-    }
-
-
-    @Operation(summary = "일촌명 변경", description = "일촌명을 변경합니다.", tags = {"ilchon"})
+    @Operation(summary = "일촌명 변경", description = "일촌명을 변경합니다. (내가 상대를 부르는 일촌명)", tags = {"ilchon"})
     @ApiResponse(
             description = "일촌명 변경 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/nickname")
+    @PutMapping("/ilchons/nickname")
     public ResponseEntity<SuccessResponseDto> updateIlchonNickname(
             @RequestBody UpdateIlchonNicknameRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails

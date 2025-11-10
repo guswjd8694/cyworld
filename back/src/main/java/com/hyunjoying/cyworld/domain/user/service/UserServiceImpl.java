@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
 
         Set<Integer> excludedIds = ilchonRepository
-                .findAllByUserAndStatusAndIsActiveTrue(currentUser, Ilchon.IlchonStatus.ACCEPTED)
+                .findAllByUserAndStatus(currentUser, Ilchon.IlchonStatus.ACCEPTED)
                 .stream()
                 .map(ilchon -> ilchon.getFriend().getId())
                 .collect(Collectors.toSet());

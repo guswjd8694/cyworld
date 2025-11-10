@@ -30,30 +30,33 @@ function IlchonModal({ onClose, targetUser, onUpdatePage }) {
         e.preventDefault();
         setError('');
 
-        let finalFriendNickname = friendRelationDropdown === '직접입력' 
+        let finalNicknameForTarget = friendRelationDropdown === '직접입력' 
             ? friendNickname.trim() 
             : friendRelationDropdown;
             
-        if (!finalFriendNickname) {
+        if (!finalNicknameForTarget) {
             setError(`'${targetUser.name}'님을 부를 일촌명을 입력하거나 선택해주세요.`);
             return;
         }
 
-        let finalUserNickname = userRelationDropdown === '직접입력'
+        let finalNicknameForRequester = userRelationDropdown === '직접입력'
             ? userNickname.trim()
             : userRelationDropdown;
 
-        if (!finalUserNickname) {
+        if (!finalNicknameForRequester) {
             setError(`'${currentUser.name}'님을 부를 일촌명을 입력하거나 선택해주세요.`);
             return;
         }
         
         setIsSubmitting(true);
         try {
-            await apiClient.post(`/ilchons`, {
+            await apiClient.post(`/ilchons-requests`, {
                 targetUserId: targetUser.id,
-                friendNickname: finalFriendNickname,
-                userNickname: finalUserNickname,
+                
+                nicknameForToUser: finalNicknameForTarget, 
+                
+                nicknameForFromUser: finalNicknameForRequester, 
+                
                 requestMessage: requestMessage
             });
             

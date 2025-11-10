@@ -37,36 +37,44 @@ function MinihomePage() {
     const fetchData = useCallback(async () => {
         if (!loginId || authLoading) return;
 
-        setLoading(true);
+        if (!minihomeOwner) {
+            setLoading(true);
+        }
         setPageError(false);
 
         try {
-            const ownerRes = await apiClient.get(`/users?loginId=${loginId}`);
-            const ownerData = ownerRes.data;
+            let ownerData = minihomeOwner;
+            let ownerId;
 
-            if (!ownerData || !ownerData.id) {
-                throw new Error('Owner not found');
+            if (!ownerData || ownerData.loginId !== loginId) {
+                const ownerRes = await apiClient.get(`/users?loginId=${loginId}`);
+                ownerData = ownerRes.data;
+
+                if (!ownerData || !ownerData.id) {
+                    throw new Error('Owner not found');
+                }
+                
+                setMinihomeOwner(ownerData);
             }
             
-            setMinihomeOwner(ownerData);
-            const ownerId = ownerData.id;
+            ownerId = ownerData.id;
 
             const visitResPromise = apiClient.post(`/users/${ownerId}/mini-homepage/visit`);
 
-            const [profileRes, statusRes, requestsRes, visitRes] = await Promise.all([
+            const [profileRes, relationRes, requestsRes, visitRes] = await Promise.all([
                 apiClient.get(`/users/${ownerId}/profile`),
                 currentUser && currentUser.id !== ownerId
-                    ? apiClient.get(`/ilchons/status?targetUserId=${ownerId}`)
-                    : Promise.resolve({ data: { status: currentUser ? 'OWNER' : 'NONE' } }),
+                    ? apiClient.get(`/ilchons?currentUserId=${currentUser.id}&targetUserId=${ownerId}`)
+                    : Promise.resolve({ data: { degree: 0 } }),
                 currentUser && currentUser.id === ownerId
-                    ? apiClient.get(`/ilchons/requests/received`)
+                    ? apiClient.get(`/ilchons-requests?toUser=me&status=PENDING`) 
                     : Promise.resolve({ data: [] }),
                 visitResPromise
             ]);
             
             setMinihomeData(visitRes.data);
             setProfileData(profileRes.data);
-            setIlchonStatus(statusRes.data.status);
+            setIlchonStatus(relationRes.data.degree);
             setReceivedRequests(requestsRes.data);
 
         } catch (error) {
@@ -75,12 +83,13 @@ function MinihomePage() {
         } finally {
             setLoading(false);
         }
-    }, [loginId, authLoading, currentUser]);
+    }, [loginId, authLoading, currentUser, minihomeOwner]);
+
 
     useEffect(() => {
         setActiveView({ view: 'HOME', params: {} });
         fetchData();
-    }, [loginId]);
+    }, [loginId, fetchData]);
 
     const handleTitleUpdate = async (newTitle) => {
         try {
@@ -99,7 +108,8 @@ function MinihomePage() {
             setIsIlchonModalOpen(true);
         }
     };
-    
+
+
     if (loading || pageError || !minihomeOwner || !minihomeData || !profileData) {
         return <div>미니홈피 로딩 중...</div>;
     }

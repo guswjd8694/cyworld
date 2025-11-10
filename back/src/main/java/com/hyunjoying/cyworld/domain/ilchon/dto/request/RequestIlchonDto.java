@@ -11,10 +11,10 @@ public class RequestIlchonDto {
     private Integer targetUserId;
 
     @Schema(example = "코딩천재우진", description = "내가 상대방에게 설정할 일촌명")
-    private String userNickname;
+    private String nicknameForToUser;
 
     @Schema(example = "기욤현정짱짱", description = "상대방이 나에게 설정할 일촌명")
-    private String friendNickname;
+    private String nicknameForFromUser;
 
     @Schema(example = "우리 일촌해요! 잘 부탁드립니다~", description = "일촌 신청 메시지")
     private String requestMessage;

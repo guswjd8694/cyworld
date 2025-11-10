@@ -1,6 +1,7 @@
 package com.hyunjoying.cyworld.domain.ilchon.dto.response;
 
 import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.entity.IlchonRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -21,11 +22,14 @@ public class GetIlchonRequestResponseDto {
     @Schema(example = "김현정", description = "신청 받은 사람의 이름", requiredMode = Schema.RequiredMode.REQUIRED)
     private final String receiverName;
 
-    @Schema(example = "기욤현정짱짱", description = "내가 신청자에게 설정할 일촌명")
-    private final String myNicknameForRequester;
+    @Schema(example = "user1", description = "신청 받은 사람의 로그인 아이디", requiredMode = Schema.RequiredMode.REQUIRED)
+    private final String receiverLoginId;
 
     @Schema(example = "코딩천재우진", description = "신청자가 나에게 설정할 일촌명")
-    private final String requesterNicknameForMe;
+    private final String nicknameForFromUser;
+
+    @Schema(example = "기욤현정짱짱", description = "내가 신청자에게 설정할 일촌명")
+    private final String nicknameForToUser;
 
     @Schema(example = "우리 일촌해요!", description = "일촌 신청 메시지", requiredMode = Schema.RequiredMode.REQUIRED)
     private final String requestMessage;
@@ -33,13 +37,14 @@ public class GetIlchonRequestResponseDto {
     @Schema(example = "2025.09.01 22:30", description = "신청 시간", requiredMode = Schema.RequiredMode.REQUIRED)
     private final String createdAt;
 
-    public GetIlchonRequestResponseDto(Ilchon ilchonRequest) {
+    public GetIlchonRequestResponseDto(IlchonRequest ilchonRequest) {
         this.ilchonRequestId = ilchonRequest.getId();
-        this.requesterName = ilchonRequest.getUser().getName();
-        this.requesterLoginId = ilchonRequest.getUser().getLoginId();
-        this.receiverName = ilchonRequest.getFriend().getName();
-        this.myNicknameForRequester = ilchonRequest.getFriendNickname();
-        this.requesterNicknameForMe = ilchonRequest.getUserNickname();
+        this.requesterName = ilchonRequest.getFromUser().getName();
+        this.requesterLoginId = ilchonRequest.getFromUser().getLoginId();
+        this.receiverName = ilchonRequest.getToUser().getName();
+        this.receiverLoginId = ilchonRequest.getToUser().getLoginId();
+        this.nicknameForFromUser = ilchonRequest.getNicknameForFromUser();
+        this.nicknameForToUser = ilchonRequest.getNicknameForToUser();
 
         if (ilchonRequest.getRequestMessage() == null || ilchonRequest.getRequestMessage().trim().isEmpty()) {
             this.requestMessage = "일촌 신청합니다";
