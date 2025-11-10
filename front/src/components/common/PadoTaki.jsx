@@ -15,7 +15,7 @@ function PadoTaki({ userId }) {
         const fetchIlchons = async () => {
             setLoading(true);
             try {
-                const response = await apiClient.get(`/ilchons/users/${userId}`);;
+                const response = await apiClient.get(`/users/${userId}/ilchons`);
                 setIlchonList(response.data);
             } catch (error) {
                 console.error("일촌 목록을 불러오는데 실패했습니다.", error);

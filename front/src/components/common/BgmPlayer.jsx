@@ -62,7 +62,7 @@ function BgmPlayer({ userId, ownerName }) {
                 }
             } else if (currentUser) {
                 try {
-                    const response = await apiClient.get(`/ilchons/relationship?currentUserId=${currentUser.id}&targetUserId=${userId}`);
+                    const response = await apiClient.get(`/ilchons?currentUserId=${currentUser.id}&targetUserId=${userId}`);
                     setRelationship(response.data.degree);
                 } catch (error) {
                     console.error("촌수 계산 실패:", error);

@@ -20,21 +20,18 @@ public class GetIlchonResponseDto {
     private final String friendLoginId;
 
     @Schema(example = "코딩천재우진", description = "내가 친구에게 설정한 일촌명")
-    private final String myNicknameForFriend;
+    private final String nicknameForToUser;
 
     @Schema(example = "기욤현정짱짱", description = "친구가 나에게 설정한 일촌명")
-    private final String friendNicknameForMe;
+    private final String nicknameForFromUser;
 
-    @Schema(example = "우리 일촌해요!", description = "일촌 신청 시 보낸 메시지")
-    private final String requestMessage;
 
-    public GetIlchonResponseDto(Integer ilchonRequestId, User friend, String myNicknameForFriend, String friendNicknameForMe, String requestMessage) {
+    public GetIlchonResponseDto(Integer ilchonRequestId, User friend, String myNickname, String friendNickname) {
         this.ilchonRequestId = ilchonRequestId;
         this.friendId = friend.getId();
         this.friendName = friend.getName();
         this.friendLoginId = friend.getLoginId();
-        this.myNicknameForFriend = myNicknameForFriend;
-        this.friendNicknameForMe = friendNicknameForMe;
-        this.requestMessage = requestMessage;
+        this.nicknameForToUser = myNickname;
+        this.nicknameForFromUser = friendNickname;
     }
 }

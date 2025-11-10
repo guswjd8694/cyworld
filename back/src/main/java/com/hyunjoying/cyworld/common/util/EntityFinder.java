@@ -7,7 +7,9 @@ import com.hyunjoying.cyworld.domain.comment.repository.CommentRepository;
 import com.hyunjoying.cyworld.domain.emotion.entity.Emotion;
 import com.hyunjoying.cyworld.domain.emotion.repository.EmotionRepository;
 import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.entity.IlchonRequest;
 import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRepository;
+import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRequestRepository;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
 import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
 import com.hyunjoying.cyworld.domain.profile.entity.UserProfile;
@@ -16,6 +18,8 @@ import com.hyunjoying.cyworld.domain.user.entity.*;
 import com.hyunjoying.cyworld.domain.user.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.NoSuchElementException;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class EntityFinder {
     private final EmotionRepository emotionRepository;
     private final UserProfileRepository userProfileRepository;
     private final IlchonRepository ilchonRepository;
+    private final IlchonRequestRepository ilchonRequestRepository;
     private final CommentRepository commentRepository;
 
 
@@ -76,13 +81,16 @@ public class EntityFinder {
                 .orElseThrow(() -> new IllegalArgumentException("활성화된 프로필을 찾을 수 없습니다. User ID: " + userId));
     }
 
-    public Ilchon getIlchonOrThrow(Integer ilchonRequestId) {
-        return ilchonRepository.findById(ilchonRequestId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일촌 요청입니다."));
+
+
+    public IlchonRequest getIlchonRequestOrThrow(Integer ilchonRequestId) {
+        return ilchonRequestRepository.findById(ilchonRequestId)
+                .orElseThrow(() -> new NoSuchElementException("해당 일촌 신청을 찾을 수 없습니다. ID: " + ilchonRequestId));
     }
+
 
     public Comment getCommentOrThrow(Integer commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 댓글을 찾을 수 없습니다: " + commentId));
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 댓글을 찾을 수 없습니다: " + commentId));
     }
 }

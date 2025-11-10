@@ -6,10 +6,12 @@ function IlchonRequestModal({ onClose, requests, onUpdate }) {
 
     const handleAccept = async (requestId) => {
         try {
-            await apiClient.put(`/ilchons/${requestId}/accept`);
+            await apiClient.patch(`/ilchons-requests/${requestId}`, {
+                status: "ACCEPTED"
+            });
             alert('일촌을 수락했습니다.');
             onUpdate();
-            window.location.reload();
+            onClose();
         } catch (err) {
             if (err.response?.status !== 401) {
                 alert(err.response?.data?.message || '수락에 실패했습니다.');
@@ -20,10 +22,12 @@ function IlchonRequestModal({ onClose, requests, onUpdate }) {
     const handleReject = async (requestId) => {
         if (window.confirm('정말로 거절하시겠습니까?')) {
             try {
-                await apiClient.delete(`/api/ilchons/requests/${requestId}/reject`);
+                await apiClient.patch(`/ilchons-requests/${requestId}`, {
+                    status: "REJECTED"
+                });
                 alert('일촌 신청을 거절했습니다.');
                 onUpdate();
-                window.location.reload();
+                onClose();
             } catch (err) {
                 if (err.response?.status !== 401) {
                     alert(err.response?.data?.message || '거절에 실패했습니다.');
@@ -45,7 +49,7 @@ function IlchonRequestModal({ onClose, requests, onUpdate }) {
                             {requests.map(req => (
                                 <li key={req.ilchonRequestId} className="request-item">
                                     <div className="request-info">
-                                        <span className="requester-name">{req.friendName}</span>
+                                        <span className="requester-name">{req.requesterName}</span>
                                         <span className="request-message">"{req.requestMessage || '...'}"</span>
                                     </div>
                                     <div className="request-actions">

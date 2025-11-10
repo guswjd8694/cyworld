@@ -14,6 +14,7 @@ import com.hyunjoying.cyworld.domain.comment.dto.request.CreateCommentRequestDto
 import com.hyunjoying.cyworld.domain.comment.dto.response.GetCommentResponseDto;
 import com.hyunjoying.cyworld.domain.comment.entity.Comment;
 import com.hyunjoying.cyworld.domain.comment.repository.CommentRepository;
+import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRequestRepository;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
 import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
@@ -44,6 +45,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final IlchonRepository ilchonRepository;
+    private final IlchonRequestRepository ilchonRequestRepository;
     private final EntityFinder entityFinder;
     private final EntityManager entityManager;
 
@@ -95,14 +97,14 @@ public class BoardServiceImpl implements BoardService {
                 .map(Board::getUser)
                 .collect(Collectors.toSet());
 
-        Map<Integer, String> nicknameMap = ilchonRepository.findByUserAndFriendInAndStatusAndIsActiveTrue(
+        Map<Integer, String> nicknameMap = ilchonRepository.findByUserAndFriendInAndStatus(
                 miniHomepage.getUser(),
                 friends,
                 Ilchon.IlchonStatus.ACCEPTED)
                 .stream()
                 .collect(Collectors.toMap(
                         ilchon -> ilchon.getFriend().getId(),
-                        Ilchon::getFriendNickname
+                        Ilchon::getNickname
                 ));
 
         for (int i = 0; i < boardList.size(); i++) {
@@ -200,7 +202,12 @@ public class BoardServiceImpl implements BoardService {
 
             case "ILCHONPYEONG":
                 boolean isOwner = writer.getId().equals(targetHomepage.getUser().getId());
-                boolean isIlchon = ilchonRepository.findByUserAndFriendAndStatusAndIsActiveTrue(writer, targetHomepage.getUser(), Ilchon.IlchonStatus.ACCEPTED).isPresent();
+                boolean isIlchon = ilchonRepository.findByUserAndFriendAndStatus(
+                        writer,
+                        targetHomepage.getUser(),
+                        Ilchon.IlchonStatus.ACCEPTED
+                        )
+                        .isPresent();
 
                 if (!isOwner && !isIlchon) {
                     throw new AccessDeniedException("일촌평은 일촌이거나 본인만 작성할 수 있습니다.");
