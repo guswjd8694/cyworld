@@ -62,8 +62,9 @@ public class CommentController {
             description = "댓글 수정 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/comments/{commentId}")
+    @PutMapping("/boards/{boardId}/comments/{commentId}")
     public ResponseEntity<SuccessResponseDto> updateComment(
+            @PathVariable Integer boardId,
             @PathVariable Integer commentId,
             @RequestBody UpdateCommentRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -78,8 +79,9 @@ public class CommentController {
             description = "댓글 삭제 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @DeleteMapping("/comments/{commentId}")
+    @DeleteMapping("/boards/{boardId}/comments/{commentId}")
     public ResponseEntity<SuccessResponseDto> deleteComment(
+            @PathVariable Integer boardId,
             @PathVariable Integer commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 

@@ -49,7 +49,7 @@ function Guestbook({ userId }) {
 
     const handleToggleSecret = async (post) => {
         try {
-            await apiClient.patch(`/boards/${post.boardId}/privacy`, {
+            await apiClient.patch(`/users/${userId}/boards/${post.boardId}/privacy`, {
                 isPublic: !post.isPublic 
             });
         } catch (err) {

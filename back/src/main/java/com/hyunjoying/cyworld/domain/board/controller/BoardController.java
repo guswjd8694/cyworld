@@ -96,8 +96,9 @@ public class BoardController {
             description = "게시글 수정 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/boards/{boardId}")
+    @PutMapping("/users/{userId}/boards/{boardId}")
     public ResponseEntity<SuccessResponseDto> updateBoard(
+            @PathVariable Integer userId,
             @PathVariable Integer boardId,
             @RequestBody UpdateBoardRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -114,8 +115,9 @@ public class BoardController {
             description = "공개 설정 변경 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PatchMapping("/boards/{boardId}/privacy")
+    @PatchMapping("/users/{userId}/boards/{boardId}/privacy")
     public ResponseEntity<SuccessResponseDto> updateBoardPrivacy(
+            @PathVariable Integer userId,
             @PathVariable Integer boardId,
             @RequestBody UpdateBoardPrivacyDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -131,8 +133,9 @@ public class BoardController {
             description = "게시글 삭제 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @DeleteMapping("/boards/{boardId}")
+    @DeleteMapping("/users/{userId}/boards/{boardId}")
     public ResponseEntity<SuccessResponseDto> deleteBoard(
+            @PathVariable Integer userId,
             @PathVariable Integer boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {

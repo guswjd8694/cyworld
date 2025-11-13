@@ -78,11 +78,26 @@ public class Board extends BaseEntity {
     }
 
     public void update(UpdateBoardRequestDto requestDto) {
-        this.title = requestDto.getTitle();
-        this.content = requestDto.getContent();
-        this.weather = requestDto.getWeather();
-        this.mood = requestDto.getMood();
-        this.isPublic = requestDto.getPublicSetting();
+
+        if (requestDto.getTitle() != null) {
+            this.title = requestDto.getTitle();
+        }
+
+        if (requestDto.getContent() != null) {
+            this.content = requestDto.getContent();
+        }
+
+        if (requestDto.getWeather() != null) {
+            this.weather = requestDto.getWeather();
+        }
+
+        if (requestDto.getMood() != null) {
+            this.mood = requestDto.getMood();
+        }
+
+        if (requestDto.getPublicSetting() != null) {
+            this.isPublic = requestDto.getPublicSetting();
+        }
 
         if (requestDto.getImageUrls() != null) {
             List<String> newImageUrls = requestDto.getImageUrls();
@@ -119,6 +134,7 @@ public class Board extends BaseEntity {
             throw new AccessDeniedException("게시글을 삭제할 권한이 없습니다.");
         }
     }
+
 
     public void addImages(List<BoardImage> imageEntities) {
         this.images.addAll(imageEntities);

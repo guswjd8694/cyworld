@@ -58,7 +58,7 @@ function PhotoAlbumItem({ post, currentUser, isOwner, onEdit, onDelete }) {
     
     const handleUpdateComment = async (commentId, newContent) => {
         try {
-            await apiClient.put(`/comments/${commentId}`, { content: newContent });
+            await apiClient.put(`/boards/${post.boardId}/comments/${commentId}`, { content: newContent });
             fetchComments(); 
         } catch (error) {
             console.error("댓글 수정 실패:", error);
@@ -69,7 +69,7 @@ function PhotoAlbumItem({ post, currentUser, isOwner, onEdit, onDelete }) {
     const handleDeleteComment = async (commentId) => {
         if (window.confirm("정말로 댓글을 삭제하시겠습니까?")) {
             try {
-                await apiClient.delete(`/comments/${commentId}`);
+                await apiClient.delete(`/boards/${post.boardId}/comments/${commentId}`);
                 fetchComments();
             } catch (error) {
                 console.error("댓글 삭제 실패:", error);
@@ -83,7 +83,7 @@ function PhotoAlbumItem({ post, currentUser, isOwner, onEdit, onDelete }) {
             <article className={`photo-post ${!post.isPublic ? 'secret' : ''}`} aria-labelledby={`post-title-${post.boardId}`}>
                 <header className="post-header">
                     <h2 id={`post-title-${post.boardId}`} className="post-title">{post.title}</h2>
-                    <p className="post-number">No.{post.boardNo}</p> {/* post-author에서 post-number로 변경 또는 스타일 추가 */}
+                    <p className="post-number">No.{post.boardNo}</p> 
                     <time dateTime={new Date(post.createdAt).toISOString()} className="post-date">
                         {formatDateTime(post.createdAt)}
                     </time>
