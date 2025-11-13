@@ -49,7 +49,7 @@ public class EntityFinder {
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
     }
 
-    public User getLoginIdAndEmailOrThrow(String loginId, String email){
+    public User getLoginIdAndEmailOrThrow(String loginId, String email, String phone){
         return userRepository.findByLoginIdAndEmailAndIsDeletedFalse(loginId, email)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
     }
@@ -62,6 +62,11 @@ public class EntityFinder {
     public MiniHomepage getMiniHomepageByUserIdOrThrow(Integer userId) {
         return minihomeRepository.findByUserIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + userId));
+    }
+
+    public MiniHomepage getMiniHomepageByUserLoginIdOrThrow(String loginId) {
+        return minihomeRepository.findByUserLoginIdAndIsDeletedFalse(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자의 미니홈피를 찾을 수 없습니다: " + loginId));
     }
 
     public MiniHomepage getMiniHomepageByUserIdWithLockOrThrow(Integer userId) {

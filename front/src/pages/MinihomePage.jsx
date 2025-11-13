@@ -37,29 +37,22 @@ function MinihomePage() {
     const fetchData = useCallback(async () => {
         if (!loginId || authLoading) return;
 
-        if (!minihomeOwner) {
-            setLoading(true);
-        }
+        setLoading(true);
         setPageError(false);
 
         try {
-            let ownerData = minihomeOwner;
-            let ownerId;
+            const ownerRes = await apiClient.get(`/users/${loginId}`);
+            const ownerData = ownerRes.data;
 
-            if (!ownerData || ownerData.loginId !== loginId) {
-                const ownerRes = await apiClient.get(`/users?loginId=${loginId}`);
-                ownerData = ownerRes.data;
-
-                if (!ownerData || !ownerData.id) {
-                    throw new Error('Owner not found');
-                }
-                
-                setMinihomeOwner(ownerData);
+            if (!ownerData || !ownerData.id) {
+                throw new Error('Owner not found');
             }
-            
-            ownerId = ownerData.id;
 
-            const visitResPromise = apiClient.post(`/users/${ownerId}/mini-homepage/visit`);
+            setMinihomeOwner(ownerData);
+            
+            const ownerId = ownerData.id;
+
+            const visitResPromise = apiClient.post(`/mini-homepage/${loginId}/visit`);
 
             const [profileRes, relationRes, requestsRes, visitRes] = await Promise.all([
                 apiClient.get(`/users/${ownerId}/profile`),
@@ -83,7 +76,8 @@ function MinihomePage() {
         } finally {
             setLoading(false);
         }
-    }, [loginId, authLoading, currentUser, minihomeOwner]);
+        
+    }, [loginId, authLoading, currentUser]);
 
 
     useEffect(() => {
@@ -93,7 +87,7 @@ function MinihomePage() {
 
     const handleTitleUpdate = async (newTitle) => {
         try {
-            await apiClient.put(`/users/${minihomeOwner.id}/mini-homepage`, { title: newTitle });
+            await apiClient.patch(`/mini-homepage/${loginId}/title`, { title: newTitle });
             setMinihomeData(prev => ({ ...prev, title: newTitle }));
         } catch (err) {
             console.error("타이틀 수정 실패:", err);
@@ -158,7 +152,7 @@ function MinihomePage() {
                 }
             </div>
             
-            {minihomeOwner && <BgmPlayer userId={minihomeOwner.id} ownerName={minihomeOwner.name}/>}
+            {minihomeOwner && <BgmPlayer key={minihomeOwner.id} userId={minihomeOwner.id} ownerName={minihomeOwner.name}/>}
         </>
     );
 }
