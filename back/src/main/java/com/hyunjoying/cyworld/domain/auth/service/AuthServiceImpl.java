@@ -50,8 +50,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequestDto requestDto) {
-        User user = entityFinder.getLoginIdAndEmailOrThrow(requestDto.getLoginId(), requestDto.getEmail());
-        log.info("비밀번호 재설정 요청. loginId: {}, email: {}", requestDto.getLoginId(), requestDto.getEmail());
+        User user = entityFinder.getLoginIdAndEmailOrThrow(requestDto.getLoginId(), requestDto.getEmail(), requestDto.getPhone());
+        log.info("비밀번호 재설정 요청. loginId: {}, email: {}, phone: {}", requestDto.getLoginId(), requestDto.getEmail(), requestDto.getPhone());
 
         String encodedPassword = passwordEncoder.encode(requestDto.getNewPassword());
 

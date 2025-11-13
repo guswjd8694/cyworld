@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import apiClient from '../api/axiosConfig';
 
 export const AuthContext = createContext(null);
 
@@ -7,12 +8,15 @@ export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const logout = useCallback(() => {
-        const token = localStorage.getItem('jwt-token');
-        if (token) {
+    const logout = useCallback(async () => {
+        try {
+            await apiClient.post('/auth/logout');
+        } catch (error) {
+            console.error("로그아웃 API 호출 실패:", error);
+        } finally {
             localStorage.removeItem('jwt-token');
+            setCurrentUser(null);
         }
-        setCurrentUser(null);
     }, []);
 
     useEffect(() => {
@@ -93,4 +97,3 @@ export function AuthProvider({ children }) {
         </AuthContext.Provider>
     );
 }
-

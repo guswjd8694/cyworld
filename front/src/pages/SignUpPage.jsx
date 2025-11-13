@@ -95,7 +95,11 @@ function SignUpPage() {
         setApiValidation(prev => ({...prev, loginIdStatus: 'checking' }));
         const debounce = setTimeout(async () => {
             try {
-                const response = await apiClient.post('/users/check-loginId', { loginId: formData.loginId });
+                const response = await apiClient.get('/auth/check-availability', { 
+                    params: { 
+                        loginId: formData.loginId 
+                    } 
+                });
                 setApiValidation(prev => ({...prev, loginIdStatus: response.data.isAvailable ? 'available' : 'unavailable' }));
             } catch (error) {
                 console.error("아이디 중복 체크 실패:", error);
@@ -124,7 +128,7 @@ function SignUpPage() {
             return;
         }
         try {
-            await apiClient.post('/users/signup', {
+            await apiClient.post('/users', {
                 name: formData.name, email: formData.email, loginId: formData.loginId,
                 password: formData.password, birth: formData.birth.replace(/-/g, ''),
                 gender: formData.gender, phone: formData.phone.replace(/-/g, '')
