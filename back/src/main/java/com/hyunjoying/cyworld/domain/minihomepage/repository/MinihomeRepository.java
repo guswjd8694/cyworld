@@ -15,6 +15,9 @@ public interface MinihomeRepository extends JpaRepository<MiniHomepage, Integer>
     @EntityGraph(attributePaths = {"user"})
     Optional<MiniHomepage> findByUserIdAndIsDeletedFalse(Integer userId);
 
+    @EntityGraph(attributePaths = {"user"})
+    Optional<MiniHomepage> findByUserLoginIdAndIsDeletedFalse(String loginId);
+
     @Modifying(clearAutomatically = true)
     @Query("UPDATE MiniHomepage m SET m.todayVisits = 0")
     void resetAllTodayVisits();

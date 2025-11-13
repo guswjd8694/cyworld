@@ -22,22 +22,22 @@ public class MinihomeServiceImpl implements MinihomeService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetMinihomeResponseDto getMinihomeInfo(Integer userId) {
-        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
+    public GetMinihomeResponseDto getMinihomeInfoByLoginId(String loginId) {
+        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserLoginIdOrThrow(loginId);
         return new GetMinihomeResponseDto(miniHomepage);
     }
 
     @Override
     @Transactional
-    public void updateMinihomeTitle(Integer userId, UpdateMinihomeRequestDto requestDto) {
-        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
+    public void updateMinihomeTitle(String loginId, UpdateMinihomeRequestDto requestDto) {
+        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserLoginIdOrThrow(loginId);
         miniHomepage.updateTitle(requestDto.getTitle());
     }
 
     @Override
     @Transactional
-    public GetMinihomeResponseDto recordAndIncrementVisit(Integer ownerUserId, Integer visitorId) {
-        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdWithLockOrThrow(ownerUserId);
+    public GetMinihomeResponseDto recordAndIncrementVisit(String ownerLoginId, Integer visitorId) {
+        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserLoginIdOrThrow(ownerLoginId);
         User visitor = (visitorId != null) ? entityFinder.getUserOrThrow(visitorId) : null;
 
         miniHomepage.incrementTodayAndTotalVisits();
