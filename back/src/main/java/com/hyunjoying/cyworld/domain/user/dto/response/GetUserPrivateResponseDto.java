@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Schema(description = "사용자 정보 응답 DTO")
-public class GetUserResponseDto {
+public class GetUserPrivateResponseDto {
     @Schema(example = "1", description = "사용자 고유 식별자(PK)", requiredMode = Schema.RequiredMode.REQUIRED)
     private final Integer id;
 
@@ -31,7 +31,7 @@ public class GetUserResponseDto {
     @Schema(example = "5", description = "함께 아는 일촌 수")
     private Integer mutualIlchons;
 
-    public GetUserResponseDto(User user) {
+    public GetUserPrivateResponseDto(User user) {
         this.id = user.getId();
         this.loginId = user.getLoginId();
         this.name = user.getName();

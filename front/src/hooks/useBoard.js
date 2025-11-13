@@ -49,7 +49,7 @@ export function useBoard(userId, boardType) {
     const handleSavePost = async (postData) => {
         try {
             if (postData.boardId) {
-                await apiClient.put(`/boards/${postData.boardId}`, postData);
+                await apiClient.put(`/users/${userId}/boards/${postData.boardId}`, postData);
             } else {
                 await apiClient.post(`/users/${userId}/boards`, { ...postData, type: boardType });
             }
@@ -66,7 +66,7 @@ export function useBoard(userId, boardType) {
     const handleDelete = async (boardId) => {
         if (window.confirm('정말로 삭제하시겠습니까?')) {
             try {
-                await apiClient.delete(`/boards/${boardId}`);
+                await apiClient.delete(`/users/${userId}/boards/${boardId}`);
                 triggerRefetch(); // 삭제 후 새로고침
             } catch (err) {
                 if (err.response?.status !== 401) {

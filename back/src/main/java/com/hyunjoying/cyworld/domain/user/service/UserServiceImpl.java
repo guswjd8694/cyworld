@@ -7,7 +7,8 @@ import com.hyunjoying.cyworld.domain.minihomepage.repository.MinihomeRepository;
 import com.hyunjoying.cyworld.domain.profile.entity.UserProfile;
 import com.hyunjoying.cyworld.domain.profile.repository.UserProfileRepository;
 import com.hyunjoying.cyworld.domain.user.dto.request.*;
-import com.hyunjoying.cyworld.domain.user.dto.response.GetUserResponseDto;
+import com.hyunjoying.cyworld.domain.user.dto.response.GetUserPrivateResponseDto;
+import com.hyunjoying.cyworld.domain.user.dto.response.GetUserPublicResponseDto;
 import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRepository;
@@ -98,9 +99,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public GetUserResponseDto getUserById(Integer userId) {
+    public GetUserPrivateResponseDto getUserById(Integer userId) {
         User user = entityFinder.getUserOrThrow(userId);
-        return new GetUserResponseDto(user);
+        return new GetUserPrivateResponseDto(user);
     }
 
 
@@ -118,15 +119,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetUserResponseDto getUserByLoginId(String loginId) {
+    public GetUserPublicResponseDto getUserByLoginId(String loginId) {
         User user = entityFinder.getLoginIdOrThrow(loginId);
-        return new GetUserResponseDto(user);
+        return new GetUserPublicResponseDto(user);
     }
 
 
     @Override
     @Transactional(readOnly = true)
-    public GetUserResponseDto getRandomUserForVisit(Integer currentUserId) {
+    public GetUserPublicResponseDto getRandomUserForVisit(Integer currentUserId) {
         long count = userRepository.countByIsDeletedFalseAndIdIsNot(currentUserId);
 
         if (count == 0) {
@@ -141,12 +142,12 @@ public class UserServiceImpl implements UserService {
         }
         User randomUser = userPage.getContent().get(0);
 
-        return new GetUserResponseDto(randomUser);
+        return new GetUserPublicResponseDto(randomUser);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GetUserResponseDto getRandomUserForRecommendation(Integer currentUserId) {
+    public GetUserPublicResponseDto getRandomUserForRecommendation(Integer currentUserId) {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
 
         Set<Integer> excludedIds = ilchonRepository
@@ -170,7 +171,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User randomUser = userPage.getContent().get(0);
-        GetUserResponseDto userResponseDto = new GetUserResponseDto(randomUser);
+        GetUserPublicResponseDto userResponseDto = new GetUserPublicResponseDto(randomUser);
 
         try {
             UserProfile activeProfile = entityFinder.getActiveUserProfileOrThrow(randomUser.getId());
