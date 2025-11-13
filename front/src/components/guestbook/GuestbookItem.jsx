@@ -47,7 +47,7 @@ function GuestbookItem({
     };
     const handleUpdateComment = async (commentId, newContent) => {
         try {
-            await apiClient.put(`/comments/${commentId}`, { content: newContent });
+            await apiClient.put(`/boards/${item.boardId}/comments/${commentId}`, { content: newContent });
             setComments(prev => prev.map(c => c.commentId === commentId ? { ...c, content: newContent } : c));
         } catch (error) {
             alert('댓글 수정에 실패했습니다.');
@@ -57,7 +57,7 @@ function GuestbookItem({
     const handleDeleteComment = async (commentId) => {
         if (window.confirm("정말로 댓글을 삭제하시겠습니까?")) {
             try {
-                await apiClient.delete(`/comments/${commentId}`);
+                await apiClient.delete(`/boards/${item.boardId}/comments/${commentId}`);
                 setComments(prev => prev.filter(c => c.commentId !== commentId));
             } catch (error) {
                 alert('댓글 삭제에 실패했습니다.');
