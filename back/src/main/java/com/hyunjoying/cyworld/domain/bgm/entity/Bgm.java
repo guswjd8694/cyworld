@@ -32,5 +32,8 @@ public class Bgm extends BaseEntity {
 
     @Column(length = 50, nullable = false)
     private String artist;
+
+    @Column(name = "play_order", nullable = false)
+    private Integer playOrder;
 }
 

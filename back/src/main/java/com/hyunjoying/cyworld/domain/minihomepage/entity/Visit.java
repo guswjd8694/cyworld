@@ -3,11 +3,10 @@ package com.hyunjoying.cyworld.domain.minihomepage.entity;
 import com.hyunjoying.cyworld.common.BaseEntity;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.SQLDelete;
+
 
 @Entity
 @Getter
@@ -29,8 +28,13 @@ public class Visit extends BaseEntity {
     @JoinColumn(name = "visitor_id")
     private User visitor;
 
-    public Visit(MiniHomepage miniHomepage, User visitor) {
+    @Column(name = "visitor_ip", length = 45)
+    private String visitorIp;
+
+    @Builder
+    public Visit(MiniHomepage miniHomepage, User visitor,  String visitorIp) {
         this.miniHomepage = miniHomepage;
         this.visitor = visitor;
+        this.visitorIp = visitorIp;
     }
 }

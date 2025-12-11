@@ -4,7 +4,7 @@ package com.hyunjoying.cyworld.domain.ilchon.entity;
 import com.hyunjoying.cyworld.common.BaseEntity;
 import com.hyunjoying.cyworld.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.*;
+        import lombok.*;
 
 
 @Entity

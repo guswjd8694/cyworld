@@ -263,14 +263,17 @@ function BgmPlayer({ userId, ownerName }) {
                         onEnded={handleEnded}
                         aria-hidden="true"
                     />
-                    <div className="track-info">
-                        <span
-                            key={`${currentTrackIndex}-${marqueeKey}`}
-                            className="track-title"
-                            ref={marqueeRef}
-                        >
-                            {currentTrack ? `${currentTrack.title} - ${currentTrack.artist}` : 'BGM 없음'}
-                        </span>
+                    <div className="track-wrap">
+                        <img src="/imgs/icon_music.png" alt="cd 아이콘" />
+                        <div className="track-info">
+                            <span
+                                key={`${currentTrackIndex}-${marqueeKey}`}
+                                className="track-title"
+                                ref={marqueeRef}
+                            >
+                                {currentTrack ? `${currentTrack.title} - ${currentTrack.artist}` : 'BGM 없음'}
+                            </span>
+                        </div>
                     </div>
                     <div className="controls">
                         <button onClick={handlePlayPause} aria-label={isPlaying ? "일시정지" : "재생"}>{isPlaying ? <PauseIcon /> : <PlayIcon />}</button>

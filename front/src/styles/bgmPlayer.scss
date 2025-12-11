@@ -2,6 +2,7 @@
 
 
 .bgm-player {
+    max-width: 190px;
     background-color: #fff;
     border-radius: 4px;
     font-size: 12px;
@@ -91,7 +92,7 @@
     .player-wrap {
         position: relative;
         background-color: #ededed;
-        padding: 10px;
+        padding: 6px;
 
         .controls {
             display: flex;
@@ -122,15 +123,26 @@
             height: 12px;
         }
 
-        .track-info {
-            width: 170px;
+        .track-wrap {
+            display: flex;
+            align-items: center;
             padding: 2px 4px;
             margin-bottom: 10px;
             background-color: #f9f9f9;
             border: 1px solid #c8c8c8;
+
+            img {
+                width: 12px;
+                margin-right: 4px;
+            }
+        }
+
+        .track-info {
+            width: 170px;
             position: relative;
             overflow: hidden;
             white-space: nowrap;
+
 
             .track-title {
                 display: inline-block;

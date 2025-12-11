@@ -56,9 +56,9 @@ function RightPageLayout({ children, owner, title, onTitleUpdate, onIlchonClick,
                             ) : (
                                 showIlchonButton && <li><button type="button" onClick={onIlchonClick}>+일촌 맺기</button></li>
                             )}
-                            {!isOwner && (
+                            {/* {!isOwner && (
                                 <li><button type="button">+팬되기</button></li>
-                            )}
+                            )} */}
                         </ul>
                         <a href="#">http://www.cyworld.com/{owner?.loginId}</a>
                     </div>
