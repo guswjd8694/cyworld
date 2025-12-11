@@ -24,7 +24,6 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
 
     Page<Board> findByMiniHomepageIdAndTypeAndIsPublicTrue(Integer miniHomepageId, String type, Pageable pageable);
 
-
     @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user"})
     List<Board> findAllByMiniHomepageIdAndTypeOrderByCreatedAtDesc(Integer miniHomepageId, String type);
 
@@ -34,10 +33,10 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
     @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user"})
     List<Board> findByMiniHomepageIdAndTypeAndIsPublicTrueAndCreatedAtBetween(Integer miniHomepageId, String type, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user", "images"})
+    @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user"})
     List<Board> findTop4ByMiniHomepageIdAndTypeInOrderByCreatedAtDesc(Integer miniHomepageId, List<String> types);
 
-    @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user", "images"})
+    @EntityGraph(attributePaths = {"user", "miniHomepage", "miniHomepage.user"})
     List<Board> findTop4ByMiniHomepageIdAndTypeInAndIsPublicTrueOrderByCreatedAtDesc(Integer miniHomepageId, List<String> types);
 
 

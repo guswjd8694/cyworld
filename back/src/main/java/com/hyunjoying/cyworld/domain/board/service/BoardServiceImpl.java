@@ -92,20 +92,23 @@ public class BoardServiceImpl implements BoardService {
         List<Board> boardList = boardPage.getContent();
         List<GetBoardResponseDto> dtoList = new ArrayList<>();
 
-        Set<User> friends = boardList.stream()
+        Set<Integer> friendIds = boardList.stream()
                 .filter(b -> "ILCHONPYEONG".equals(b.getType()))
-                .map(Board::getUser)
+                .map(b -> b.getUser().getId())
                 .collect(Collectors.toSet());
 
-        Map<Integer, String> nicknameMap = ilchonRepository.findByUserAndFriendInAndStatus(
-                miniHomepage.getUser(),
-                friends,
-                Ilchon.IlchonStatus.ACCEPTED)
-                .stream()
-                .collect(Collectors.toMap(
-                        ilchon -> ilchon.getFriend().getId(),
-                        Ilchon::getNickname
-                ));
+        Map<Integer, String> nicknameMap = new HashMap<>();
+        if (!friendIds.isEmpty()) {
+            nicknameMap = ilchonRepository.findLatestByUserInAndFriendAndStatus(
+                            friendIds,
+                            miniHomepage.getUser().getId(),
+                            Ilchon.IlchonStatus.ACCEPTED.name())
+                    .stream()
+                    .collect(Collectors.toMap(
+                            ilchon -> ilchon.getUser().getId(),
+                            Ilchon::getNickname
+                    ));
+        }
 
         for (int i = 0; i < boardList.size(); i++) {
             Board board = boardList.get(i);
