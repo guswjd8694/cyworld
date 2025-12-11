@@ -2,10 +2,11 @@ package com.hyunjoying.cyworld.domain.minihomepage.service;
 
 import com.hyunjoying.cyworld.domain.minihomepage.dto.request.UpdateMinihomeRequestDto;
 import com.hyunjoying.cyworld.domain.minihomepage.dto.response.GetMinihomeResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface MinihomeService {
-    GetMinihomeResponseDto getMinihomeInfo(Integer userId);
-    void updateMinihomeTitle(Integer userId, UpdateMinihomeRequestDto requestDto);
-    GetMinihomeResponseDto recordAndIncrementVisit(Integer ownerUserId, Integer visitorId);
+    GetMinihomeResponseDto getMinihomeInfoByLoginId(String loginId);
+    void updateMinihomeTitle(String loginId, UpdateMinihomeRequestDto requestDto);
+    GetMinihomeResponseDto recordAndIncrementVisit(String ownerLoginId, Integer visitorId, HttpServletRequest request);
 }
 

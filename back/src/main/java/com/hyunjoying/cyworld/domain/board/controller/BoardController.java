@@ -36,21 +36,40 @@ public class BoardController {
     private final BoardService boardService;
 
 
-    @Operation(summary = "게시글 목록 조회", description = "특정 사용자의 게시글 목록을 조회합니다.", tags = {"board"})
+    @Operation(summary = "게시판 조회 (타입별/날짜별)", description = "쿼리 파라미터(type, date, pageable)에 따라 게시글 목록 또는 특정 날짜의 다이어리를 조회합니다.", tags = {"board"})
     @ApiResponse(
-            description = "게시글 목록 조회 성공",
+            description = "게시판 조회 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))
     )
     @GetMapping("/users/{userId}/boards")
     public ResponseEntity<Page<GetBoardResponseDto>> getBoards(
             @PathVariable Integer userId,
             @RequestParam String type,
-            Pageable pageable
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            Pageable pageable,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        Page<GetBoardResponseDto> boardPage = boardService.getBoards(userId, type, pageable);
+        User viewer = (userDetails != null) ? userDetails.getUser() : null;
+        Page<GetBoardResponseDto> boardPage = boardService.getBoards(userId, viewer, type, date, pageable);
 
         return ResponseEntity.ok(boardPage);
     }
+
+    @Operation(summary = "최근 게시물 조회", description = "홈 화면에 표시될 최근 게시물 4개를 조회합니다.", tags = {"board"})
+    @ApiResponse(
+            description = "최근 게시물 조회 성공",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GetBoardResponseDto.class)))
+    )
+    @GetMapping("/users/{userId}/boards/recent")
+    public ResponseEntity<List<GetBoardResponseDto>> getRecentBoards(
+            @PathVariable Integer userId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User viewer = (userDetails != null) ? userDetails.getUser() : null;
+        List<GetBoardResponseDto> recentBoards = boardService.getRecentBoards(userId, viewer);
+        return ResponseEntity.ok(recentBoards);
+    }
+
 
 
     @Operation(summary = "게시글 생성", description = "로그인한 사용자가 특정 미니홈피에 게시글을 작성합니다.", tags = {"board"})
@@ -77,8 +96,9 @@ public class BoardController {
             description = "게시글 수정 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping("/boards/{boardId}")
+    @PutMapping("/users/{userId}/boards/{boardId}")
     public ResponseEntity<SuccessResponseDto> updateBoard(
+            @PathVariable Integer userId,
             @PathVariable Integer boardId,
             @RequestBody UpdateBoardRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -89,14 +109,23 @@ public class BoardController {
         return ResponseEntity.ok(new SuccessResponseDto("게시글이 성공적으로 수정되었습니다."));
     }
 
-//    @PutMapping("/api/boards/{boardId}/privacy")
-//    public void updateBoardPrivacy(
-//            @PathVariable Integer boardId,
-//            @Valid @RequestBody UpdateBoardPrivacyDto requestDto,
-//            @AuthenticationPrincipal UserDetailsImpl userDetails
-//    ) {
-//        boardService.updateBoardPrivacy(boardId, requestDto.getIsPublic(), userDetails.getUser());
-//    }
+
+    @Operation(summary = "게시글 공개 설정 변경 (비밀로하기/공개하기)", description = "로그인한 사용자가 자신의 게시글 공개 설정을 변경합니다.", tags = {"board"})
+    @ApiResponse(
+            description = "공개 설정 변경 성공",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
+    )
+    @PatchMapping("/users/{userId}/boards/{boardId}/privacy")
+    public ResponseEntity<SuccessResponseDto> updateBoardPrivacy(
+            @PathVariable Integer userId,
+            @PathVariable Integer boardId,
+            @RequestBody UpdateBoardPrivacyDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User currentUser = userDetails.getUser();
+        boardService.updateBoardPrivacy(boardId, currentUser.getId(), requestDto);
+        return ResponseEntity.ok(new SuccessResponseDto("공개 설정이 변경되었습니다."));
+    }
 
 
     @Operation(summary = "게시글 삭제", description = "로그인한 사용자가 자신의 게시글을 삭제합니다.", tags = {"board"})
@@ -104,8 +133,9 @@ public class BoardController {
             description = "게시글 삭제 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @DeleteMapping("/boards/{boardId}")
+    @DeleteMapping("/users/{userId}/boards/{boardId}")
     public ResponseEntity<SuccessResponseDto> deleteBoard(
+            @PathVariable Integer userId,
             @PathVariable Integer boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
@@ -115,32 +145,6 @@ public class BoardController {
         return ResponseEntity.ok(new SuccessResponseDto("게시글이 성공적으로 삭제되었습니다."));
     }
 
-
-    @Operation(summary = "날짜별 다이어리 조회", description = "특정 사용자의 특정 날짜에 작성된 다이어리를 조회합니다.", tags = {"board"})
-    @ApiResponse(
-            description = "다이어리 조회 성공",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetBoardResponseDto.class))
-    )
-    @GetMapping("/users/{userId}/diary")
-    public ResponseEntity<GetBoardResponseDto> getDiaryByDate(
-            @PathVariable Integer userId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ){
-        GetBoardResponseDto diary = boardService.getDiaryByDate(userId, date);
-        return ResponseEntity.ok(diary);
-    }
-
-
-    @Operation(summary = "최근 게시물 조회", description = "홈 화면에 표시될 최근 게시물 4개를 조회합니다.", tags = {"board"})
-    @ApiResponse(
-            description = "최근 게시물 조회 성공",
-            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GetBoardResponseDto.class)))
-    )
-    @GetMapping("/users/{userId}/boards/recent")
-    public ResponseEntity<List<GetBoardResponseDto>> getRecentBoards(@PathVariable Integer userId) {
-        List<GetBoardResponseDto> recentBoards = boardService.getRecentBoards(userId);
-        return ResponseEntity.ok(recentBoards);
-    }
 
 
     @Operation(summary = "게시판별 게시물 수 조회", description = "사진첩, 다이어리, 방명록 각각의 게시물 수를 조회합니다.", tags = {"board"})

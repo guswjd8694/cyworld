@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users/{userId}/mini-homepage")
+@RequestMapping("/mini-homepage")
 public class MinihomeController {
     private final MinihomeService minihomeService;
 
@@ -25,9 +26,9 @@ public class MinihomeController {
             description = "미니홈피 정보 조회 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetMinihomeResponseDto.class))
     )
-    @GetMapping
-    public ResponseEntity<GetMinihomeResponseDto> getMinihomeInfo(@PathVariable Integer userId) {
-        GetMinihomeResponseDto responseDto = minihomeService.getMinihomeInfo(userId);
+    @GetMapping("/{loginId}")
+    public ResponseEntity<GetMinihomeResponseDto> getMinihomeInfo(@PathVariable String loginId) {
+        GetMinihomeResponseDto responseDto = minihomeService.getMinihomeInfoByLoginId(loginId);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -36,14 +37,15 @@ public class MinihomeController {
             description = "미니홈피 방문 및 조회수 증가 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetMinihomeResponseDto.class))
     )
-    @PostMapping("/visit")
+    @PostMapping("/{loginId}/visit")
     public ResponseEntity<GetMinihomeResponseDto> recordVisit(
-            @PathVariable("userId") Integer ownerUserId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @PathVariable("loginId") String ownerLoginId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            HttpServletRequest request
     ) {
         Integer visitorId = (userDetails != null) ? userDetails.getUser().getId() : null;
 
-        GetMinihomeResponseDto updatedMinihome = minihomeService.recordAndIncrementVisit(ownerUserId, visitorId);
+        GetMinihomeResponseDto updatedMinihome = minihomeService.recordAndIncrementVisit(ownerLoginId, visitorId, request);
 
         return ResponseEntity.ok(updatedMinihome);
     }
@@ -53,12 +55,12 @@ public class MinihomeController {
             description = "미니홈피 수정 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))
     )
-    @PutMapping
+    @PatchMapping("/{loginId}/title")
     public ResponseEntity<SuccessResponseDto> updateMinihomeTitle(
-            @PathVariable Integer userId,
+            @PathVariable String loginId,
             @RequestBody UpdateMinihomeRequestDto requestDto
     ) {
-        minihomeService.updateMinihomeTitle(userId, requestDto);
+        minihomeService.updateMinihomeTitle(loginId, requestDto);
         return ResponseEntity.ok(new SuccessResponseDto("미니홈피 타이틀이 성공적으로 수정되었습니다."));
     }
 }

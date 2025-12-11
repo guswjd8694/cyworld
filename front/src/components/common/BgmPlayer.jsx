@@ -12,7 +12,7 @@ function BgmPlayer({ userId, ownerName }) {
     const [playlist, setPlaylist] = useState([]);
     const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(0.5);
+    const [volume, setVolume] = useState(0.1);
     const [isPlaylistVisible, setIsPlaylistVisible] = useState(false);
     const audioRef = useRef(null);
     const marqueeRef = useRef(null);
@@ -52,7 +52,7 @@ function BgmPlayer({ userId, ownerName }) {
 
             if (isOwner) {
                 try {
-                    const response = await apiClient.get('/users/recommendations/random');
+                    const response = await apiClient.get('/users/random-recommendation');
                     setRecommendations(response.data ? [response.data] : []);
                 } catch (error) {
                     if (error.response && error.response.status !== 204) {
@@ -62,7 +62,7 @@ function BgmPlayer({ userId, ownerName }) {
                 }
             } else if (currentUser) {
                 try {
-                    const response = await apiClient.get(`/ilchons/relationship?currentUserId=${currentUser.id}&targetUserId=${userId}`);
+                    const response = await apiClient.get(`/ilchons?currentUserId=${currentUser.id}&targetUserId=${userId}`);
                     setRelationship(response.data.degree);
                 } catch (error) {
                     console.error("촌수 계산 실패:", error);
@@ -263,14 +263,17 @@ function BgmPlayer({ userId, ownerName }) {
                         onEnded={handleEnded}
                         aria-hidden="true"
                     />
-                    <div className="track-info">
-                        <span
-                            key={`${currentTrackIndex}-${marqueeKey}`}
-                            className="track-title"
-                            ref={marqueeRef}
-                        >
-                            {currentTrack ? `${currentTrack.title} - ${currentTrack.artist}` : 'BGM 없음'}
-                        </span>
+                    <div className="track-wrap">
+                        <img src="/imgs/icon_music.png" alt="cd 아이콘" />
+                        <div className="track-info">
+                            <span
+                                key={`${currentTrackIndex}-${marqueeKey}`}
+                                className="track-title"
+                                ref={marqueeRef}
+                            >
+                                {currentTrack ? `${currentTrack.title} - ${currentTrack.artist}` : 'BGM 없음'}
+                            </span>
+                        </div>
                     </div>
                     <div className="controls">
                         <button onClick={handlePlayPause} aria-label={isPlaying ? "일시정지" : "재생"}>{isPlaying ? <PauseIcon /> : <PlayIcon />}</button>

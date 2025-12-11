@@ -48,9 +48,8 @@ function Ilchonpyeong({ userId, ilchonStatus }) {
         setEditedContent(post.content);
     };
 
-    const isIlchon = ilchonStatus === 'ACCEPTED';
+    const isIlchon = ilchonStatus === 1; 
     const canWrite = isOwner || isIlchon;
-
     return (
         <section className="ilchon" aria-labelledby="ilchon-title">
             <h2 id="ilchon-title">일촌평</h2>

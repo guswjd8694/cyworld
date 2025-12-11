@@ -1,6 +1,8 @@
 package com.hyunjoying.cyworld.domain.user.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +10,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SignUpRequestDto {
     @Schema(example = "newuser", description = "로그인 아이디", requiredMode = Schema.RequiredMode.REQUIRED)
     private String loginId;

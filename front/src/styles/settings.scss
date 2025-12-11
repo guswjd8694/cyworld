@@ -36,8 +36,60 @@
             font-size: 14px;
         }
 
+        .validation-message {
+            font-size: 12px;
+            padding-left: 5px;
+
+            &.error {
+                color: #e53e3e;
+            }
+
+            &.success {
+                color: #38a169;
+            }
+            
+            &.caps-lock {
+                color: #dd6b20;
+                font-weight: 500;
+            }
+        }
+
         .form-group {
             width: 100%;
+        }
+
+        .gender-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+
+            label {
+                input[type="radio"] {
+                    position: absolute;
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+
+                span {
+                    display: block;
+                    padding: 12px;
+                    border: 1px solid $border-color;
+                    border-radius: 4px;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.2s ease-in-out;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                }
+
+                input[type="radio"]:checked + span {
+                    background-color: #ccc;
+                    color: white;
+                    border-color: #ccc;
+                    font-weight: bold;
+                }
+            }
         }
 
         .error-message {

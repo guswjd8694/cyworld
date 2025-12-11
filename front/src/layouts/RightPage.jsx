@@ -17,7 +17,7 @@ function RightPageLayout({ children, owner, title, onTitleUpdate, onIlchonClick,
         setIsEditingTitle(false);
     };
 
-    const showIlchonButton = ilchonStatus === 'NONE';
+    const showIlchonButton = ilchonStatus !== 1 && ilchonStatus !== 0 && ilchonStatus !== -2;
 
     return (
         <section className="section_right book_cover right_page">
@@ -56,9 +56,9 @@ function RightPageLayout({ children, owner, title, onTitleUpdate, onIlchonClick,
                             ) : (
                                 showIlchonButton && <li><button type="button" onClick={onIlchonClick}>+일촌 맺기</button></li>
                             )}
-                            {!isOwner && (
+                            {/* {!isOwner && (
                                 <li><button type="button">+팬되기</button></li>
-                            )}
+                            )} */}
                         </ul>
                         <a href="#">http://www.cyworld.com/{owner?.loginId}</a>
                     </div>

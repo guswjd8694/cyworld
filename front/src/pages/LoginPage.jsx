@@ -26,7 +26,7 @@ function LoginPage() {
         setError(''); 
 
         try {
-            const response = await apiClient.post('/users/login', { loginId, password });
+            const response = await apiClient.post('/auth/login', { loginId, password });
 
             const token = response.headers['authorization'];
 
@@ -81,7 +81,7 @@ function LoginPage() {
             {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
 
             <ul className="sub-links">
-                {/* <li><Link to="/find">아이디/비밀번호 찾기</Link></li> */}
+                <li><Link to="/find">아이디/비밀번호 찾기</Link></li>
                 <li><Link to="/signup">회원가입</Link></li>
             </ul>
         </main>

@@ -85,6 +85,32 @@ public class GetBoardResponseDto {
         this.updatedAt = board.getUpdatedAt();
         this.writerNickname = writerNickname;
         this.writerLoginId = writer.getLoginId();
-        this.previewContent = Jsoup.parse(board.getContent()).text();
+
+
+        String textContent = (board.getContent() == null) ? "" : Jsoup.parse(board.getContent()).text();
+        this.previewContent = textContent;
+    }
+
+    public GetBoardResponseDto(Board board, User writer, Long boardNo, String writerNickname, String maskedContent) {
+        this.boardId = board.getId();
+        this.writerId = writer.getId();
+        this.boardNo = boardNo;
+        this.writerName = writer.getName();
+        this.title = board.getTitle();
+        this.images = board.getActiveImages().stream()
+                .map(BoardImage::getImageUrl)
+                .collect(Collectors.toList());
+        this.type = board.getType();
+        this.weather = board.getWeather();
+        this.mood = board.getMood();
+        this.isPublic = board.isPublic();
+        this.createdAt = board.getCreatedAt();
+        this.updatedAt = board.getUpdatedAt();
+        this.writerNickname = writerNickname;
+        this.writerLoginId = writer.getLoginId();
+
+        String preview = (maskedContent == null) ? "" : maskedContent;
+        this.content = preview;
+        this.previewContent = preview;
     }
 }

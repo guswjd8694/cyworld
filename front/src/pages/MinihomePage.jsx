@@ -41,32 +41,33 @@ function MinihomePage() {
         setPageError(false);
 
         try {
-            const ownerRes = await apiClient.get(`/users/by-login-id/${loginId}`);
+            const ownerRes = await apiClient.get(`/users/${loginId}`);
             const ownerData = ownerRes.data;
 
             if (!ownerData || !ownerData.id) {
                 throw new Error('Owner not found');
             }
-            
+
             setMinihomeOwner(ownerData);
+            
             const ownerId = ownerData.id;
 
-            const visitResPromise = apiClient.post(`/users/${ownerId}/mini-homepage/visit`);
+            const visitResPromise = apiClient.post(`/mini-homepage/${loginId}/visit`);
 
-            const [profileRes, statusRes, requestsRes, visitRes] = await Promise.all([
+            const [profileRes, relationRes, requestsRes, visitRes] = await Promise.all([
                 apiClient.get(`/users/${ownerId}/profile`),
                 currentUser && currentUser.id !== ownerId
-                    ? apiClient.get(`/ilchons/status?targetUserId=${ownerId}`)
-                    : Promise.resolve({ data: { status: currentUser ? 'OWNER' : 'NONE' } }),
+                    ? apiClient.get(`/ilchons?currentUserId=${currentUser.id}&targetUserId=${ownerId}`)
+                    : Promise.resolve({ data: { degree: 0 } }),
                 currentUser && currentUser.id === ownerId
-                    ? apiClient.get(`/ilchons/requests/received`)
+                    ? apiClient.get(`/ilchons-requests?toUser=me&status=PENDING`) 
                     : Promise.resolve({ data: [] }),
                 visitResPromise
             ]);
             
             setMinihomeData(visitRes.data);
             setProfileData(profileRes.data);
-            setIlchonStatus(statusRes.data.status);
+            setIlchonStatus(relationRes.data.degree);
             setReceivedRequests(requestsRes.data);
 
         } catch (error) {
@@ -75,16 +76,18 @@ function MinihomePage() {
         } finally {
             setLoading(false);
         }
+        
     }, [loginId, authLoading, currentUser]);
+
 
     useEffect(() => {
         setActiveView({ view: 'HOME', params: {} });
         fetchData();
-    }, [loginId]);
+    }, [loginId, fetchData]);
 
     const handleTitleUpdate = async (newTitle) => {
         try {
-            await apiClient.put(`/users/${minihomeOwner.id}/mini-homepage`, { title: newTitle });
+            await apiClient.patch(`/mini-homepage/${loginId}/title`, { title: newTitle });
             setMinihomeData(prev => ({ ...prev, title: newTitle }));
         } catch (err) {
             console.error("타이틀 수정 실패:", err);
@@ -99,7 +102,8 @@ function MinihomePage() {
             setIsIlchonModalOpen(true);
         }
     };
-    
+
+
     if (loading || pageError || !minihomeOwner || !minihomeData || !profileData) {
         return <div>미니홈피 로딩 중...</div>;
     }
@@ -148,7 +152,7 @@ function MinihomePage() {
                 }
             </div>
             
-            {minihomeOwner && <BgmPlayer userId={minihomeOwner.id} ownerName={minihomeOwner.name}/>}
+            {minihomeOwner && <BgmPlayer key={minihomeOwner.id} userId={minihomeOwner.id} ownerName={minihomeOwner.name}/>}
         </>
     );
 }

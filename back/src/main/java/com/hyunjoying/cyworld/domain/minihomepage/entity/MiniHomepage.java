@@ -51,9 +51,13 @@ public class MiniHomepage extends BaseEntity {
         this.title = title;
     }
 
-    public void incrementTodayAndTotalVisits() {
-        this.todayVisits++;
+
+    public void incrementTotalVisits() {
         this.totalVisits++;
+    }
+
+    public void incrementTodayVisits() {
+        this.todayVisits++;
     }
 
 

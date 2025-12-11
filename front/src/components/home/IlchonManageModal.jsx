@@ -6,26 +6,30 @@ import '../../styles/Modal.scss';
 import '../../styles/IlchonModal.scss';
 
 function MyIlchonsTab({ ilchons, onUpdate }) {
-    const [editingState, setEditingState] = useState({ id: null, myNickname: '', friendNickname: '' });
+    const [editingState, setEditingState] = useState({ 
+        id: null,
+        nicknameForToUser: '', 
+        nicknameForFromUser: ''
+    });
 
     const handleEditClick = (ilchon) => {
         setEditingState({ 
-            id: ilchon.friendId, 
-            myNickname: ilchon.myNicknameForFriend,
-            friendNickname: ilchon.friendNicknameForMe
+            id: ilchon.friendId,
+            nicknameForToUser: ilchon.nicknameForToUser,
+            nicknameForFromUser: ilchon.nicknameForFromUser
         });
     };
 
     const handleCancelEdit = () => {
-        setEditingState({ id: null, myNickname: '', friendNickname: '' });
+        setEditingState({ id: null, nicknameForToUser: '', nicknameForFromUser: '' });
     };
 
     const handleSaveNickname = async () => {
         try {
             await apiClient.put(`/ilchons/nickname`, {
                 targetUserId: editingState.id,
-                myNicknameForFriend: editingState.myNickname,
-                friendNicknameForMe: editingState.friendNickname
+                nicknameForToUser: editingState.nicknameForToUser,
+                nicknameForFromUser: editingState.nicknameForFromUser
             });
             alert("일촌명이 변경되었습니다.");
             handleCancelEdit();
@@ -38,7 +42,7 @@ function MyIlchonsTab({ ilchons, onUpdate }) {
     const handleBreakIlchon = async (targetUserId) => {
         if (window.confirm("정말로 일촌을 끊으시겠습니까?")) {
             try {
-                await apiClient.delete(`/ilchons/${targetUserId}`);
+                await apiClient.delete(`/ilchons/${targetUserId}`); 
                 alert("일촌 관계가 해제되었습니다.");
                 onUpdate();
             } catch (error) {
@@ -52,21 +56,21 @@ function MyIlchonsTab({ ilchons, onUpdate }) {
             {ilchons.length > 0 ? (
                 <ul className="ilchon-list">
                     {ilchons.map(ilchon => (
-                        <li key={ilchon.friendId}>
+                        <li key={ilchon.ilchonRequestId}>
                             {editingState.id === ilchon.friendId ? (
                                 <div className="edit-nickname-form">
                                     <div className='nickname-inputs'>
                                         <input 
                                             type="text" 
-                                            value={editingState.friendNickname} 
-                                            onChange={(e) => setEditingState(prev => ({...prev, friendNickname: e.target.value}))}
+                                            value={editingState.nicknameForFromUser} 
+                                            onChange={(e) => setEditingState(prev => ({...prev, nicknameForFromUser: e.target.value}))}
                                             placeholder="친구가 부를 이름"
                                         />
                                         <span className="separator">↔</span>
                                         <input 
                                             type="text" 
-                                            value={editingState.myNickname} 
-                                            onChange={(e) => setEditingState(prev => ({...prev, myNickname: e.target.value}))}
+                                            value={editingState.nicknameForToUser} 
+                                            onChange={(e) => setEditingState(prev => ({...prev, nicknameForToUser: e.target.value}))}
                                             placeholder="내가 부를 이름"
                                         />
                                     </div>
@@ -82,11 +86,11 @@ function MyIlchonsTab({ ilchons, onUpdate }) {
                                             <strong>
                                                 <Link to={`/${ilchon.friendLoginId}`}>{ilchon.friendName}</Link>
                                             </strong>
-                                            ({ilchon.friendNicknameForMe})
+                                            ({ilchon.nicknameForToUser})
                                         </span>
                                         <span className="separator">↔</span>
                                         <span className="my-info">
-                                            <strong>나</strong>({ilchon.myNicknameForFriend})
+                                            <strong>나</strong>({ilchon.nicknameForFromUser})
                                         </span>
                                     </div>
                                     <div className="ilchon-actions">
@@ -107,7 +111,9 @@ function SentRequestsTab({ requests, onUpdate }) {
     const handleCancelRequest = async (requestId) => {
         if (window.confirm("일촌 신청을 취소하시겠습니까?")) {
             try {
-                await apiClient.delete(`/ilchons/requests/${requestId}/cancel`);
+                await apiClient.delete(`/ilchons-requests/${requestId}`, {
+                    status: "CANCELED"
+                });
                 alert("신청이 취소되었습니다.");
                 onUpdate();
             } catch(error) {
@@ -124,12 +130,12 @@ function SentRequestsTab({ requests, onUpdate }) {
                         <li key={req.ilchonRequestId}>
                             <div className="ilchon-link">
                                 <span className="friend-info">
-                                    <Link to={`/${req.friendLoginId}`}>{req.friendName}</Link>
-                                    ({req.friendNicknameForMe})
+                                    <Link to={`/${req.receiverLoginId}`}>{req.receiverName}</Link>
+                                    ({req.nicknameForToUser})
                                 </span>
                                 <span className="separator">↔</span>
                                 <span className="my-info">
-                                    나 ({req.myNicknameForFriend})
+                                    나 ({req.nicknameForFromUser})
                                 </span>
                             </div>
                             <div className="ilchon-actions">
@@ -161,7 +167,7 @@ function RequestDetail({ request, onAccept, onReject }) {
             <div className="nickname-info">
                 <p>아래 일촌명으로 신청하셨습니다.</p>
                 <p className="nickname-display">
-                    {request.requesterName}({request.requesterNicknameForMe}) - {request.receiverName}({request.myNicknameForRequester})
+                    {request.requesterName}({request.nicknameForFromUser}) - {request.receiverName}({request.nicknameForToUser})
                 </p>
             </div>
             <footer className="modal-footer">
@@ -185,7 +191,9 @@ function ReceivedRequestsTab({ requests, onUpdate }) {
 
     const handleAccept = async (requestId) => {
         try {
-            await apiClient.put(`/ilchons/${requestId}/accept`);
+            await apiClient.patch(`/ilchons-requests/${requestId}`, {
+                status: "ACCEPTED"
+            });
             onUpdate();
         } catch (err) {
             alert(err.response?.data?.message || '수락에 실패했습니다.');
@@ -194,7 +202,9 @@ function ReceivedRequestsTab({ requests, onUpdate }) {
 
     const handleReject = async (requestId) => {
         try {
-            await apiClient.delete(`/ilchons/requests/${requestId}/reject`);
+            await apiClient.patch(`/ilchons-requests/${requestId}`, {
+                status: "REJECTED"
+            });
             onUpdate();
         } catch (err) {
             alert(err.response?.data?.message || '거절에 실패했습니다.');
@@ -235,9 +245,9 @@ function IlchonManageModal({ onClose, initialTab = 'myIlchons', onUpdatePage }) 
         setLoading(true);
         try {
             const [myIlchonsRes, sentRes, receivedRes] = await Promise.all([
-                apiClient.get(`/ilchons/users/${currentUser.id}`),
-                apiClient.get('/ilchons/requests/sent'),
-                apiClient.get('/ilchons/requests/received')
+                apiClient.get(`/users/${currentUser.id}/ilchons`),
+                apiClient.get('/ilchons-requests?fromUser=me&status=PENDING'),
+                apiClient.get('/ilchons-requests?toUser=me&status=PENDING')
             ]);
             setData({
                 myIlchons: myIlchonsRes.data,
@@ -257,6 +267,8 @@ function IlchonManageModal({ onClose, initialTab = 'myIlchons', onUpdatePage }) 
     }, [fetchData]);
 
     const handleUpdate = () => {
+        console.log("IlchonManageModal: handleUpdate 실행. '내부' fetchData와 '부모' onUpdatePage 호출 시작.");
+        
         fetchData();
         if (onUpdatePage) {
             onUpdatePage();

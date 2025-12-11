@@ -1,22 +1,24 @@
 package com.hyunjoying.cyworld.domain.board.service;
 
+import com.hyunjoying.cyworld.common.exception.ValidationExceptionHandler;
 import com.hyunjoying.cyworld.common.util.EntityFinder;
 import com.hyunjoying.cyworld.domain.board.dto.request.CreateBoardRequestDto;
+import com.hyunjoying.cyworld.domain.board.dto.request.UpdateBoardPrivacyDto;
 import com.hyunjoying.cyworld.domain.board.dto.request.UpdateBoardRequestDto;
 import com.hyunjoying.cyworld.domain.board.dto.response.BoardCountDto;
 import com.hyunjoying.cyworld.domain.board.dto.response.GetBoardResponseDto;
 import com.hyunjoying.cyworld.domain.board.entity.Board;
 import com.hyunjoying.cyworld.domain.board.entity.BoardImage;
-import com.hyunjoying.cyworld.domain.board.repository.BoardImageRepository;
 import com.hyunjoying.cyworld.domain.board.repository.BoardRepository;
 import com.hyunjoying.cyworld.domain.comment.dto.request.CreateCommentRequestDto;
 import com.hyunjoying.cyworld.domain.comment.dto.response.GetCommentResponseDto;
 import com.hyunjoying.cyworld.domain.comment.entity.Comment;
 import com.hyunjoying.cyworld.domain.comment.repository.CommentRepository;
+import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRequestRepository;
 import com.hyunjoying.cyworld.domain.minihomepage.entity.MiniHomepage;
-import com.hyunjoying.cyworld.domain.user.entity.Ilchon;
+import com.hyunjoying.cyworld.domain.ilchon.entity.Ilchon;
 import com.hyunjoying.cyworld.domain.user.entity.User;
-import com.hyunjoying.cyworld.domain.user.repository.IlchonRepository;
+import com.hyunjoying.cyworld.domain.ilchon.repository.IlchonRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
@@ -43,44 +45,88 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final IlchonRepository ilchonRepository;
+    private final IlchonRequestRepository ilchonRequestRepository;
     private final EntityFinder entityFinder;
     private final EntityManager entityManager;
 
+
     @Override
-    public Page<GetBoardResponseDto> getBoards(Integer userId, String type, Pageable pageable) {
+    public Page<GetBoardResponseDto> getBoards(Integer userId, User viewer, String type, LocalDate date, Pageable pageable) {
         MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
         Page<Board> boardPage;
 
-        if ("ILCHONPYEONG".equals(type)) {
+        boolean isOwner = (viewer != null) && viewer.getId().equals(userId);
+        Integer viewerId = (viewer != null) ? viewer.getId() : null;
+
+        if (date != null) {
+            if (!"DIARY".equals(type)) {
+                throw new IllegalArgumentException("날짜별 조회는 다이어리만 가능합니다.");
+            }
+
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+            List<Board> boards;
+
+            if (isOwner) {
+                boards = boardRepository.findByMiniHomepageIdAndTypeAndCreatedAtBetween(miniHomepage.getId(), "DIARY", startOfDay, endOfDay);
+            } else {
+                boards = boardRepository.findByMiniHomepageIdAndTypeAndIsPublicTrueAndCreatedAtBetween(miniHomepage.getId(), "DIARY", startOfDay, endOfDay);
+            }
+            boardPage = new PageImpl<>(boards, pageable, boards.size());
+        } else if ("ILCHONPYEONG".equals(type)) {
             List<Board> allIlchonpyeongs = boardRepository.findAllByMiniHomepageIdAndTypeOrderByCreatedAtDesc(miniHomepage.getId(), type);
             boardPage = new PageImpl<>(allIlchonpyeongs, Pageable.unpaged(), allIlchonpyeongs.size());
-        } else {
+
+        } else if ("GUESTBOOK".equals(type)) {
             boardPage = boardRepository.findByMiniHomepageIdAndType(miniHomepage.getId(), type, pageable);
+
+        } else {
+            if (isOwner) {
+                boardPage = boardRepository.findByMiniHomepageIdAndType(miniHomepage.getId(), type, pageable);
+            } else {
+                boardPage = boardRepository.findByMiniHomepageIdAndTypeAndIsPublicTrue(miniHomepage.getId(), type, pageable);
+            }
         }
 
         long totalElements = boardPage.getTotalElements();
         List<Board> boardList = boardPage.getContent();
         List<GetBoardResponseDto> dtoList = new ArrayList<>();
 
+        Set<User> friends = boardList.stream()
+                .filter(b -> "ILCHONPYEONG".equals(b.getType()))
+                .map(Board::getUser)
+                .collect(Collectors.toSet());
+
+        Map<Integer, String> nicknameMap = ilchonRepository.findByUserAndFriendInAndStatus(
+                miniHomepage.getUser(),
+                friends,
+                Ilchon.IlchonStatus.ACCEPTED)
+                .stream()
+                .collect(Collectors.toMap(
+                        ilchon -> ilchon.getFriend().getId(),
+                        Ilchon::getNickname
+                ));
+
         for (int i = 0; i < boardList.size(); i++) {
             Board board = boardList.get(i);
-
             String nickname = null;
-            if ("ILCHONPYEONG".equals(board.getType())) {
-                if (!board.getUser().getId().equals(miniHomepage.getUser().getId())) {
 
-                    nickname = ilchonRepository.findByUserAndFriendAndStatusAndIsActiveTrue(
-                            miniHomepage.getUser(),
-                            board.getUser(),
-                            Ilchon.IlchonStatus.ACCEPTED)
-                            .map(Ilchon::getFriendNickname)
-                            .orElse(null);
-                }
+            if ("ILCHONPYEONG".equals(board.getType())) {
+                nickname = nicknameMap.get(board.getUser().getId());
             }
 
             Long boardNo = null;
             if (!"ILCHONPYEONG".equals(type)) {
                 boardNo = totalElements - ((long) pageable.getPageNumber() * pageable.getPageSize()) - i;
+            }
+
+            if ("GUESTBOOK".equals(board.getType()) && !board.isPublic()) {
+                boolean isWriter = (viewerId != null) && viewerId.equals(board.getUser().getId());
+
+                if (!isOwner && !isWriter) {
+                    dtoList.add(new GetBoardResponseDto(board, board.getUser(), boardNo, nickname, "🔒 비밀글입니다."));
+                    continue;
+                }
             }
 
             dtoList.add(new GetBoardResponseDto(board, board.getUser(), boardNo, nickname));
@@ -90,10 +136,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<GetBoardResponseDto> getRecentBoards(Integer userId) {
+    public List<GetBoardResponseDto> getRecentBoards(Integer userId, User viewer) {
         MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
         List<String> allowedTypes = Arrays.asList("PHOTO", "DIARY", "JUKEBOX");
-        List<Board> recentBoards = boardRepository.findTop4ByMiniHomepageIdAndTypeInOrderByCreatedAtDesc(miniHomepage.getId(), allowedTypes);
+        boolean isOwner = (viewer != null) && viewer.getId().equals(userId);
+        List<Board> recentBoards;
+
+        if (isOwner) {
+            recentBoards = boardRepository.findTop4ByMiniHomepageIdAndTypeInOrderByCreatedAtDesc(miniHomepage.getId(), allowedTypes);
+        } else {
+            recentBoards = boardRepository.findTop4ByMiniHomepageIdAndTypeInAndIsPublicTrueOrderByCreatedAtDesc(miniHomepage.getId(), allowedTypes);
+        }
 
         return recentBoards.stream()
                 .map(board -> new GetBoardResponseDto(board, board.getUser(), null, null))
@@ -107,19 +160,31 @@ public class BoardServiceImpl implements BoardService {
         MiniHomepage targetHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(requestDto.getMinihomepageOwnerId());
         String type = requestDto.getType();
 
+        boolean isPublicSetting = true;
+        if ("ILCHONPYEONG".equals(type)) {
+            isPublicSetting = true;
+        }
+        else if(requestDto.getPublicSetting() != null) {
+            isPublicSetting = requestDto.getPublicSetting();
+        }
+
         Board.BoardBuilder boardBuilder = Board.builder()
                 .user(writer)
                 .miniHomepage(targetHomepage)
                 .type(type)
-                .isPublic(requestDto.getPublicSetting());
+                .isPublic(isPublicSetting);
+
+        if (requestDto.getContent() == null) {
+            requestDto.setContent("");
+        }
 
         switch (type) {
             case "PHOTO":
                 if (requestDto.getImageUrls() == null || requestDto.getImageUrls().isEmpty()) {
-                    throw new IllegalArgumentException("이미지를 첨부해주세요.");
+                    throw new ValidationExceptionHandler("이미지를 첨부해주세요.");
                 }
                 if (requestDto.getTitle() == null || requestDto.getTitle().isEmpty()) {
-                    throw new IllegalArgumentException("제목을 입력해주세요.");
+                    throw new ValidationExceptionHandler("제목을 입력해주세요.");
                 }
 
                 Document doc = Jsoup.parse(requestDto.getContent());
@@ -137,7 +202,12 @@ public class BoardServiceImpl implements BoardService {
 
             case "ILCHONPYEONG":
                 boolean isOwner = writer.getId().equals(targetHomepage.getUser().getId());
-                boolean isIlchon = ilchonRepository.findByUserAndFriendAndStatusAndIsActiveTrue(writer, targetHomepage.getUser(), Ilchon.IlchonStatus.ACCEPTED).isPresent();
+                boolean isIlchon = ilchonRepository.findByUserAndFriendAndStatus(
+                        writer,
+                        targetHomepage.getUser(),
+                        Ilchon.IlchonStatus.ACCEPTED
+                        )
+                        .isPresent();
 
                 if (!isOwner && !isIlchon) {
                     throw new AccessDeniedException("일촌평은 일촌이거나 본인만 작성할 수 있습니다.");
@@ -153,14 +223,16 @@ public class BoardServiceImpl implements BoardService {
         Board newBoard = boardBuilder.build();
 
         if ("PHOTO".equals(requestDto.getType()) || "DIARY".equals(requestDto.getType())) {
-            List<BoardImage> imageEntities = requestDto.getImageUrls().stream()
-                    .map(url -> BoardImage.builder()
-                            .board(newBoard)
-                            .imageUrl(url)
-                            .build())
-                    .collect(Collectors.toList());
+            if (requestDto.getImageUrls() != null) {
+                List<BoardImage> imageEntities = requestDto.getImageUrls().stream()
+                        .map(url -> BoardImage.builder()
+                                .board(newBoard)
+                                .imageUrl(url)
+                                .build())
+                        .collect(Collectors.toList());
 
-            newBoard.addImages(imageEntities);
+                newBoard.addImages(imageEntities);
+            }
         }
 
         boardRepository.save(newBoard);
@@ -172,19 +244,47 @@ public class BoardServiceImpl implements BoardService {
     public void updateBoard(Integer boardId, Integer currentUserId, UpdateBoardRequestDto requestDto) {
         Board board = entityFinder.getBoardOrThrow(boardId);
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
+        boolean isWriter = board.getUser().getId().equals(currentUserId);
 
-        if (!board.getUser().getId().equals(currentUser.getId())) {
+        if (!isWriter) {
             throw new AccessDeniedException("게시글을 수정할 권한이 없습니다.");
         }
 
         board.update(requestDto);
     }
 
+
+    @Override
+    @Transactional
+    public void updateBoardPrivacy(Integer boardId, Integer currentUserId, UpdateBoardPrivacyDto requestDto) {
+        Board board = entityFinder.getBoardOrThrow(boardId);
+        User currentUser = entityFinder.getUserOrThrow(currentUserId);
+
+        boolean isWriter = board.getUser().getId().equals(currentUserId);
+        boolean isOwner = board.getMiniHomepage().getUser().getId().equals(currentUserId);
+
+        if ("GUESTBOOK".equals(board.getType())) {
+            if (!isWriter && !isOwner) {
+                throw new AccessDeniedException("게시글 공개 설정을 변경할 권한이 없습니다.");
+            }
+        } else {
+            if (!isWriter) {
+                throw new AccessDeniedException("게시글 공개 설정을 변경할 권한이 없습니다.");
+            }
+        }
+
+        board.updatePrivacy(requestDto.getPublicSetting());
+    }
+
+
+
     @Override
     @Transactional
     public void deleteBoard(Integer boardId, Integer currentUserId) {
         Board board = entityFinder.getBoardOrThrow(boardId);
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
+
+        boolean isOwner = board.getMiniHomepage().getUser().getId().equals(currentUser.getId());
 
         board.checkDeletionPermission(currentUser);
         commentRepository.deleteAll(board.getComments());
@@ -214,34 +314,31 @@ public class BoardServiceImpl implements BoardService {
         return comments.stream().map(GetCommentResponseDto::new).collect(Collectors.toList());
     }
 
-    @Override
-    public GetBoardResponseDto getDiaryByDate(Integer userId, LocalDate date) {
-        MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
 
-        return boardRepository.findByMiniHomepageIdAndTypeAndCreatedAtBetween(miniHomepage.getId(), "DIARY", startOfDay, endOfDay)
-                .map(board -> new GetBoardResponseDto(board, board.getUser(), null, null))
-                .orElse(null);
-    }
 
 
     @Override
     @Transactional(readOnly = true)
     public Map<String, BoardCountDto> getBoardCounts(Integer userId) {
         MiniHomepage miniHomepage = entityFinder.getMiniHomepageByUserIdOrThrow(userId);
-        Map<String, BoardCountDto> counts = new HashMap<>();
-        List<String> types = Arrays.asList("PHOTO", "DIARY", "JUKEBOX", "GUESTBOOK");
+        List<String> types = Arrays.asList("PHOTO", "DIARY", "JUKEBOX", "GUESTBOOK", "ILCHONPYEONG");
+        LocalDateTime recentDate = LocalDateTime.now().minusDays((7));
 
-        LocalDateTime recentCount = LocalDateTime.now().minusDays((7));
+        List<BoardRepository.BoardCountByTypeDto> countsDto = boardRepository.countBoardsByType(
+                miniHomepage.getId(), types, recentDate
+        );
+
+        Map<String, BoardCountDto> countsMap = countsDto.stream()
+                .collect(Collectors.toMap(
+                        BoardRepository.BoardCountByTypeDto::getType,
+                        dto -> new BoardCountDto(dto.getNewCount(), dto.getTotalCount())
+                ));
 
         for (String type : types) {
-            long totalCount = boardRepository.countByMiniHomepageIdAndType(miniHomepage.getId(), type);
-            long newCount = boardRepository.countByMiniHomepageIdAndTypeAndCreatedAtAfter(miniHomepage.getId(), type, recentCount);
-            counts.put(type, new BoardCountDto(newCount, totalCount));
+            countsMap.putIfAbsent(type, new BoardCountDto(0L, 0L));
         }
 
-        return counts;
+        return countsMap;
     }
 
 

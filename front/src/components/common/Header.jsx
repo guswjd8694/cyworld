@@ -17,7 +17,7 @@ function Header() {
 
     const handleRandomVisit = async () => {
         try {
-            const response = await apiClient.get('/users/random'); 
+            const response = await apiClient.get('/users/random-visit'); 
             const randomUserLoginId = response.data.loginId;
 
             if (randomUserLoginId) {

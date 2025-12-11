@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.data.domain.AuditorAware;
+import com.hyunjoying.cyworld.config.RateLimitingFilter;
 
 import java.util.List;
 
@@ -26,9 +27,8 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitingFilter rateLimitingFilter;
 
     @Bean
     public AuditorAware<Integer> auditorProvider() {
@@ -47,16 +47,18 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeHttpRequests(authorize -> authorize
                         // 로그인, 회원가입, Swagger 등은 인증 없이 접근 허용
                         .requestMatchers(
+                                "/auth/**",
+                                "/users",
                                 "/users/signup",
-                                "/users/login",
-                                "/users/find-id",
-                                "/users/reset-password",
-                                "/users/check-loginId",
-                                "/users/*/mini-homepage/visit",
+                                "/upload/**",
+                                "/mini-homepage/*/visit",
                                 "/upload/**",
                                 "/images/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -77,7 +79,7 @@ public class SecurityConfig {
 //                "https://d1h4znmb6e9q3l.cloudfront.net",
                 "https://daiks060spghp.cloudfront.net"
         ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(List.of("Authorization"));

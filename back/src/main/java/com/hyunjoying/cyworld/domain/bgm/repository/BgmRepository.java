@@ -9,5 +9,7 @@ import java.util.List;
 public interface BgmRepository extends JpaRepository<Bgm, Integer> {
     @EntityGraph(attributePaths = {"user"})
     List<Bgm> findAllByUserIdAndIsDeletedFalse(Integer userId);
+
+    List<Bgm> findAllByUserIdOrderByPlayOrderAsc(Integer userId);
 }
 
