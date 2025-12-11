@@ -5,6 +5,8 @@
 사이트 주소 : https://daiks060spghp.cloudfront.net/guswjd8694
 </p>
 
+  <img alt="ERD" src="back/erd/cyworld_home.png" alt="main" width="800" />
+
 <br>
 
 ---
@@ -40,25 +42,22 @@
 
 ### 테이블 설계 (Database Schema)
 
-<details>
-  <summary>ERD 보기 (Click to expand)</summary>
-  <img alt="ERD" src="back/erd/cyworld_erd_20251005_v02.png" />
-</details>
+  <img alt="ERD" src="back/erd/cyworld_erd_20251128_v03.png" alt="ERD" width="800" />
 
 <br>
 
 ---
 
 ### 시스템 아키텍처 (System Architecture)
-- 업데이트 예정
+
+  <img alt="ERD" src="back/erd/architecture_v01.png" alt="Architecture" width="800" />
 
 <br>
 
 ---
 
-### 주요 기능 (Features) 25.10.05
-
-![progress](https://img.shields.io/badge/Progress-96%25-blue)
+### 주요 기능 (Features)
+[//]: # (![progress]&#40;https://img.shields.io/badge/Progress-96%25-blue&#41;)
 
 - [x] 회원 관리: 회원가입, JWT 기반 로그인/로그아웃, Spring Security를 이용한 인증/인가
 - [x] 미니홈피: 개인화된 프로필, 오늘의 감정, 방문자 수(Today/Total) 자동 집계 및 스케줄링을 통한 초기화
