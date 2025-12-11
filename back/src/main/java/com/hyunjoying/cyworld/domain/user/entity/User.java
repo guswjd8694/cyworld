@@ -65,9 +65,19 @@ public class User extends BaseEntity {
         this.gender = gender;
     }
 
-    public void updateUserInfo(String email, String phone) {
+    public void updateUserInfo(String name, String email, String phone, String birth, String genderStr) {
+        this.name = name;
         this.email = email;
         this.phone = phone;
+        this.birth = birth;
+
+        if (genderStr != null) {
+            if (genderStr.equalsIgnoreCase("MALE") || genderStr.equalsIgnoreCase("Male")) {
+                this.gender = Gender.MALE;
+            } else if (genderStr.equalsIgnoreCase("FEMALE") || genderStr.equalsIgnoreCase("Female")) {
+                this.gender = Gender.FEMALE;
+            }
+        }
     }
 
     public void updatePassword(String newPassword) {

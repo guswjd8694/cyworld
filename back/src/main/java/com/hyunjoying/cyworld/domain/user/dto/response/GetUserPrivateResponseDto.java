@@ -23,6 +23,12 @@ public class GetUserPrivateResponseDto {
     @Schema(example = "010-1234-5678", description = "전화번호")
     private String phone;
 
+    @Schema(example = "20000101", description = "생년월일 (YYYYMMDD)")
+    private String birth;
+
+    @Schema(example = "FEMALE", description = "성별 (MALE/FEMALE)")
+    private String gender;
+
     @Setter
     @Schema(example = "/img/profile_pic.png", description = "현재 프로필 이미지 URL")
     private String imageUrl;
@@ -37,5 +43,10 @@ public class GetUserPrivateResponseDto {
         this.name = user.getName();
         this.email = user.getEmail();
         this.phone = user.getPhone();
+        this.birth = user.getBirth();
+
+        if (user.getGender() != null) {
+            this.gender = user.getGender().name();
+        }
     }
 }

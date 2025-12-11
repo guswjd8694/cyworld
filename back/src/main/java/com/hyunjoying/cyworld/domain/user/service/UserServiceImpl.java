@@ -16,12 +16,14 @@ import com.hyunjoying.cyworld.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -93,7 +95,13 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = entityFinder.getUserOrThrow(userId);
-        user.updateUserInfo(requestDto.getEmail(), requestDto.getPhone());
+        user.updateUserInfo(
+                requestDto.getName(),
+                requestDto.getEmail(),
+                requestDto.getPhone(),
+                requestDto.getBirth(),
+                requestDto.getGender()
+        );
     }
 
 
@@ -109,10 +117,48 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void withdrawUser(Integer userId, User currentUser) {
         if (!currentUser.getId().equals(userId)) {
-            throw new IllegalArgumentException("본인만 탈퇴할 수 있습니다.");
+            throw new AccessDeniedException("본인의 계정만 탈퇴시킬 수 있습니다.");
         }
 
         User user = entityFinder.getUserOrThrow(userId);
+
+
+        List<Ilchon> myFriendships = ilchonRepository.findLatestByUserGroupByFriendAndStatus(
+                userId, Ilchon.IlchonStatus.ACCEPTED.name()
+        );
+
+        Set<Integer> myFriendIds = myFriendships.stream()
+                .map(ilchon -> ilchon.getFriend().getId())
+                .collect(Collectors.toSet());
+
+        List<Ilchon> friendOfMeShips = new ArrayList<>();
+        if (!myFriendIds.isEmpty()) {
+            friendOfMeShips = ilchonRepository.findLatestByUserInAndFriendAndStatus(
+                    myFriendIds, userId, Ilchon.IlchonStatus.ACCEPTED.name()
+            );
+        }
+
+        List<Ilchon> allCurrentFriendships = Stream.concat(myFriendships.stream(), friendOfMeShips.stream())
+                .toList();
+
+        List<Ilchon> newBrokenRows = new ArrayList<>();
+        for (Ilchon oldRel : allCurrentFriendships) {
+            Ilchon brokenRel = Ilchon.builder()
+                    .user(oldRel.getUser())
+                    .friend(oldRel.getFriend())
+                    .nickname(oldRel.getNickname())
+                    .status(Ilchon.IlchonStatus.BROKEN)
+                    .build();
+
+            brokenRel.setCreatedBy(userId);
+
+            newBrokenRows.add(brokenRel);
+        }
+
+        if (!newBrokenRows.isEmpty()) {
+            ilchonRepository.saveAll(newBrokenRows);
+        }
+
         userRepository.delete(user);
     }
 

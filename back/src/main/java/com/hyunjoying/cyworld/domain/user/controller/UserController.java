@@ -40,7 +40,7 @@ public class UserController {
     }
 
 
-    @Operation(summary = "개인정보 수정", description = "로그인한 사용자의 개인정보(이메일, 전화번호)를 수정합니다.", tags = { "user" })
+    @Operation(summary = "개인정보 수정", description = "로그인한 사용자의 개인정보를 수정합니다.", tags = { "user" })
     @ApiResponse(
             description = "개인정보 수정 성공",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SuccessResponseDto.class))

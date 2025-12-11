@@ -20,6 +20,12 @@ public class GetUserPublicResponseDto {
     @Schema(example = "khj@email.com", description = "이메일")
     private String email;
 
+    @Schema(example = "20000101", description = "생년월일 (YYYYMMDD)")
+    private String birth;
+
+    @Schema(example = "FEMALE", description = "성별 (MALE/FEMALE)")
+    private String gender;
+
     @Setter
     @Schema(example = "/img/profile_pic.png", description = "현재 프로필 이미지 URL")
     private String imageUrl;
@@ -33,5 +39,10 @@ public class GetUserPublicResponseDto {
         this.loginId = user.getLoginId();
         this.name = user.getName();
         this.email = user.getEmail();
+        this.birth = user.getBirth();
+
+        if (user.getGender() != null) {
+            this.gender = user.getGender().name();
+        }
     }
 }
