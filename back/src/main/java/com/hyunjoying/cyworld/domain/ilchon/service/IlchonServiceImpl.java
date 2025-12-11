@@ -32,11 +32,11 @@ public class IlchonServiceImpl implements IlchonService {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
         User targetUser = entityFinder.getUserOrThrow(targetUserId);
 
-        Ilchon ilchon1 = ilchonRepository.findByUserAndFriendAndStatus(
+        Ilchon ilchon1 = ilchonRepository.findTopByUserAndFriendAndStatusOrderByCreatedAtDesc(
                         currentUser, targetUser, Ilchon.IlchonStatus.ACCEPTED)
                 .orElseThrow(() -> new IllegalStateException("일촌 관계가 아닙니다."));
 
-        Ilchon ilchon2 = ilchonRepository.findByUserAndFriendAndStatus(
+        Ilchon ilchon2 = ilchonRepository.findTopByUserAndFriendAndStatusOrderByCreatedAtDesc(
                         targetUser, currentUser, Ilchon.IlchonStatus.ACCEPTED)
                 .orElseThrow(() -> new IllegalStateException("일촌 관계가 아닙니다."));
 
@@ -49,16 +49,26 @@ public class IlchonServiceImpl implements IlchonService {
     public List<GetIlchonResponseDto> getIlchons(Integer userId) {
         User user = entityFinder.getUserOrThrow(userId);
 
-        List<Ilchon> myIlchons = ilchonRepository.findAllByUserAndStatus(
-                user, Ilchon.IlchonStatus.ACCEPTED);
+        List<Ilchon> myIlchons = ilchonRepository.findLatestByUserGroupByFriendAndStatus(
+                user.getId(),
+                Ilchon.IlchonStatus.ACCEPTED.name()
+        );
 
-        Set<User> friends = myIlchons.stream()
-                .map(Ilchon::getFriend)
+        Set<Integer> friendIds = myIlchons.stream()
+                .map(ilchon -> ilchon.getFriend().getId())
                 .collect(Collectors.toSet());
 
-        Map<Integer, String> friendNicknamesMap = ilchonRepository.findByUserInAndFriendAndStatus(
-                        friends, user, Ilchon.IlchonStatus.ACCEPTED)
-                .stream()
+        if (friendIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Ilchon> friendToUserIlchons = ilchonRepository.findLatestByUserInAndFriendAndStatus(
+                friendIds,
+                userId,
+                Ilchon.IlchonStatus.ACCEPTED.name()
+        );
+
+        Map<Integer, String> friendNicknamesMap = friendToUserIlchons.stream()
                 .collect(Collectors.toMap(
                         ilchon -> ilchon.getUser().getId(),
                         Ilchon::getNickname
@@ -67,6 +77,7 @@ public class IlchonServiceImpl implements IlchonService {
         return myIlchons.stream().map(myIlchon -> {
             User friend = myIlchon.getFriend();
             String myNickname = myIlchon.getNickname();
+
             String friendNickname = friendNicknamesMap.get(friend.getId());
 
             return new GetIlchonResponseDto(
@@ -85,11 +96,11 @@ public class IlchonServiceImpl implements IlchonService {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
         User targetUser = entityFinder.getUserOrThrow(requestDto.getTargetUserId());
 
-        Ilchon ilchonAtoB = ilchonRepository.findByUserAndFriendAndStatus(
+        Ilchon ilchonAtoB = ilchonRepository.findTopByUserAndFriendAndStatusOrderByCreatedAtDesc(
                         currentUser, targetUser, Ilchon.IlchonStatus.ACCEPTED)
                 .orElseThrow(() -> new IllegalStateException("일촌 관계가 아닙니다. (A->B)"));
 
-        Ilchon ilchonBtoA = ilchonRepository.findByUserAndFriendAndStatus(
+        Ilchon ilchonBtoA = ilchonRepository.findTopByUserAndFriendAndStatusOrderByCreatedAtDesc(
                         targetUser, currentUser, Ilchon.IlchonStatus.ACCEPTED)
                 .orElseThrow(() -> new IllegalStateException("일촌 관계가 아닙니다. (B->A)"));
 
@@ -107,16 +118,20 @@ public class IlchonServiceImpl implements IlchonService {
             return new GetIlchonRelationshipResponseDto(0, null, null);
         }
 
-        Optional<Ilchon> ilchonAtoB = ilchonRepository.findByUserAndFriendAndStatus(userA, userB, Ilchon.IlchonStatus.ACCEPTED);
-        Optional<Ilchon> ilchonBtoA = ilchonRepository.findByUserAndFriendAndStatus(userB, userA, Ilchon.IlchonStatus.ACCEPTED);
+        Optional<Ilchon> ilchonAtoB = ilchonRepository.findTopByUserAndFriendOrderByCreatedAtDesc(userA, userB);
+        Optional<Ilchon> ilchonBtoA = ilchonRepository.findTopByUserAndFriendOrderByCreatedAtDesc(userB, userA);
 
-        if (ilchonAtoB.isPresent() && ilchonBtoA.isPresent()) {
+
+        if (ilchonAtoB.isPresent() && ilchonAtoB.get().getStatus() == Ilchon.IlchonStatus.ACCEPTED &&
+                ilchonBtoA.isPresent() && ilchonBtoA.get().getStatus() == Ilchon.IlchonStatus.ACCEPTED) {
+
             return new GetIlchonRelationshipResponseDto(
                     1,
-                    ilchonAtoB.get().getNickname(),
-                    ilchonBtoA.get().getNickname()
+                    ilchonBtoA.get().getNickname(),
+                    ilchonAtoB.get().getNickname()
             );
         }
+
 
         Optional<IlchonRequest> pendingRequest = ilchonRequestRepository
                 .findExistingPendingRequest(userA, userB, IlchonRequest.IlchonRequestStatus.PENDING);
@@ -138,19 +153,22 @@ public class IlchonServiceImpl implements IlchonService {
         User currentUser = entityFinder.getUserOrThrow(currentUserId);
         User targetUser = entityFinder.getUserOrThrow(targetUserId);
 
-        Set<User> friendsOfCurrentUser = ilchonRepository.findAllByUserAndStatus(currentUser, Ilchon.IlchonStatus.ACCEPTED)
-                .stream()
-                .map(Ilchon::getFriend)
+        List<Ilchon> myIlchons = ilchonRepository.findLatestByUserGroupByFriendAndStatus(
+                currentUser.getId(), Ilchon.IlchonStatus.ACCEPTED.name());
+
+        List<Ilchon> targetUserIlchons = ilchonRepository.findLatestByUserGroupByFriendAndStatus(
+                targetUser.getId(), Ilchon.IlchonStatus.ACCEPTED.name());
+
+        Set<Integer> myFriendIds = myIlchons.stream()
+                .map(ilchon -> ilchon.getFriend().getId())
                 .collect(Collectors.toSet());
 
-        Set<User> friendsOfTargetUser = ilchonRepository.findAllByUserAndStatus(targetUser, Ilchon.IlchonStatus.ACCEPTED)
-                .stream()
-                .map(Ilchon::getFriend)
+        Set<Integer> targetFriendIds = targetUserIlchons.stream()
+                .map(ilchon -> ilchon.getFriend().getId())
                 .collect(Collectors.toSet());
 
-        friendsOfCurrentUser.retainAll(friendsOfTargetUser);
+        myFriendIds.retainAll(targetFriendIds);
 
-        return friendsOfCurrentUser.size();
-
+        return myFriendIds.size();
     }
 }
