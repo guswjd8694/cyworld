@@ -25,6 +25,8 @@ const validate = (name, value, formData) => {
             return '';
         case 'name':
             if (!value) return '이름을 입력해주세요.';
+            if (!/^[가-힣]+$/.test(value)) return '이름은 한글만 입력 가능합니다.';
+            if (value.length < 2 || value.length > 5) return '이름은 2자 이상 5자 이하로 입력해주세요.';
             return '';
         case 'birth':
             if (!value) return '생년월일을 입력해주세요.';

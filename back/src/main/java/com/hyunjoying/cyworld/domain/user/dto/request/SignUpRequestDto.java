@@ -25,12 +25,12 @@ public class SignUpRequestDto {
     @Schema(example = "홍길동", description = "이름", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
 
-    @Schema(example = "2002-02-02", description = "생년월일 (YYYY-MM-DD)", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "20020202", description = "생년월일", requiredMode = Schema.RequiredMode.REQUIRED)
     private String birth;
 
-    @Schema(example = "FEMALE", description = "성별 (MALE/FEMALE)", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "FEMALE", description = "성별 (Male/Female)", requiredMode = Schema.RequiredMode.REQUIRED)
     private String gender;
 
-    @Schema(example = "010-1234-5678", description = "전화번호", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(example = "01012345678", description = "전화번호", requiredMode = Schema.RequiredMode.REQUIRED)
     private String phone;
 }

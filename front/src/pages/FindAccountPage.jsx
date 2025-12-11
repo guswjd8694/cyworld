@@ -38,7 +38,7 @@ function FindAccountPage() {
     const [activeTab, setActiveTab] = useState('findId');
     
     const [findIdData, setFindIdData] = useState({ name: '', email: '' });
-    const [foundId, setFoundId] = useState('');
+    const [foId, setFoundId] = useState('');
 
     const [resetPwData, setResetPwData] = useState({ 
         loginId: '', 
@@ -104,8 +104,14 @@ function FindAccountPage() {
         try {
             const response = await apiClient.post('/auth/find-id', findIdData);
             const result = response.data;
-            setFoundId(result.loginId);
-            setSuccessMessage(`회원님의 아이디는 [ ${result.loginId} ] 입니다.`);
+            
+            if (result && result.loginId) {
+                setFoundId(result.loginId);
+                setSuccessMessage(`회원님의 아이디는 [ ${result.loginId} ] 입니다.`);
+            } else {
+                setSubmitError('일치하는 회원 정보가 없습니다.');
+            }
+
         } catch (err) {
             setSubmitError(err.response?.data?.message || '일치하는 사용자를 찾을 수 없습니다.');
         }
