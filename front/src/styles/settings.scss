@@ -58,6 +58,40 @@
             width: 100%;
         }
 
+        .gender-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+
+            label {
+                input[type="radio"] {
+                    position: absolute;
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+
+                span {
+                    display: block;
+                    padding: 12px;
+                    border: 1px solid $border-color;
+                    border-radius: 4px;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.2s ease-in-out;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                }
+
+                input[type="radio"]:checked + span {
+                    background-color: #ccc;
+                    color: white;
+                    border-color: #ccc;
+                    font-weight: bold;
+                }
+            }
+        }
+
         .error-message {
             color: #e53e3e;
             font-size: 12px;

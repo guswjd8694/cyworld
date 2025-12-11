@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,11 +40,12 @@ public class MinihomeController {
     @PostMapping("/{loginId}/visit")
     public ResponseEntity<GetMinihomeResponseDto> recordVisit(
             @PathVariable("loginId") String ownerLoginId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            HttpServletRequest request
     ) {
         Integer visitorId = (userDetails != null) ? userDetails.getUser().getId() : null;
 
-        GetMinihomeResponseDto updatedMinihome = minihomeService.recordAndIncrementVisit(ownerLoginId, visitorId);
+        GetMinihomeResponseDto updatedMinihome = minihomeService.recordAndIncrementVisit(ownerLoginId, visitorId, request);
 
         return ResponseEntity.ok(updatedMinihome);
     }

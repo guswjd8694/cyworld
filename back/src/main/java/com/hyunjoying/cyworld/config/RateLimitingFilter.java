@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,6 +30,19 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private List<String> excludePaths;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
+
+    @Scheduled(fixedRate = 60 * 1000)
+    public void cleanupRequestCounts() {
+        long currentTime = System.currentTimeMillis();
+
+        requestCounts.entrySet().removeIf(entry -> {
+            Queue<Long> queue = entry.getValue();
+
+            return queue.isEmpty() || (currentTime - queue.peek() > TIME_FRAME_IN_MILLIS && queue.stream().allMatch(time -> currentTime - time > TIME_FRAME_IN_MILLIS));
+        });
+    }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
