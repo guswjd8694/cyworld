@@ -54,17 +54,10 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # 1. 기존에 실행 중인 서버 중지 및 삭제
             sudo docker stop cyworld-server || true
             sudo docker rm cyworld-server || true
-            
-            # 2. 용량 확보를 위해 안 쓰는 이미지 삭제
             sudo docker system prune -f
-            
-            # 3. 도커 허브에서 최신 이미지 받아오기
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/cyworld-server:latest
-            
-            # 4. 새 버전 실행 (Prod 프로필 적용 + AWS 키 주입)
             sudo docker run -d -p 80:8080 \
               --name cyworld-server \
               -e SPRING_PROFILES_ACTIVE=prod \
