@@ -21,4 +21,5 @@ public class BgmController {
         List<GetPlaylistResponseDto> bgms = bgmService.getBgmByUserId(userId);
         return ResponseEntity.ok(bgms);
     }
+//dd
 }
