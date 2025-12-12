@@ -2,7 +2,7 @@ name: Cyworld CI/CD
 
 on:
   push:
-    branches: [ "refactor/bgm" ]
+    branches: [ "develop" ]
     paths:
       - 'back/**'
 
