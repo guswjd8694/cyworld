@@ -71,7 +71,8 @@ public class IlchonServiceImpl implements IlchonService {
         Map<Integer, String> friendNicknamesMap = friendToUserIlchons.stream()
                 .collect(Collectors.toMap(
                         ilchon -> ilchon.getUser().getId(),
-                        Ilchon::getNickname
+                        Ilchon::getNickname,
+                        (oldValue, newValue) -> newValue
                 ));
 
         return myIlchons.stream().map(myIlchon -> {
