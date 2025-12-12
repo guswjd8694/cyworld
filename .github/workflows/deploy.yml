@@ -69,9 +69,17 @@ jobs:
               -e SPRING_DATASOURCE_PASSWORD="${{ secrets.PROD_DB_PASSWORD }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e JWT_EXPIRATION_TIME=3600000 \
+              -e CLOUD_AWS_S3_BUCKET="${{ secrets.S3_BUCKET_NAME }}" \
+              -e APP_BASE_URL="https://daiks060spghp.cloudfront.net" \
+              -e CLOUD_AWS_REGION_STATIC="ap-northeast-2" \
+              -e CLOUD_AWS_CLOUDFRONT_URL="https://daiks060spghp.cloudfront.net" \
               -e RATE_LIMITER_EXCLUDE_PATHS="/images/**,/css/**,/js/**,/favicon.ico,/swagger-ui/**,/v3/api-docs/**,/error" \
               -e FILE_UPLOAD_DIR="/tmp/uploads" \
               -e SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE="10MB" \
               -e SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE="10MB" \
+              -e SPRING_JPA_HIBERNATE_DDL_AUTO="update" \
+              -e SERVER_SERVLET_CONTEXT_PATH="/api" \
               -e SPRING_JPA_DATABASE_PLATFORM="org.hibernate.dialect.MySQLDialect" \
+              -e SPRING_JPA_SHOW_SQL="true" \
+              -e SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL="false" \
               ${{ secrets.DOCKER_USERNAME }}/cyworld-server:latest
