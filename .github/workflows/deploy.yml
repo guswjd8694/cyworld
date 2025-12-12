@@ -67,6 +67,7 @@ jobs:
               -e AWS_REGION=ap-northeast-2 \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e JWT_EXPIRATION_TIME=3600000 \
+              -e RATE_LIMITER_EXCLUDE_PATHS="/images/**,/css/**,/js/**,/favicon.ico,/swagger-ui/**,/v3/api-docs/**,/error" \
               -e SPRING_DATASOURCE_URL="${{ secrets.PROD_DB_URL }}" \
               -e SPRING_DATASOURCE_USERNAME="${{ secrets.PROD_DB_USERNAME }}" \
               -e SPRING_DATASOURCE_PASSWORD="${{ secrets.PROD_DB_PASSWORD }}" \
