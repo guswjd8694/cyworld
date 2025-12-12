@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # MySQL
+  cyworld-db:
+    image: mysql:8.0
+    container_name: cyworld-db
+    ports:
+      - "3307:3306" # 내 컴퓨터 3307포트 -> 도커 안쪽 3306포트 연결 (맥북 DB랑 안 겹치게)
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck: # DB가 살아있는지 10초마다 검사
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot
+  cyworld-app:
+    build: .
+    container_name: cyworld-server
+    ports:
+      - "8080:8080"
+    environment:
+      # 로컬 프로필 사용
+      SPRING_PROFILES_ACTIVE: local
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ap-northeast-2
+      # 도커 내부 통신용 주소 (cyworld-db)
+      SPRING_DATASOURCE_URL: jdbc:mysql://cyworld-db:3306/cyworld?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      # properties 파일들을 도커 안으로 연결
+      - ./src/main/resources/application.properties:/app/config/application.properties
+      - ./src/main/resources/application-local.properties:/app/config/application-local.properties
+    depends_on:
+      cyworld-db:
+        condition: service_healthy # DB가 신호를 보낼 때까지 기다림
