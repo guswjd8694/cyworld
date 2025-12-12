@@ -22,5 +22,4 @@ public class BgmController {
         return ResponseEntity.ok(bgms);
     }
 
-    //ㅇ
 }
