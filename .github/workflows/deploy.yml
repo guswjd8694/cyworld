@@ -46,7 +46,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/cyworld-server:latest
 
-      # EC2에 접속해서 배포 (SSH)
+      # EC2(SSH)에 접속해서 배포
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
