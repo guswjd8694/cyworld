@@ -48,6 +48,8 @@ public class IlchonServiceImpl implements IlchonService {
 
     @Override
     public List<GetIlchonResponseDto> getIlchons(Integer userId) {
+        System.out.println("====== 버전 체크: 진짜 바뀐거 맞지 ======");
+
         User user = entityFinder.getUserOrThrow(userId);
 
         List<Ilchon> myIlchons = ilchonRepository.findLatestByUserGroupByFriendAndStatus(
@@ -75,6 +77,7 @@ public class IlchonServiceImpl implements IlchonService {
                         Ilchon::getNickname,
                         (oldValue, newValue) -> newValue
                 ));
+
 
         return myIlchons.stream().map(myIlchon -> {
             User friend = myIlchon.getFriend();

@@ -21,7 +21,6 @@ public class CyworldApplication {
     }
 
     public static void main(String[] args) {
-        System.out.println("====== 버전 체크: 진짜 바뀐거 맞지 ======");
         SpringApplication.run(CyworldApplication.class, args);
     }
 
