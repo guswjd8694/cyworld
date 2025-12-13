@@ -48,6 +48,8 @@ public class IlchonServiceImpl implements IlchonService {
 
     @Override
     public List<GetIlchonResponseDto> getIlchons(Integer userId) {
+        System.out.println("====== 버전 체크: 진짜 진짜 첫번째 진짜 ======");
+
         User user = entityFinder.getUserOrThrow(userId);
 
         List<Ilchon> myIlchons = ilchonRepository.findLatestByUserGroupByFriendAndStatus(
