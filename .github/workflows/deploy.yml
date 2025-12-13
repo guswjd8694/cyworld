@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew clean build -x test
 
       - name: Check build result
-        run: ls -al ./back/build/libs
+        run: ls -al build/libs
 
       # 도커 이미지 빌드 & 허브 로그인 & 푸시
       - name: Login to Docker Hub
