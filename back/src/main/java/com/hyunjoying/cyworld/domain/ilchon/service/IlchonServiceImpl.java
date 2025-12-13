@@ -26,6 +26,7 @@ public class IlchonServiceImpl implements IlchonService {
     private final EntityFinder entityFinder;
     private final IlchonRequestRepository ilchonRequestRepository;
 
+
     @Override
     @Transactional
     public void breakIlchon(Integer currentUserId, Integer targetUserId) {
