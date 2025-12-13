@@ -48,8 +48,6 @@ public class IlchonServiceImpl implements IlchonService {
 
     @Override
     public List<GetIlchonResponseDto> getIlchons(Integer userId) {
-        System.out.println("====== 버전 체크: 진짜 바뀐거 맞지 ======");
-
         User user = entityFinder.getUserOrThrow(userId);
 
         List<Ilchon> myIlchons = ilchonRepository.findLatestByUserGroupByFriendAndStatus(
@@ -71,19 +69,20 @@ public class IlchonServiceImpl implements IlchonService {
                 Ilchon.IlchonStatus.ACCEPTED.name()
         );
 
-        Map<Integer, String> friendNicknamesMap = friendToUserIlchons.stream()
-                .collect(Collectors.toMap(
-                        ilchon -> ilchon.getUser().getId(),
-                        Ilchon::getNickname,
-                        (oldValue, newValue) -> newValue
-                ));
+        Map<Integer, String> friendNicknamesMap = new HashMap<>();
 
+        for (Ilchon ilchon : friendToUserIlchons) {
+            Integer key = ilchon.getUser().getId();
+            String value = ilchon.getNickname();
+
+            friendNicknamesMap.put(key, value);
+        }
 
         return myIlchons.stream().map(myIlchon -> {
             User friend = myIlchon.getFriend();
             String myNickname = myIlchon.getNickname();
 
-            String friendNickname = friendNicknamesMap.get(friend.getId());
+            String friendNickname = friendNicknamesMap.getOrDefault(friend.getId(), "");
 
             return new GetIlchonResponseDto(
                     myIlchon.getId(),
