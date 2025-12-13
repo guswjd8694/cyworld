@@ -35,12 +35,12 @@ public interface IlchonRepository extends JpaRepository<Ilchon, Integer> {
     @Query(
             value = "SELECT i.* FROM ilchons i " +
                     "INNER JOIN (" +
-                    "    SELECT user_id, MAX(created_at) as max_created_at " +
+                    "    SELECT user_id, MAX(id) as max_id " +
                     "    FROM ilchons " +
                     "    WHERE user_id IN (:userIds) AND friend_id = :friendId AND status = :status " +
                     "    GROUP BY user_id" +
                     ") AS latest_ilchon " +
-                    "ON i.user_id = latest_ilchon.user_id AND i.created_at = latest_ilchon.max_created_at " +
+                    "ON i.user_id = latest_ilchon.user_id AND i.id = latest_ilchon.max_id " +
                     "WHERE i.friend_id = :friendId AND i.status = :status",
             nativeQuery = true
     )
@@ -53,12 +53,12 @@ public interface IlchonRepository extends JpaRepository<Ilchon, Integer> {
     @Query(
             value = "SELECT i.* FROM ilchons i " +
                     "INNER JOIN (" +
-                    "    SELECT friend_id, MAX(created_at) as max_created_at " +
+                    "    SELECT friend_id, MAX(id) as max_id " +
                     "    FROM ilchons " +
                     "    WHERE user_id = :userId AND status = :status " +
                     "    GROUP BY friend_id" +
                     ") AS latest_ilchon " +
-                    "ON i.friend_id = latest_ilchon.friend_id AND i.created_at = latest_ilchon.max_created_at " +
+                    "ON i.friend_id = latest_ilchon.friend_id AND i.id = latest_ilchon.max_id " +
                     "WHERE i.user_id = :userId AND i.status = :status",
             nativeQuery = true
     )
